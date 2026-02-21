@@ -550,11 +550,11 @@ function playFragment(onDone) {
   if (frag.time !== null && player && player.seekTo && player.playVideo) {
     player.seekTo(frag.time, true);
     player.playVideo();
-    // Calculate duration with a minimum of 3 seconds and a 1.5s buffer
+    // Calculate duration: tight to fragment boundaries
     const nextFrag = S.fragments[S.idx + 1];
     const duration = nextFrag && nextFrag.time !== null
-      ? Math.max(3, (nextFrag.time - frag.time) + 1.5)
-      : Math.max(5, frag.text.split(' ').length * 0.5 + 2);
+      ? Math.max(2, (nextFrag.time - frag.time) - 0.3)
+      : Math.max(3, frag.text.split(' ').length * 0.45);
     setTimeout(() => {
       if (player && player.pauseVideo) player.pauseVideo();
       if (onDone) onDone();
