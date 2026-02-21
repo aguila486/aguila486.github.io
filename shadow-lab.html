@@ -543,24 +543,38 @@ function clearSubs() {
 // ═══════════════════════════════════════════════
 // FRAGMENT PLAYBACK
 // ═══════════════════════════════════════════════
+let _playWatcher = null;
+
 function playFragment(onDone) {
   if (!S.fragments.length) return;
+  clearInterval(_playWatcher);
   const frag = S.fragments[S.idx];
 
   if (frag.time !== null && player && player.seekTo && player.playVideo) {
     player.seekTo(frag.time, true);
     player.playVideo();
-    // Calculate duration: tight to fragment boundaries
+
+    // Calculate the exact video timestamp where we must stop
     const nextFrag = S.fragments[S.idx + 1];
-    const duration = nextFrag && nextFrag.time !== null
-      ? Math.max(2, (nextFrag.time - frag.time) + 2.45)
-      : Math.max(3, frag.text.split(' ').length * 0.45 + 2.75);
-    setTimeout(() => {
-      if (player && player.pauseVideo) player.pauseVideo();
-      if (onDone) onDone();
-    }, duration * 1000);
+    const endTime = nextFrag && nextFrag.time !== null
+      ? nextFrag.time - 0.2
+      : frag.time + Math.max(4, frag.text.split(' ').length * 0.55 + 2);
+
+    // Poll the REAL video position every 100ms
+    // This eliminates the seek/buffer delay problem completely
+    _playWatcher = setInterval(() => {
+      if (!player || !player.getCurrentTime) { clearInterval(_playWatcher); return; }
+      if (player.getCurrentTime() >= endTime) {
+        clearInterval(_playWatcher);
+        player.pauseVideo();
+        if (onDone) onDone();
+      }
+    }, 100);
+
+    // Safety: force stop after 30s if something goes wrong
+    setTimeout(() => { clearInterval(_playWatcher); }, 30000);
+
   } else {
-    // Use TTS — onend callback ensures we wait until speech finishes
     speakText(frag.text, onDone);
   }
 }
