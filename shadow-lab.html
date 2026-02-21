@@ -553,8 +553,8 @@ function playFragment(onDone) {
     // Calculate duration: tight to fragment boundaries
     const nextFrag = S.fragments[S.idx + 1];
     const duration = nextFrag && nextFrag.time !== null
-      ? Math.max(2, (nextFrag.time - frag.time) - 0.3)
-      : Math.max(3, frag.text.split(' ').length * 0.45);
+      ? Math.max(2, (nextFrag.time - frag.time) + 1.7)
+      : Math.max(3, frag.text.split(' ').length * 0.45 + 2);
     setTimeout(() => {
       if (player && player.pauseVideo) player.pauseVideo();
       if (onDone) onDone();
