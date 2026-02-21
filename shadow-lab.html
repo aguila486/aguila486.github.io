@@ -431,6 +431,9 @@ function loadVideo() {
 
 function setRate(rate, btn) {
   if (player && player.setPlaybackRate) player.setPlaybackRate(rate);
+  // Also set TTS rate (mapped: 0.5x→0.55, 0.75x→0.7, 1x→0.82, 1.25x→1.0, 1.5x→1.15)
+  const ttsMap = {0.5:0.55, 0.75:0.7, 1:0.82, 1.25:1.0, 1.5:1.15};
+  ttsRate = ttsMap[rate] || 0.82;
   document.querySelectorAll('.speed-chip').forEach(c => c.classList.remove('on'));
   btn.classList.add('on');
 }
@@ -540,20 +543,25 @@ function clearSubs() {
 // ═══════════════════════════════════════════════
 // FRAGMENT PLAYBACK
 // ═══════════════════════════════════════════════
-function playFragment() {
+function playFragment(onDone) {
   if (!S.fragments.length) return;
   const frag = S.fragments[S.idx];
 
-  if (frag.time !== null && player && player.seekTo) {
+  if (frag.time !== null && player && player.seekTo && player.playVideo) {
     player.seekTo(frag.time, true);
     player.playVideo();
-    // Stop after approximate fragment duration
+    // Calculate duration with a minimum of 3 seconds and a 1.5s buffer
     const nextFrag = S.fragments[S.idx + 1];
-    const duration = nextFrag && nextFrag.time !== null ? (nextFrag.time - frag.time) : 5;
-    setTimeout(() => { if (player && player.pauseVideo) player.pauseVideo(); }, duration * 1000);
+    const duration = nextFrag && nextFrag.time !== null
+      ? Math.max(3, (nextFrag.time - frag.time) + 1.5)
+      : Math.max(5, frag.text.split(' ').length * 0.5 + 2);
+    setTimeout(() => {
+      if (player && player.pauseVideo) player.pauseVideo();
+      if (onDone) onDone();
+    }, duration * 1000);
   } else {
-    // Use TTS fallback
-    speakText(frag.text);
+    // Use TTS — onend callback ensures we wait until speech finishes
+    speakText(frag.text, onDone);
   }
 }
 
@@ -562,15 +570,35 @@ function repeatFragment() {
   speakText(S.fragments[S.idx].text);
 }
 
-function speakText(text) {
-  if (!('speechSynthesis' in window)) return;
+let ttsRate = 0.82;
+let _resumeTimer = null;
+
+function speakText(text, onDone) {
+  if (!('speechSynthesis' in window)) { if (onDone) onDone(); return; }
   speechSynthesis.cancel();
+  clearInterval(_resumeTimer);
+
   const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'en-US'; u.rate = 0.85;
+  u.lang = 'en-US';
+  u.rate = ttsRate;
   const voices = speechSynthesis.getVoices();
-  const v = voices.find(v => v.lang.startsWith('en') && v.name.includes('Google')) || voices.find(v => v.lang.startsWith('en-US'));
+  const v = voices.find(v => v.lang.startsWith('en') && v.name.includes('Google'))
+    || voices.find(v => v.lang.startsWith('en-US'))
+    || voices.find(v => v.lang.startsWith('en'));
   if (v) u.voice = v;
+
+  u.onend = () => { clearInterval(_resumeTimer); if (onDone) onDone(); };
+  u.onerror = () => { clearInterval(_resumeTimer); if (onDone) onDone(); };
+
   speechSynthesis.speak(u);
+
+  // Chrome bug workaround: Chrome pauses TTS after ~15s silently.
+  // We keep it alive by calling pause/resume every 10s.
+  _resumeTimer = setInterval(() => {
+    if (!speechSynthesis.speaking) { clearInterval(_resumeTimer); return; }
+    speechSynthesis.pause();
+    speechSynthesis.resume();
+  }, 10000);
 }
 
 // ═══════════════════════════════════════════════
@@ -706,7 +734,11 @@ function analyzeResult(spoken, confidence) {
 
   // Auto-advance in guided mode
   if (S.guided && score >= 70) {
-    setTimeout(() => { nextFrag(); }, 2000);
+    setTimeout(() => {
+      nextFrag();
+      // Auto-play next fragment after advancing
+      setTimeout(() => playFragment(), 500);
+    }, 2000);
   }
 }
 
