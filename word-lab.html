@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Word Lab — Learn English Word Building</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #08090d;
+    --surface: #10131a;
+    --surface-2: #171c28;
+    --surface-3: #1e2535;
+    --surface-hover: #252d3f;
+    --compound: #f59e0b;
+    --compound-bg: rgba(245, 158, 11, 0.08);
+    --compound-border: rgba(245, 158, 11, 0.2);
+    --phrasal: #8b5cf6;
+    --phrasal-bg: rgba(139, 92, 246, 0.08);
+    --phrasal-border: rgba(139, 92, 246, 0.2);
+    --portmanteau: #ec4899;
+    --portmanteau-bg: rgba(236, 72, 153, 0.08);
+    --portmanteau-border: rgba(236, 72, 153, 0.2);
+    --success: #22c55e;
+    --success-bg: rgba(34, 197, 94, 0.1);
+    --error: #ef4444;
+    --error-bg: rgba(239, 68, 68, 0.1);
+    --text: #e8eaf0;
+    --text-dim: #94a3b8;
+    --text-muted: #5a6478;
+    --border: rgba(255,255,255,0.06);
+    --radius: 14px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 15% 10%, rgba(245,158,11,0.03) 0%, transparent 45%),
+      radial-gradient(ellipse at 85% 30%, rgba(139,92,246,0.03) 0%, transparent 45%),
+      radial-gradient(ellipse at 50% 90%, rgba(236,72,153,0.025) 0%, transparent 45%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 28px 20px 80px; }
+
+  /* ── Header ── */
+  .header { text-align: center; margin-bottom: 36px; animation: fadeDown .5s ease; }
+  @keyframes fadeDown { from { opacity:0; transform:translateY(-18px); } to { opacity:1; transform:translateY(0); } }
+
+  .logo {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 2.5px; color: var(--text-muted);
+    margin-bottom: 14px;
+  }
+  .logo-dots { display: flex; gap: 5px; }
+  .logo-dots span { width: 8px; height: 8px; border-radius: 50%; }
+  .logo-dots span:nth-child(1) { background: var(--compound); }
+  .logo-dots span:nth-child(2) { background: var(--phrasal); }
+  .logo-dots span:nth-child(3) { background: var(--portmanteau); }
+
+  .header h1 { font-size: 2.4rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 6px; }
+  .header p { color: var(--text-dim); font-size: 1rem; font-weight: 300; }
+
+  /* ── Category Tabs ── */
+  .category-tabs {
+    display: flex; gap: 8px; justify-content: center; margin-bottom: 28px;
+    flex-wrap: wrap; animation: fadeUp .5s ease .15s both;
+  }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+
+  .cat-tab {
+    padding: 10px 22px; border-radius: 100px; border: 1.5px solid var(--border);
+    background: var(--surface); color: var(--text-dim);
+    font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 500;
+    cursor: pointer; transition: all .25s ease; display: flex; align-items: center; gap: 8px;
+  }
+  .cat-tab .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .cat-tab:hover { border-color: rgba(255,255,255,0.12); color: var(--text); }
+  .cat-tab.active-compound { background: var(--compound-bg); border-color: var(--compound-border); color: var(--compound); }
+  .cat-tab.active-phrasal { background: var(--phrasal-bg); border-color: var(--phrasal-border); color: var(--phrasal); }
+  .cat-tab.active-portmanteau { background: var(--portmanteau-bg); border-color: var(--portmanteau-border); color: var(--portmanteau); }
+
+  /* ── Mode Tabs ── */
+  .mode-tabs {
+    display: flex; gap: 6px; justify-content: center; margin-bottom: 24px;
+    animation: fadeUp .5s ease .25s both;
+  }
+  .mode-tab {
+    padding: 7px 16px; border-radius: 10px; border: 1px solid var(--border);
+    background: transparent; color: var(--text-muted);
+    font-size: 13px; font-weight: 500; cursor: pointer; transition: all .2s;
+  }
+  .mode-tab:hover { color: var(--text-dim); background: var(--surface); }
+  .mode-tab.active { background: var(--surface-2); color: var(--text); border-color: rgba(255,255,255,0.1); }
+
+  /* ── Level Filter ── */
+  .level-filter {
+    display: flex; gap: 5px; justify-content: center; margin-bottom: 24px;
+    animation: fadeUp .5s ease .3s both;
+  }
+  .lvl-btn {
+    padding: 5px 12px; border-radius: 8px; border: 1px solid var(--border);
+    background: transparent; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; cursor: pointer; transition: all .2s;
+  }
+  .lvl-btn:hover { color: var(--text-dim); }
+  .lvl-btn.active { background: var(--surface-2); color: var(--text); border-color: rgba(255,255,255,0.12); }
+
+  /* ── Cards / Containers ── */
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 28px; margin-bottom: 18px;
+    animation: fadeUp .4s ease;
+  }
+  .card-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted);
+    margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+  }
+  .card-label .pill {
+    padding: 2px 8px; border-radius: 6px; font-size: 9px;
+    font-weight: 600; letter-spacing: 1px;
+  }
+
+  /* ── Flashcard ── */
+  .flashcard-container { perspective: 1000px; margin-bottom: 20px; }
+  .flashcard {
+    position: relative; width: 100%; min-height: 260px;
+    cursor: pointer; transform-style: preserve-3d; transition: transform .6s ease;
+  }
+  .flashcard.flipped { transform: rotateY(180deg); }
+  .flashcard-face {
+    position: absolute; inset: 0; backface-visibility: hidden;
+    background: var(--surface-2); border: 1.5px solid var(--border);
+    border-radius: var(--radius); padding: 32px; display: flex;
+    flex-direction: column; justify-content: center; align-items: center;
+    text-align: center;
+  }
+  .flashcard-back { transform: rotateY(180deg); background: var(--surface-3); }
+
+  .fc-category {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    text-transform: uppercase; letter-spacing: 2px; margin-bottom: 16px;
+    padding: 4px 12px; border-radius: 100px;
+  }
+  .fc-word { font-size: 2rem; font-weight: 700; margin-bottom: 10px; letter-spacing: -0.5px; }
+  .fc-phonetic {
+    font-family: 'JetBrains Mono', monospace; font-size: 14px;
+    color: var(--text-muted); margin-bottom: 8px;
+  }
+  .fc-hint { color: var(--text-dim); font-size: 13px; font-weight: 300; }
+  .fc-meaning { font-size: 1.1rem; color: var(--text); line-height: 1.6; margin-bottom: 12px; }
+  .fc-example {
+    font-size: 0.9rem; color: var(--text-dim); font-style: italic;
+    line-height: 1.5; max-width: 400px;
+  }
+  .fc-parts {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 1.1rem; font-weight: 600; margin-bottom: 14px;
+  }
+  .fc-parts .plus { color: var(--text-muted); font-size: 0.9rem; }
+
+  .fc-nav {
+    display: flex; gap: 10px; justify-content: center; align-items: center;
+  }
+  .fc-nav-btn {
+    width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--border);
+    background: var(--surface); color: var(--text-dim); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: all .2s;
+  }
+  .fc-nav-btn:hover { background: var(--surface-2); color: var(--text); }
+  .fc-nav-btn svg { width: 18px; height: 18px; }
+  .fc-counter {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    color: var(--text-muted); min-width: 60px; text-align: center;
+  }
+  .fc-speak-btn {
+    position: absolute; top: 16px; right: 16px;
+    width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border);
+    background: var(--surface); cursor: pointer; display: flex;
+    align-items: center; justify-content: center; color: var(--text-muted);
+    transition: all .2s; z-index: 2;
+  }
+  .fc-speak-btn:hover { color: var(--text); background: var(--surface-2); }
+  .fc-speak-btn svg { width: 16px; height: 16px; }
+
+  /* ── Quiz Mode ── */
+  .quiz-question {
+    font-size: 1.3rem; font-weight: 600; margin-bottom: 8px;
+    line-height: 1.5;
+  }
+  .quiz-context {
+    font-size: 0.9rem; color: var(--text-dim); margin-bottom: 24px;
+    line-height: 1.5; font-style: italic;
+  }
+  .quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  @media (max-width: 500px) { .quiz-options { grid-template-columns: 1fr; } }
+
+  .quiz-opt {
+    padding: 14px 18px; border: 1.5px solid var(--border); border-radius: 12px;
+    background: var(--surface-2); color: var(--text-dim); font-size: 15px;
+    font-weight: 500; cursor: pointer; transition: all .2s; text-align: left;
+  }
+  .quiz-opt:hover:not(.disabled) {
+    border-color: rgba(255,255,255,0.15); color: var(--text); background: var(--surface-3);
+  }
+  .quiz-opt.selected-correct {
+    border-color: var(--success); background: var(--success-bg); color: var(--success);
+  }
+  .quiz-opt.selected-wrong {
+    border-color: var(--error); background: var(--error-bg); color: var(--error);
+  }
+  .quiz-opt.reveal-correct {
+    border-color: rgba(34,197,94,0.4); color: var(--success);
+  }
+  .quiz-opt.disabled { pointer-events: none; }
+
+  .quiz-feedback {
+    padding: 14px 18px; border-radius: 12px; font-size: 14px;
+    line-height: 1.6; margin-bottom: 16px; display: none;
+  }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.correct { background: var(--success-bg); border: 1px solid rgba(34,197,94,0.2); color: #86efac; }
+  .quiz-feedback.wrong { background: var(--error-bg); border: 1px solid rgba(239,68,68,0.2); color: #fca5a5; }
+
+  .quiz-progress {
+    display: flex; gap: 4px; margin-bottom: 20px;
+  }
+  .qp-dot {
+    height: 4px; flex: 1; border-radius: 4px; background: var(--surface-3);
+    transition: background .3s;
+  }
+  .qp-dot.correct { background: var(--success); }
+  .qp-dot.wrong { background: var(--error); }
+  .qp-dot.current { background: var(--text-muted); }
+
+  /* ── Builder (Drag Match) ── */
+  .builder-prompt {
+    font-size: 1.15rem; font-weight: 600; margin-bottom: 6px;
+  }
+  .builder-sub {
+    font-size: 0.85rem; color: var(--text-dim); margin-bottom: 20px;
+  }
+  .builder-grid {
+    display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;
+    justify-content: center;
+  }
+  .builder-chip {
+    padding: 10px 20px; border: 1.5px solid var(--border); border-radius: 12px;
+    background: var(--surface-2); color: var(--text-dim); font-size: 15px;
+    font-weight: 500; cursor: pointer; transition: all .25s; user-select: none;
+  }
+  .builder-chip:hover:not(.used):not(.disabled) {
+    border-color: rgba(255,255,255,0.15); color: var(--text); transform: translateY(-2px);
+  }
+  .builder-chip.selected {
+    border-color: currentColor; transform: scale(1.05);
+  }
+  .builder-chip.used { opacity: 0.3; pointer-events: none; }
+
+  .builder-answer-area {
+    min-height: 60px; border: 2px dashed var(--border); border-radius: 14px;
+    display: flex; flex-wrap: wrap; gap: 10px; padding: 16px;
+    margin-bottom: 16px; align-items: center; justify-content: center;
+  }
+  .builder-combined {
+    padding: 10px 20px; border-radius: 12px; font-size: 16px;
+    font-weight: 600; animation: popIn .3s ease;
+  }
+  @keyframes popIn { from { transform: scale(0.8); opacity:0; } to { transform: scale(1); opacity:1; } }
+
+  .builder-result {
+    text-align: center; padding: 16px; border-radius: 12px;
+    margin-bottom: 14px; display: none;
+  }
+  .builder-result.show { display: block; animation: fadeUp .3s ease; }
+
+  /* ── Buttons ── */
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 22px; border: 1px solid var(--border); border-radius: 12px;
+    background: var(--surface-2); color: var(--text-dim);
+    font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 500;
+    cursor: pointer; transition: all .2s;
+  }
+  .btn:hover { background: var(--surface-3); color: var(--text); border-color: rgba(255,255,255,0.1); }
+  .btn svg { width: 16px; height: 16px; }
+
+  .btn-primary {
+    background: var(--surface-3); color: var(--text); border-color: rgba(255,255,255,0.1);
+  }
+
+  .btn-accent {
+    border: none; font-weight: 600;
+  }
+
+  .btn-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+  /* ── Score Summary ── */
+  .score-summary {
+    text-align: center; padding: 40px 20px;
+  }
+  .score-big {
+    font-family: 'JetBrains Mono', monospace; font-size: 4rem;
+    font-weight: 700; margin-bottom: 8px;
+  }
+  .score-label { color: var(--text-dim); font-size: 1rem; margin-bottom: 24px; }
+  .score-breakdown {
+    display: flex; gap: 24px; justify-content: center; margin-bottom: 28px;
+  }
+  .sb-item { text-align: center; }
+  .sb-num {
+    font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; font-weight: 700;
+  }
+  .sb-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+
+  /* ── Stats Footer ── */
+  .stats-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+  }
+  @media (max-width: 500px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+
+  .stat-box {
+    text-align: center; padding: 14px 8px;
+    background: var(--surface-2); border-radius: 12px; border: 1px solid var(--border);
+  }
+  .stat-num {
+    font-family: 'JetBrains Mono', monospace; font-size: 1.4rem; font-weight: 700;
+  }
+  .stat-lbl {
+    font-size: 10px; color: var(--text-muted); text-transform: uppercase;
+    letter-spacing: 1px; margin-top: 4px;
+  }
+
+  /* ── Reference List ── */
+  .ref-list { max-height: 500px; overflow-y: auto; }
+  .ref-item {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 14px 0; border-bottom: 1px solid var(--border);
+  }
+  .ref-item:last-child { border-bottom: none; }
+  .ref-word { font-weight: 600; font-size: 1rem; min-width: 140px; }
+  .ref-def { font-size: 0.85rem; color: var(--text-dim); line-height: 1.5; flex: 1; }
+  .ref-level {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    padding: 2px 8px; border-radius: 6px; background: var(--surface-3);
+    color: var(--text-muted); flex-shrink: 0;
+  }
+  .ref-speak {
+    width: 28px; height: 28px; border-radius: 8px; border: 1px solid var(--border);
+    background: transparent; cursor: pointer; display: flex;
+    align-items: center; justify-content: center; color: var(--text-muted);
+    flex-shrink: 0; transition: all .2s;
+  }
+  .ref-speak:hover { color: var(--text); background: var(--surface-3); }
+  .ref-speak svg { width: 14px; height: 14px; }
+
+  /* Search */
+  .search-bar {
+    width: 100%; padding: 10px 16px; border: 1px solid var(--border);
+    border-radius: 12px; background: var(--surface-2); color: var(--text);
+    font-family: 'Outfit', sans-serif; font-size: 14px; outline: none;
+    margin-bottom: 16px; transition: border-color .2s;
+  }
+  .search-bar:focus { border-color: rgba(255,255,255,0.15); }
+  .search-bar::placeholder { color: var(--text-muted); }
+
+  /* Utility */
+  .hidden { display: none !important; }
+  .mt-12 { margin-top: 12px; }
+  .text-center { text-align: center; }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- Header -->
+  <div class="header">
+    <div class="logo">
+      <div class="logo-dots"><span></span><span></span><span></span></div>
+      Word Lab
+    </div>
+    <h1>Word Building Mastery</h1>
+    <p>Compound Words · Phrasal Verbs · Portmanteau Words</p>
+  </div>
+
+  <!-- Category Tabs -->
+  <div class="category-tabs" id="catTabs"></div>
+
+  <!-- Mode Tabs -->
+  <div class="mode-tabs" id="modeTabs"></div>
+
+  <!-- Level Filter -->
+  <div class="level-filter" id="levelFilter"></div>
+
+  <!-- Main Content -->
+  <div id="mainContent"></div>
+
+  <!-- Session Stats -->
+  <div class="card mt-12" id="statsCard">
+    <div class="card-label">Session Progress</div>
+    <div class="stats-grid" id="statsGrid"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════════
+const DATA = {
+  compound: [
+    // A1-A2
+    { word: "sunflower", parts: ["sun","flower"], meaning: "A tall plant with a large yellow flower that faces the sun", example: "The sunflower in our garden grew over two meters tall.", level: "A1" },
+    { word: "bookshelf", parts: ["book","shelf"], meaning: "A piece of furniture with shelves to hold books", example: "I put the new novel on the bookshelf.", level: "A1" },
+    { word: "bedroom", parts: ["bed","room"], meaning: "A room used for sleeping", example: "My bedroom has a big window facing the park.", level: "A1" },
+    { word: "toothbrush", parts: ["tooth","brush"], meaning: "A small brush used for cleaning teeth", example: "Don't forget to pack your toothbrush for the trip.", level: "A1" },
+    { word: "rainbow", parts: ["rain","bow"], meaning: "An arc of colors visible in the sky after rain", example: "We saw a beautiful rainbow after the storm.", level: "A1" },
+    { word: "football", parts: ["foot","ball"], meaning: "A sport played by kicking a ball, or the ball itself", example: "The kids played football in the park all afternoon.", level: "A1" },
+    { word: "airport", parts: ["air","port"], meaning: "A place where airplanes take off and land", example: "We arrived at the airport two hours before our flight.", level: "A1" },
+    { word: "birthday", parts: ["birth","day"], meaning: "The anniversary of the day someone was born", example: "Happy birthday! How old are you today?", level: "A1" },
+    { word: "homework", parts: ["home","work"], meaning: "Schoolwork that students do at home", example: "I need to finish my homework before dinner.", level: "A1" },
+    { word: "butterfly", parts: ["butter","fly"], meaning: "An insect with large, colorful wings", example: "A blue butterfly landed on the flowers.", level: "A1" },
+    // A2-B1
+    { word: "earthquake", parts: ["earth","quake"], meaning: "A sudden violent shaking of the ground", example: "The earthquake damaged several buildings downtown.", level: "A2" },
+    { word: "waterfall", parts: ["water","fall"], meaning: "A cascade of water falling from a height", example: "We hiked for hours to reach the stunning waterfall.", level: "A2" },
+    { word: "headphones", parts: ["head","phones"], meaning: "A device worn over the ears to listen to audio", example: "She always wears headphones while studying.", level: "A2" },
+    { word: "brainstorm", parts: ["brain","storm"], meaning: "To produce ideas spontaneously as a group or individually", example: "Let's brainstorm solutions to this problem.", level: "B1" },
+    { word: "backbone", parts: ["back","bone"], meaning: "The spine; also means courage or determination", example: "You need backbone to stand up for what's right.", level: "B1" },
+    { word: "breakthrough", parts: ["break","through"], meaning: "An important discovery or development", example: "Scientists made a breakthrough in cancer research.", level: "B1" },
+    { word: "widespread", parts: ["wide","spread"], meaning: "Found or distributed over a large area", example: "The use of smartphones is now widespread.", level: "B1" },
+    { word: "nevertheless", parts: ["never","the","less"], meaning: "In spite of that; however", example: "It was raining; nevertheless, we went hiking.", level: "B2" },
+    { word: "wholehearted", parts: ["whole","hearted"], meaning: "Showing complete sincerity and commitment", example: "She gave her wholehearted support to the project.", level: "B2" },
+    { word: "shortcoming", parts: ["short","coming"], meaning: "A fault or failure to meet a certain standard", example: "Everyone has shortcomings; the key is to improve.", level: "B2" },
+    { word: "outweigh", parts: ["out","weigh"], meaning: "To be greater or more significant than", example: "The benefits outweigh the risks in this case.", level: "C1" },
+    { word: "standpoint", parts: ["stand","point"], meaning: "An attitude or point of view", example: "From an economic standpoint, the plan makes sense.", level: "C1" },
+    { word: "underpinning", parts: ["under","pinning"], meaning: "A foundation or basis for something", example: "Trust is the underpinning of any good relationship.", level: "C1" },
+    { word: "forthcoming", parts: ["forth","coming"], meaning: "About to happen; willing to share information", example: "The forthcoming report will address all concerns.", level: "C1" },
+  ],
+
+  phrasal: [
+    // A1-A2
+    { word: "give up", parts: ["give","up"], meaning: "To stop trying or doing something", example: "Don't give up — you're so close to finishing!", level: "A1" },
+    { word: "wake up", parts: ["wake","up"], meaning: "To stop sleeping", example: "I usually wake up at 7 in the morning.", level: "A1" },
+    { word: "look for", parts: ["look","for"], meaning: "To try to find something", example: "I'm looking for my keys. Have you seen them?", level: "A1" },
+    { word: "turn on", parts: ["turn","on"], meaning: "To activate or start a device", example: "Can you turn on the lights, please?", level: "A1" },
+    { word: "turn off", parts: ["turn","off"], meaning: "To deactivate or stop a device", example: "Please turn off your phone during the movie.", level: "A1" },
+    { word: "come back", parts: ["come","back"], meaning: "To return", example: "I'll come back home after work.", level: "A1" },
+    { word: "put on", parts: ["put","on"], meaning: "To place clothing on your body", example: "Put on your coat — it's cold outside.", level: "A1" },
+    { word: "sit down", parts: ["sit","down"], meaning: "To move from standing to sitting", example: "Please sit down and make yourself comfortable.", level: "A1" },
+    { word: "get up", parts: ["get","up"], meaning: "To rise from bed or a seated position", example: "I have to get up early tomorrow for work.", level: "A1" },
+    { word: "pick up", parts: ["pick","up"], meaning: "To lift something from a surface; to collect someone", example: "Can you pick up the groceries on your way home?", level: "A2" },
+    // A2-B1
+    { word: "look after", parts: ["look","after"], meaning: "To take care of someone or something", example: "She looks after her younger brother every afternoon.", level: "A2" },
+    { word: "find out", parts: ["find","out"], meaning: "To discover information", example: "I just found out that the meeting was cancelled.", level: "A2" },
+    { word: "run out of", parts: ["run","out of"], meaning: "To have no more of something", example: "We've run out of milk — can you buy some?", level: "A2" },
+    { word: "get along", parts: ["get","along"], meaning: "To have a good relationship with someone", example: "My sister and I get along very well.", level: "A2" },
+    { word: "bring up", parts: ["bring","up"], meaning: "To mention a topic; to raise a child", example: "She brought up an interesting point during the meeting.", level: "B1" },
+    { word: "carry out", parts: ["carry","out"], meaning: "To perform or complete a task", example: "The team carried out the experiment successfully.", level: "B1" },
+    { word: "break down", parts: ["break","down"], meaning: "To stop functioning; to analyze into parts", example: "My car broke down on the highway last night.", level: "B1" },
+    { word: "figure out", parts: ["figure","out"], meaning: "To understand or solve something", example: "I can't figure out how to fix this problem.", level: "B1" },
+    { word: "put off", parts: ["put","off"], meaning: "To postpone or delay", example: "Stop putting off your homework and start now.", level: "B1" },
+    { word: "come across", parts: ["come","across"], meaning: "To find by chance; to give an impression", example: "I came across an old photo album in the attic.", level: "B1" },
+    // B2-C1
+    { word: "account for", parts: ["account","for"], meaning: "To explain the reason for; to make up a proportion", example: "How do you account for the missing funds?", level: "B2" },
+    { word: "draw up", parts: ["draw","up"], meaning: "To prepare a document or plan", example: "The lawyer drew up the contract overnight.", level: "B2" },
+    { word: "rule out", parts: ["rule","out"], meaning: "To exclude something as a possibility", example: "The doctor ruled out any serious illness.", level: "B2" },
+    { word: "pull off", parts: ["pull","off"], meaning: "To succeed in doing something difficult", example: "They managed to pull off the surprise party perfectly.", level: "B2" },
+    { word: "boil down to", parts: ["boil","down to"], meaning: "To be reduced to the essential point", example: "It all boils down to whether we can afford it.", level: "C1" },
+    { word: "phase out", parts: ["phase","out"], meaning: "To gradually stop using or providing something", example: "The company is phasing out its older product line.", level: "C1" },
+    { word: "iron out", parts: ["iron","out"], meaning: "To resolve problems or difficulties", example: "We need to iron out the details before signing.", level: "C1" },
+    { word: "stem from", parts: ["stem","from"], meaning: "To originate or be caused by", example: "His anxiety stems from childhood experiences.", level: "C1" },
+  ],
+
+  portmanteau: [
+    { word: "brunch", parts: ["breakfast","lunch"], meaning: "A late morning meal combining breakfast and lunch", example: "Let's meet for brunch on Sunday at 11.", level: "A2" },
+    { word: "smog", parts: ["smoke","fog"], meaning: "Fog mixed with smoke or pollution", example: "The city was covered in thick smog yesterday.", level: "A2" },
+    { word: "motel", parts: ["motor","hotel"], meaning: "A roadside hotel designed for motorists", example: "We stayed at a motel during our road trip.", level: "A2" },
+    { word: "email", parts: ["electronic","mail"], meaning: "Messages sent electronically via computer networks", example: "I'll send you an email with all the details.", level: "A1" },
+    { word: "blog", parts: ["web","log"], meaning: "A website with regular personal entries", example: "She writes a blog about healthy cooking.", level: "A2" },
+    { word: "vlog", parts: ["video","log"], meaning: "A blog in video format", example: "He started a vlog about his travels in Asia.", level: "A2" },
+    { word: "emoticon", parts: ["emotion","icon"], meaning: "A symbol used to express emotion in text", example: "She added a smiley emoticon to her message.", level: "A2" },
+    { word: "podcast", parts: ["iPod","broadcast"], meaning: "A digital audio program available for download", example: "I listen to a great podcast about science.", level: "B1" },
+    { word: "frenemy", parts: ["friend","enemy"], meaning: "A person who pretends to be a friend but is actually an enemy", example: "Watch out for her — she's a total frenemy.", level: "B1" },
+    { word: "glamping", parts: ["glamorous","camping"], meaning: "Luxurious camping with modern amenities", example: "Glamping lets you enjoy nature without roughing it.", level: "B1" },
+    { word: "staycation", parts: ["stay","vacation"], meaning: "A vacation spent at home or near home", example: "We had a lovely staycation exploring local restaurants.", level: "B1" },
+    { word: "hangry", parts: ["hungry","angry"], meaning: "Bad-tempered or irritable due to hunger", example: "Sorry for snapping — I get hangry when I skip lunch.", level: "B1" },
+    { word: "infomercial", parts: ["information","commercial"], meaning: "A long TV ad presenting information about a product", example: "That infomercial convinced me to buy a blender.", level: "B2" },
+    { word: "edutainment", parts: ["education","entertainment"], meaning: "Content designed to be both educational and entertaining", example: "The museum has great edutainment exhibits for kids.", level: "B2" },
+    { word: "affluenza", parts: ["affluence","influenza"], meaning: "Guilt or lack of motivation experienced by wealthy people", example: "Affluenza describes the emptiness that comes with excess.", level: "C1" },
+    { word: "stagflation", parts: ["stagnation","inflation"], meaning: "Persistent high inflation combined with economic stagnation", example: "Economists feared the country was entering a period of stagflation.", level: "C1" },
+    { word: "Brexit", parts: ["Britain","exit"], meaning: "The withdrawal of the United Kingdom from the European Union", example: "Brexit caused significant political debate across Europe.", level: "B2" },
+    { word: "netiquette", parts: ["internet","etiquette"], meaning: "The correct or acceptable way of behaving on the internet", example: "Good netiquette means not typing in all caps.", level: "B1" },
+    { word: "workaholic", parts: ["work","alcoholic"], meaning: "A person who compulsively works long hours", example: "He's such a workaholic — he never takes vacations.", level: "B1" },
+    { word: "sitcom", parts: ["situation","comedy"], meaning: "A television comedy series with recurring characters", example: "Friends is one of the most famous sitcoms ever.", level: "A2" },
+  ]
+};
+
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+let state = {
+  category: 'compound',   // compound | phrasal | portmanteau
+  mode: 'flashcards',     // flashcards | quiz | builder | reference
+  level: 'all',
+  fcIndex: 0,
+  fcFlipped: false,
+  quizItems: [],
+  quizIndex: 0,
+  quizAnswers: [],
+  quizAnswered: false,
+  builderItems: [],
+  builderIndex: 0,
+  builderParts: [],
+  builderSelected: [],
+  builderDone: false,
+  builderAnswers: [],
+  stats: { attempts: 0, correct: 0, streak: 0, bestStreak: 0 }
+};
+
+const CAT_META = {
+  compound:    { label: 'Compound Words', color: 'var(--compound)', class: 'compound' },
+  phrasal:     { label: 'Phrasal Verbs', color: 'var(--phrasal)', class: 'phrasal' },
+  portmanteau: { label: 'Portmanteau', color: 'var(--portmanteau)', class: 'portmanteau' }
+};
+
+const MODES = [
+  { id: 'flashcards', label: '📇 Flashcards' },
+  { id: 'quiz', label: '🧠 Quiz' },
+  { id: 'builder', label: '🔨 Builder' },
+  { id: 'reference', label: '📖 Reference' }
+];
+
+const LEVELS = ['all','A1','A2','B1','B2','C1','C2'];
+
+// ═══════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════
+function getFiltered() {
+  let items = DATA[state.category] || [];
+  if (state.level !== 'all') items = items.filter(i => i.level === state.level);
+  return items;
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+
+function speak(text) {
+  if ('speechSynthesis' in window) {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US'; u.rate = 0.85;
+    const voices = speechSynthesis.getVoices();
+    const v = voices.find(v => v.lang.startsWith('en') && v.name.includes('Google')) || voices.find(v => v.lang.startsWith('en-US'));
+    if (v) u.voice = v;
+    speechSynthesis.speak(u);
+  }
+}
+
+const speakerSVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>`;
+const arrowLeftSVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>`;
+const arrowRightSVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>`;
+
+// ═══════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════
+function render() {
+  renderCatTabs();
+  renderModeTabs();
+  renderLevelFilter();
+  renderMain();
+  renderStats();
+}
+
+function renderCatTabs() {
+  const el = document.getElementById('catTabs');
+  el.innerHTML = Object.entries(CAT_META).map(([key, meta]) => {
+    const active = state.category === key ? `active-${meta.class}` : '';
+    return `<button class="cat-tab ${active}" onclick="setCategory('${key}')">
+      <span class="dot" style="background:${meta.color}"></span>${meta.label}
+    </button>`;
+  }).join('');
+}
+
+function renderModeTabs() {
+  const el = document.getElementById('modeTabs');
+  el.innerHTML = MODES.map(m =>
+    `<button class="mode-tab ${state.mode === m.id ? 'active' : ''}" onclick="setMode('${m.id}')">${m.label}</button>`
+  ).join('');
+}
+
+function renderLevelFilter() {
+  const el = document.getElementById('levelFilter');
+  const available = new Set(DATA[state.category].map(i => i.level));
+  el.innerHTML = LEVELS.filter(l => l === 'all' || available.has(l)).map(l =>
+    `<button class="lvl-btn ${state.level === l ? 'active' : ''}" onclick="setLevel('${l}')">${l === 'all' ? 'All' : l}</button>`
+  ).join('');
+}
+
+function renderMain() {
+  const el = document.getElementById('mainContent');
+  switch (state.mode) {
+    case 'flashcards': renderFlashcards(el); break;
+    case 'quiz': renderQuiz(el); break;
+    case 'builder': renderBuilder(el); break;
+    case 'reference': renderReference(el); break;
+  }
+}
+
+function renderStats() {
+  document.getElementById('statsGrid').innerHTML = `
+    <div class="stat-box"><div class="stat-num" style="color:var(--text)">${state.stats.attempts}</div><div class="stat-lbl">Attempted</div></div>
+    <div class="stat-box"><div class="stat-num" style="color:var(--success)">${state.stats.correct}</div><div class="stat-lbl">Correct</div></div>
+    <div class="stat-box"><div class="stat-num" style="color:${CAT_META[state.category].color}">${state.stats.streak}</div><div class="stat-lbl">Streak</div></div>
+    <div class="stat-box"><div class="stat-num" style="color:var(--compound)">${state.stats.bestStreak}</div><div class="stat-lbl">Best</div></div>
+  `;
+}
+
+// ── Flashcards ──
+function renderFlashcards(el) {
+  const items = getFiltered();
+  if (!items.length) { el.innerHTML = '<div class="card text-center"><p style="color:var(--text-dim)">No items for this level. Try "All".</p></div>'; return; }
+  const idx = state.fcIndex % items.length;
+  const item = items[idx];
+  const meta = CAT_META[state.category];
+
+  el.innerHTML = `
+    <div class="flashcard-container">
+      <div class="flashcard ${state.fcFlipped ? 'flipped' : ''}" onclick="flipCard()">
+        <div class="flashcard-face">
+          <button class="fc-speak-btn" onclick="event.stopPropagation(); speak('${item.word}')">${speakerSVG}</button>
+          <div class="fc-category" style="background:${meta.color}15; color:${meta.color}; border:1px solid ${meta.color}33">${meta.label}</div>
+          <div class="fc-word" style="color:${meta.color}">${item.word}</div>
+          <div class="fc-parts">${item.parts.map((p,i) => `<span>${p}</span>${i < item.parts.length-1 ? '<span class="plus">+</span>' : ''}`).join('')}</div>
+          <div class="fc-hint">Tap to reveal meaning →</div>
+        </div>
+        <div class="flashcard-face flashcard-back">
+          <button class="fc-speak-btn" onclick="event.stopPropagation(); speak('${item.example}')">${speakerSVG}</button>
+          <div class="fc-category" style="background:${meta.color}15; color:${meta.color}; border:1px solid ${meta.color}33">${item.level}</div>
+          <div class="fc-word" style="color:${meta.color}; font-size:1.6rem;">${item.word}</div>
+          <div class="fc-meaning">${item.meaning}</div>
+          <div class="fc-example">"${item.example}"</div>
+        </div>
+      </div>
+    </div>
+    <div class="fc-nav">
+      <button class="fc-nav-btn" onclick="prevCard()">${arrowLeftSVG}</button>
+      <span class="fc-counter">${idx + 1} / ${items.length}</span>
+      <button class="fc-nav-btn" onclick="nextCard()">${arrowRightSVG}</button>
+    </div>
+  `;
+}
+
+function flipCard() { state.fcFlipped = !state.fcFlipped; renderMain(); }
+function nextCard() { state.fcIndex++; state.fcFlipped = false; renderMain(); }
+function prevCard() { state.fcIndex = Math.max(0, state.fcIndex - 1); state.fcFlipped = false; renderMain(); }
+
+// ── Quiz ──
+function initQuiz() {
+  const items = shuffle(getFiltered());
+  if (!items.length) return;
+  state.quizItems = items.slice(0, Math.min(10, items.length));
+  state.quizIndex = 0;
+  state.quizAnswers = [];
+  state.quizAnswered = false;
+}
+
+function renderQuiz(el) {
+  if (!state.quizItems.length) {
+    initQuiz();
+    if (!state.quizItems.length) { el.innerHTML = '<div class="card text-center"><p style="color:var(--text-dim)">No items for this level.</p></div>'; return; }
+  }
+
+  // Finished?
+  if (state.quizIndex >= state.quizItems.length) {
+    renderQuizSummary(el);
+    return;
+  }
+
+  const item = state.quizItems[state.quizIndex];
+  const allItems = DATA[state.category];
+  const meta = CAT_META[state.category];
+
+  // Generate wrong options
+  let options = [item.meaning];
+  const pool = shuffle(allItems.filter(i => i.word !== item.word));
+  for (const p of pool) { if (options.length >= 4) break; if (!options.includes(p.meaning)) options.push(p.meaning); }
+  while (options.length < 4) options.push("No correct answer available");
+  options = shuffle(options);
+
+  const progress = state.quizItems.map((_, i) => {
+    if (i < state.quizAnswers.length) return state.quizAnswers[i] ? 'correct' : 'wrong';
+    if (i === state.quizIndex) return 'current';
+    return '';
+  });
+
+  el.innerHTML = `
+    <div class="card">
+      <div class="card-label">
+        Quiz
+        <span class="pill" style="background:${meta.color}20; color:${meta.color}">${meta.label}</span>
+      </div>
+      <div class="quiz-progress">${progress.map(p => `<div class="qp-dot ${p}"></div>`).join('')}</div>
+      <div class="quiz-question">What does <span style="color:${meta.color}">"${item.word}"</span> mean?</div>
+      <div class="quiz-context">💡 ${item.parts.join(' + ')} → ${item.word}</div>
+      <div class="quiz-options" id="quizOptions">
+        ${options.map((opt, i) => `<button class="quiz-opt" data-idx="${i}" data-correct="${opt === item.meaning}" onclick="answerQuiz(this, ${opt === item.meaning})">${opt}</button>`).join('')}
+      </div>
+      <div class="quiz-feedback" id="quizFeedback"></div>
+      <div class="btn-row">
+        <button class="btn" id="quizNextBtn" onclick="nextQuiz()" style="display:none">
+          Next ${arrowRightSVG}
+        </button>
+        <button class="btn" onclick="speak('${item.word}. ${item.example}')">${speakerSVG} Listen</button>
+      </div>
+    </div>`;
+}
+
+function answerQuiz(btn, isCorrect) {
+  if (state.quizAnswered) return;
+  state.quizAnswered = true;
+  state.stats.attempts++;
+  state.quizAnswers.push(isCorrect);
+
+  const opts = document.querySelectorAll('.quiz-opt');
+  opts.forEach(o => {
+    o.classList.add('disabled');
+    if (o.dataset.correct === 'true') o.classList.add('reveal-correct');
+  });
+
+  btn.classList.add(isCorrect ? 'selected-correct' : 'selected-wrong');
+
+  const fb = document.getElementById('quizFeedback');
+  const item = state.quizItems[state.quizIndex];
+  if (isCorrect) {
+    state.stats.correct++;
+    state.stats.streak++;
+    state.stats.bestStreak = Math.max(state.stats.bestStreak, state.stats.streak);
+    fb.className = 'quiz-feedback show correct';
+    fb.innerHTML = `✅ Correct! "${item.example}"`;
+  } else {
+    state.stats.streak = 0;
+    fb.className = 'quiz-feedback show wrong';
+    fb.innerHTML = `❌ The answer is: ${item.meaning}`;
+  }
+
+  document.getElementById('quizNextBtn').style.display = 'inline-flex';
+  renderStats();
+}
+
+function nextQuiz() {
+  state.quizIndex++;
+  state.quizAnswered = false;
+  renderMain();
+}
+
+function renderQuizSummary(el) {
+  const correct = state.quizAnswers.filter(Boolean).length;
+  const total = state.quizAnswers.length;
+  const pct = Math.round((correct / total) * 100);
+  const color = pct >= 80 ? 'var(--success)' : pct >= 50 ? 'var(--compound)' : 'var(--error)';
+
+  el.innerHTML = `
+    <div class="card">
+      <div class="score-summary">
+        <div class="score-big" style="color:${color}">${pct}%</div>
+        <div class="score-label">Quiz Complete!</div>
+        <div class="score-breakdown">
+          <div class="sb-item"><div class="sb-num" style="color:var(--success)">${correct}</div><div class="sb-label">Correct</div></div>
+          <div class="sb-item"><div class="sb-num" style="color:var(--error)">${total - correct}</div><div class="sb-label">Wrong</div></div>
+          <div class="sb-item"><div class="sb-num" style="color:var(--text)">${total}</div><div class="sb-label">Total</div></div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="restartQuiz()">🔄 Try Again</button>
+          <button class="btn" onclick="setMode('flashcards')">📇 Review Cards</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function restartQuiz() { initQuiz(); renderMain(); }
+
+// ── Builder ──
+function initBuilder() {
+  const items = shuffle(getFiltered());
+  if (!items.length) return;
+  state.builderItems = items.slice(0, Math.min(8, items.length));
+  state.builderIndex = 0;
+  state.builderSelected = [];
+  state.builderDone = false;
+  state.builderAnswers = [];
+}
+
+function renderBuilder(el) {
+  if (!state.builderItems.length) {
+    initBuilder();
+    if (!state.builderItems.length) { el.innerHTML = '<div class="card text-center"><p style="color:var(--text-dim)">No items for this level.</p></div>'; return; }
+  }
+
+  // Finished?
+  if (state.builderIndex >= state.builderItems.length) {
+    const correct = state.builderAnswers.filter(Boolean).length;
+    const total = state.builderAnswers.length;
+    const pct = Math.round((correct / total) * 100);
+    const color = pct >= 80 ? 'var(--success)' : pct >= 50 ? 'var(--compound)' : 'var(--error)';
+    el.innerHTML = `
+      <div class="card">
+        <div class="score-summary">
+          <div class="score-big" style="color:${color}">${pct}%</div>
+          <div class="score-label">Builder Complete!</div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="restartBuilder()">🔄 Again</button>
+            <button class="btn" onclick="setMode('quiz')">🧠 Quiz</button>
+          </div>
+        </div>
+      </div>`;
+    return;
+  }
+
+  const item = state.builderItems[state.builderIndex];
+  const meta = CAT_META[state.category];
+
+  // Build distractor parts
+  const allParts = DATA[state.category].flatMap(i => i.parts);
+  const uniqueOther = [...new Set(allParts.filter(p => !item.parts.includes(p)))];
+  const distractors = shuffle(uniqueOther).slice(0, Math.min(3, uniqueOther.length));
+  const chips = shuffle([...item.parts, ...distractors]);
+
+  // Save expected for checking
+  state.builderParts = chips;
+  state.builderExpected = item.parts;
+
+  const progress = state.builderItems.map((_, i) => {
+    if (i < state.builderAnswers.length) return state.builderAnswers[i] ? 'correct' : 'wrong';
+    if (i === state.builderIndex) return 'current';
+    return '';
+  });
+
+  el.innerHTML = `
+    <div class="card">
+      <div class="card-label">
+        Builder
+        <span class="pill" style="background:${meta.color}20; color:${meta.color}">${item.level}</span>
+      </div>
+      <div class="quiz-progress">${progress.map(p => `<div class="qp-dot ${p}"></div>`).join('')}</div>
+      <div class="builder-prompt">Build: <span style="color:${meta.color}">${item.meaning}</span></div>
+      <div class="builder-sub">Select the correct parts to form the word</div>
+      <div class="builder-grid" id="builderChips">
+        ${chips.map((c, i) => `<button class="builder-chip" data-idx="${i}" data-part="${c}"
+          onclick="selectBuilderChip(this)" style="--cat-color:${meta.color}">${c}</button>`).join('')}
+      </div>
+      <div class="builder-answer-area" id="builderAnswer">
+        <span style="color:var(--text-muted); font-size:13px;">Select parts above...</span>
+      </div>
+      <div class="builder-result" id="builderResult"></div>
+      <div class="btn-row">
+        <button class="btn" id="builderCheckBtn" onclick="checkBuilder()" style="display:none">✓ Check Answer</button>
+        <button class="btn" id="builderNextBtn" onclick="nextBuilder()" style="display:none">Next ${arrowRightSVG}</button>
+        <button class="btn" onclick="resetBuilderSelection()">↺ Reset</button>
+      </div>
+    </div>`;
+}
+
+function selectBuilderChip(btn) {
+  if (state.builderDone || btn.classList.contains('used')) return;
+
+  const part = btn.dataset.part;
+  btn.classList.add('used');
+  state.builderSelected.push(part);
+
+  const area = document.getElementById('builderAnswer');
+  const meta = CAT_META[state.category];
+  area.innerHTML = state.builderSelected.map(p =>
+    `<span class="builder-combined" style="background:${meta.color}15; color:${meta.color}; border:1px solid ${meta.color}33">${p}</span>`
+  ).join('<span style="color:var(--text-muted); margin:0 2px;">+</span>');
+
+  if (state.builderSelected.length >= 2) {
+    document.getElementById('builderCheckBtn').style.display = 'inline-flex';
+  }
+}
+
+function resetBuilderSelection() {
+  if (state.builderDone) return;
+  state.builderSelected = [];
+  document.querySelectorAll('.builder-chip').forEach(c => c.classList.remove('used'));
+  document.getElementById('builderAnswer').innerHTML = '<span style="color:var(--text-muted); font-size:13px;">Select parts above...</span>';
+  document.getElementById('builderCheckBtn').style.display = 'none';
+}
+
+function checkBuilder() {
+  state.builderDone = true;
+  state.stats.attempts++;
+  const item = state.builderItems[state.builderIndex];
+
+  // Check if selected parts match expected (order-sensitive)
+  const isCorrect = JSON.stringify(state.builderSelected) === JSON.stringify(item.parts);
+  state.builderAnswers.push(isCorrect);
+
+  const result = document.getElementById('builderResult');
+  result.classList.add('show');
+
+  if (isCorrect) {
+    state.stats.correct++;
+    state.stats.streak++;
+    state.stats.bestStreak = Math.max(state.stats.bestStreak, state.stats.streak);
+    result.style.background = 'var(--success-bg)';
+    result.style.border = '1px solid rgba(34,197,94,0.2)';
+    result.innerHTML = `<span style="color:#86efac">✅ Correct! <strong>${item.word}</strong> = ${item.parts.join(' + ')}</span>`;
+  } else {
+    state.stats.streak = 0;
+    result.style.background = 'var(--error-bg)';
+    result.style.border = '1px solid rgba(239,68,68,0.2)';
+    result.innerHTML = `<span style="color:#fca5a5">❌ The answer is <strong>${item.word}</strong> = ${item.parts.join(' + ')}</span>`;
+  }
+
+  document.getElementById('builderCheckBtn').style.display = 'none';
+  document.getElementById('builderNextBtn').style.display = 'inline-flex';
+  renderStats();
+}
+
+function nextBuilder() {
+  state.builderIndex++;
+  state.builderSelected = [];
+  state.builderDone = false;
+  renderMain();
+}
+
+function restartBuilder() { initBuilder(); renderMain(); }
+
+// ── Reference ──
+function renderReference(el) {
+  const items = getFiltered();
+  const meta = CAT_META[state.category];
+
+  el.innerHTML = `
+    <div class="card">
+      <div class="card-label">${meta.label} Reference <span class="pill" style="background:${meta.color}20; color:${meta.color}">${items.length} words</span></div>
+      <input type="text" class="search-bar" placeholder="Search words..." oninput="filterReference(this.value)">
+      <div class="ref-list" id="refList">
+        ${items.map(item => `
+          <div class="ref-item" data-word="${item.word.toLowerCase()}">
+            <button class="ref-speak" onclick="speak('${item.word}. ${item.example}')">${speakerSVG}</button>
+            <div class="ref-word" style="color:${meta.color}">${item.word}</div>
+            <div class="ref-def">
+              <div>${item.meaning}</div>
+              <div style="margin-top:4px; font-style:italic; color:var(--text-muted); font-size:0.8rem;">"${item.example}"</div>
+              <div style="margin-top:4px; color:var(--text-muted); font-size:0.75rem;">${item.parts.join(' + ')}</div>
+            </div>
+            <div class="ref-level">${item.level}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>`;
+}
+
+function filterReference(val) {
+  const term = val.toLowerCase();
+  document.querySelectorAll('.ref-item').forEach(item => {
+    item.style.display = item.dataset.word.includes(term) ? '' : 'none';
+  });
+}
+
+// ── Actions ──
+function setCategory(cat) {
+  state.category = cat;
+  state.fcIndex = 0;
+  state.fcFlipped = false;
+  state.quizItems = [];
+  state.builderItems = [];
+  render();
+}
+
+function setMode(mode) {
+  state.mode = mode;
+  state.fcIndex = 0;
+  state.fcFlipped = false;
+  if (mode === 'quiz') initQuiz();
+  if (mode === 'builder') initBuilder();
+  render();
+}
+
+function setLevel(lvl) {
+  state.level = lvl;
+  state.fcIndex = 0;
+  state.fcFlipped = false;
+  state.quizItems = [];
+  state.builderItems = [];
+  if (state.mode === 'quiz') initQuiz();
+  if (state.mode === 'builder') initBuilder();
+  render();
+}
+
+// ── Init ──
+if ('speechSynthesis' in window) speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+render();
+</script>
+</body>
+</html>

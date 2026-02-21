@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dictation Lab — English Listening & Writing</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#05070e;--s1:#0b0f1a;--s2:#111628;--s3:#182036;--s4:#1f2944;
+  --accent:#3b82f6;--accent-bg:rgba(59,130,246,.08);--accent-bd:rgba(59,130,246,.25);
+  --gold:#f59e0b;--gold-bg:rgba(245,158,11,.08);--gold-bd:rgba(245,158,11,.2);
+  --emerald:#10b981;--emerald-bg:rgba(16,185,129,.08);--emerald-bd:rgba(16,185,129,.2);
+  --rose:#f43f5e;--rose-bg:rgba(244,63,94,.08);--rose-bd:rgba(244,63,94,.2);
+  --violet:#8b5cf6;--violet-bg:rgba(139,92,246,.08);--violet-bd:rgba(139,92,246,.2);
+  --sky:#06b6d4;--sky-bg:rgba(6,182,212,.08);
+  --ok:#22c55e;--ok-bg:rgba(34,197,94,.1);--ok-bd:rgba(34,197,94,.2);
+  --err:#ef4444;--err-bg:rgba(239,68,68,.1);--err-bd:rgba(239,68,68,.2);
+  --warn:#eab308;
+  --tx:#e2e7f0;--tx2:#8d99b0;--tx3:#566176;--bd:rgba(255,255,255,.055);--r:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 25% 0%,rgba(59,130,246,.03),transparent 55%),radial-gradient(ellipse at 75% 100%,rgba(139,92,246,.025),transparent 55%);pointer-events:none}
+.app{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:24px 16px 80px}
+
+@keyframes fadeD{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeU{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pop{from{transform:scale(.88);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,.25)}50%{box-shadow:0 0 0 12px rgba(59,130,246,0)}}
+@keyframes typing{from{border-color:var(--accent)}to{border-color:transparent}}
+
+/* Header */
+.hdr{text-align:center;margin-bottom:30px;animation:fadeD .5s ease}
+.hdr-badge{display:inline-flex;align-items:center;gap:7px;padding:5px 14px;border-radius:100px;font-family:'Geist Mono',monospace;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--tx3);border:1px solid var(--bd);background:var(--s1);margin-bottom:12px}
+.hdr h1{font-size:2.1rem;font-weight:800;letter-spacing:-.5px;margin-bottom:5px}
+.hdr h1 .a{color:var(--accent)}.hdr h1 .b{color:var(--violet)}
+.hdr p{color:var(--tx2);font-size:.9rem;font-weight:300}
+
+/* Tabs */
+.tabs{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;margin-bottom:18px;animation:fadeU .4s ease .1s both}
+.tab{padding:8px 16px;border-radius:100px;border:1.5px solid var(--bd);background:var(--s1);color:var(--tx3);font-family:'Plus Jakarta Sans',sans-serif;font-size:12.5px;font-weight:500;cursor:pointer;transition:all .25s;display:flex;align-items:center;gap:6px}
+.tab:hover{border-color:rgba(255,255,255,.1);color:var(--tx2)}
+.tab.active{background:var(--s3);color:var(--tx);border-color:rgba(255,255,255,.1)}
+.tab .ico{font-size:14px}
+
+/* Filters */
+.filters{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:22px;animation:fadeU .4s ease .15s both}
+.fbtn{padding:5px 12px;border-radius:8px;border:1px solid var(--bd);background:transparent;color:var(--tx3);font-family:'Geist Mono',monospace;font-size:11px;cursor:pointer;transition:all .2s}
+.fbtn:hover{color:var(--tx2)}.fbtn.on{background:var(--s2);color:var(--tx);border-color:rgba(255,255,255,.1)}
+.flbl{font-family:'Geist Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--tx3);margin-right:4px;align-self:center}
+
+/* Card */
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:24px;margin-bottom:16px;animation:fadeU .4s ease}
+.card-l{font-family:'Geist Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--tx3);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.pill{padding:2px 8px;border-radius:6px;font-size:9px;font-weight:600;letter-spacing:1px}
+
+/* Play Button */
+.play-area{display:flex;flex-direction:column;align-items:center;gap:14px;margin:20px 0}
+.play-btn{width:80px;height:80px;border-radius:50%;border:2px solid var(--accent-bd);background:var(--s1);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s;position:relative}
+.play-btn::after{content:'';position:absolute;inset:-5px;border-radius:50%;border:1px solid transparent;transition:all .3s}
+.play-btn:hover{background:var(--accent-bg);border-color:var(--accent);transform:scale(1.06)}
+.play-btn:hover::after{border-color:rgba(59,130,246,.12)}
+.play-btn.playing{animation:glow 1.5s ease infinite;border-color:var(--accent);background:var(--accent-bg)}
+.play-btn svg{width:30px;height:30px;color:var(--accent);transition:color .2s}
+.play-controls{display:flex;gap:8px;align-items:center}
+.speed-chip{padding:4px 10px;border-radius:7px;border:1px solid var(--bd);background:transparent;color:var(--tx3);font-family:'Geist Mono',monospace;font-size:10px;cursor:pointer;transition:all .2s}
+.speed-chip:hover{color:var(--tx2)}.speed-chip.on{background:var(--accent-bg);border-color:var(--accent-bd);color:var(--accent)}
+.play-hint{font-size:12px;color:var(--tx3)}
+.play-hint b{color:var(--tx2)}
+.replays-left{font-family:'Geist Mono',monospace;font-size:11px;color:var(--tx3)}
+
+/* Input Area */
+.input-zone{margin:16px 0}
+.dict-input{width:100%;padding:14px 18px;border:2px solid var(--bd);border-radius:12px;background:var(--s2);color:var(--tx);font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;line-height:1.6;outline:none;transition:border-color .25s;resize:vertical;min-height:50px}
+.dict-input:focus{border-color:var(--accent-bd)}
+.dict-input::placeholder{color:var(--tx3)}
+.dict-input.correct-border{border-color:var(--ok);background:var(--ok-bg)}
+.dict-input.wrong-border{border-color:var(--err);animation:shake .35s ease}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border:1px solid var(--bd);border-radius:12px;background:var(--s2);color:var(--tx2);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s}
+.btn:hover{background:var(--s3);color:var(--tx);border-color:rgba(255,255,255,.1)}
+.btn svg{width:15px;height:15px}
+.btn-primary{background:var(--accent-bg);border-color:var(--accent-bd);color:var(--accent)}
+.btn-primary:hover{background:rgba(59,130,246,.15)}
+.btn-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+
+/* Diff Display */
+.diff-display{padding:16px 20px;background:var(--s2);border-radius:12px;margin:14px 0;line-height:2;font-size:15px}
+.diff-correct{color:var(--ok);font-weight:500}
+.diff-wrong{color:var(--err);text-decoration:line-through;text-decoration-thickness:2px;font-weight:500}
+.diff-missing{color:var(--err);opacity:.5;font-style:italic;text-decoration:underline;text-decoration-style:wavy}
+.diff-extra{color:var(--warn);opacity:.6;font-size:12px}
+
+/* Answer reveal */
+.answer-box{padding:14px 18px;border-radius:12px;margin:12px 0;font-size:14px;line-height:1.7}
+.answer-box.good{background:var(--ok-bg);border:1px solid var(--ok-bd);color:#86efac}
+.answer-box.bad{background:var(--err-bg);border:1px solid var(--err-bd);color:#fca5a5}
+.answer-box.info{background:var(--accent-bg);border:1px solid var(--accent-bd);color:#93c5fd}
+
+/* Progress */
+.progress-bar{display:flex;gap:3px;margin-bottom:16px}
+.pb-dot{height:4px;flex:1;border-radius:4px;background:var(--s3);transition:background .3s}
+.pb-dot.ok{background:var(--ok)}.pb-dot.err{background:var(--err)}.pb-dot.cur{background:var(--tx3)}
+
+/* Score */
+.score-big{font-family:'Geist Mono',monospace;font-size:3.5rem;font-weight:700;text-align:center}
+.score-sub{color:var(--tx2);text-align:center;margin-bottom:20px}
+.score-grid{display:flex;gap:20px;justify-content:center;margin-bottom:24px}
+.sg-item{text-align:center}
+.sg-num{font-family:'Geist Mono',monospace;font-size:1.4rem;font-weight:700}
+.sg-lbl{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:1px}
+
+/* Stats */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:500px){.stats-row{grid-template-columns:repeat(2,1fr)}}
+.stat-box{text-align:center;padding:14px 8px;background:var(--s2);border-radius:12px;border:1px solid var(--bd)}
+.stat-n{font-family:'Geist Mono',monospace;font-size:1.3rem;font-weight:700}
+.stat-l{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:1px;margin-top:3px}
+
+/* Difficulty stars */
+.stars{display:flex;gap:3px;justify-content:center;margin:6px 0}
+.star{width:14px;height:14px;color:var(--tx3)}
+.star.filled{color:var(--gold)}
+
+/* Tips */
+.tip-box{display:flex;gap:10px;padding:14px;background:var(--accent-bg);border:1px solid var(--accent-bd);border-radius:12px;margin-top:12px}
+.tip-box .t-ico{color:var(--accent);flex-shrink:0;margin-top:2px}
+.tip-box p{font-size:.83rem;color:var(--tx2);line-height:1.6}
+
+/* Word grid for word mode */
+.word-display{text-align:center;margin:20px 0}
+.word-big{font-size:2.2rem;font-weight:700;letter-spacing:-.5px;margin-bottom:4px}
+.word-phonetic{font-family:'Geist Mono',monospace;font-size:13px;color:var(--tx3)}
+
+/* Category label */
+.cat-tag{display:inline-flex;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:600;margin-bottom:10px}
+
+/* Paragraph display */
+.para-display{font-size:1rem;line-height:1.9;color:var(--tx);margin:14px 0;padding:16px;background:var(--s2);border-radius:12px;border:1px solid var(--bd);white-space:pre-wrap}
+
+.hidden{display:none!important}
+.tc{text-align:center}
+@media(max-width:500px){.hdr h1{font-size:1.7rem}.word-big{font-size:1.7rem}.dict-input{font-size:14px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hdr">
+    <div class="hdr-badge">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg>
+      Dictation Lab
+    </div>
+    <h1><span class="a">Listen</span> · Write · <span class="b">Master</span></h1>
+    <p>Progressive dictation from words to complex paragraphs</p>
+  </div>
+
+  <div class="tabs" id="modeTabs"></div>
+  <div class="filters" id="filters"></div>
+  <div id="main"></div>
+
+  <div class="card" id="statsCard" style="animation-delay:.3s">
+    <div class="card-l">Session Progress</div>
+    <div class="stats-row" id="statsRow"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// DICTATION DATABASE
+// ═══════════════════════════════════════════════════════════
+
+const WORDS = {
+  A1: [
+    {w:"apple",ph:"/ˈæp.əl/",cat:"noun"},
+    {w:"beautiful",ph:"/ˈbjuː.tɪ.fəl/",cat:"adjective"},
+    {w:"because",ph:"/bɪˈkɒz/",cat:"conjunction"},
+    {w:"breakfast",ph:"/ˈbrek.fəst/",cat:"noun"},
+    {w:"children",ph:"/ˈtʃɪl.drən/",cat:"noun"},
+    {w:"different",ph:"/ˈdɪf.ər.ənt/",cat:"adjective"},
+    {w:"enough",ph:"/ɪˈnʌf/",cat:"adverb"},
+    {w:"favorite",ph:"/ˈfeɪ.vər.ɪt/",cat:"adjective"},
+    {w:"friend",ph:"/frend/",cat:"noun"},
+    {w:"kitchen",ph:"/ˈkɪtʃ.ɪn/",cat:"noun"},
+    {w:"language",ph:"/ˈlæŋ.ɡwɪdʒ/",cat:"noun"},
+    {w:"listen",ph:"/ˈlɪs.ən/",cat:"verb"},
+    {w:"money",ph:"/ˈmʌn.i/",cat:"noun"},
+    {w:"people",ph:"/ˈpiː.pəl/",cat:"noun"},
+    {w:"picture",ph:"/ˈpɪk.tʃər/",cat:"noun"},
+    {w:"question",ph:"/ˈkwes.tʃən/",cat:"noun"},
+    {w:"really",ph:"/ˈrɪə.li/",cat:"adverb"},
+    {w:"school",ph:"/skuːl/",cat:"noun"},
+    {w:"together",ph:"/təˈɡeð.ər/",cat:"adverb"},
+    {w:"weather",ph:"/ˈweð.ər/",cat:"noun"},
+    {w:"Wednesday",ph:"/ˈwenz.deɪ/",cat:"noun"},
+    {w:"write",ph:"/raɪt/",cat:"verb"},
+    {w:"young",ph:"/jʌŋ/",cat:"adjective"},
+    {w:"thought",ph:"/θɔːt/",cat:"noun"},
+    {w:"through",ph:"/θruː/",cat:"preposition"},
+  ],
+  A2: [
+    {w:"achievement",ph:"/əˈtʃiːv.mənt/",cat:"noun"},
+    {w:"actually",ph:"/ˈæk.tʃu.ə.li/",cat:"adverb"},
+    {w:"advertisement",ph:"/ədˈvɜː.tɪs.mənt/",cat:"noun"},
+    {w:"although",ph:"/ɔːlˈðoʊ/",cat:"conjunction"},
+    {w:"comfortable",ph:"/ˈkʌm.fər.tə.bəl/",cat:"adjective"},
+    {w:"competition",ph:"/ˌkɒm.pəˈtɪʃ.ən/",cat:"noun"},
+    {w:"dangerous",ph:"/ˈdeɪn.dʒər.əs/",cat:"adjective"},
+    {w:"decision",ph:"/dɪˈsɪʒ.ən/",cat:"noun"},
+    {w:"especially",ph:"/ɪˈspeʃ.əl.i/",cat:"adverb"},
+    {w:"experience",ph:"/ɪkˈspɪr.i.əns/",cat:"noun"},
+    {w:"government",ph:"/ˈɡʌv.ərn.mənt/",cat:"noun"},
+    {w:"immediately",ph:"/ɪˈmiː.di.ət.li/",cat:"adverb"},
+    {w:"important",ph:"/ɪmˈpɔːr.tənt/",cat:"adjective"},
+    {w:"interesting",ph:"/ˈɪn.trəs.tɪŋ/",cat:"adjective"},
+    {w:"knowledge",ph:"/ˈnɒl.ɪdʒ/",cat:"noun"},
+    {w:"necessary",ph:"/ˈnes.ə.ser.i/",cat:"adjective"},
+    {w:"opportunity",ph:"/ˌɒp.əˈtjuː.nə.ti/",cat:"noun"},
+    {w:"photograph",ph:"/ˈfoʊ.t̬ə.ɡræf/",cat:"noun"},
+    {w:"restaurant",ph:"/ˈres.tə.rɒnt/",cat:"noun"},
+    {w:"temperature",ph:"/ˈtem.prə.tʃər/",cat:"noun"},
+    {w:"thoroughly",ph:"/ˈθɜːr.ə.li/",cat:"adverb"},
+    {w:"throughout",ph:"/θruːˈaʊt/",cat:"preposition"},
+    {w:"vocabulary",ph:"/vəˈkæb.jə.ler.i/",cat:"noun"},
+    {w:"whether",ph:"/ˈweð.ər/",cat:"conjunction"},
+    {w:"business",ph:"/ˈbɪz.nɪs/",cat:"noun"},
+  ],
+  B1: [
+    {w:"accommodate",ph:"/əˈkɒm.ə.deɪt/",cat:"verb"},
+    {w:"approximately",ph:"/əˈprɒk.sɪ.mət.li/",cat:"adverb"},
+    {w:"circumstances",ph:"/ˈsɜː.kəm.stæn.sɪz/",cat:"noun"},
+    {w:"communicate",ph:"/kəˈmjuː.nɪ.keɪt/",cat:"verb"},
+    {w:"consequences",ph:"/ˈkɒn.sɪ.kwən.sɪz/",cat:"noun"},
+    {w:"considerable",ph:"/kənˈsɪd.ər.ə.bəl/",cat:"adjective"},
+    {w:"development",ph:"/dɪˈvel.əp.mənt/",cat:"noun"},
+    {w:"disappointed",ph:"/ˌdɪs.əˈpɔɪn.tɪd/",cat:"adjective"},
+    {w:"environment",ph:"/ɪnˈvaɪ.rən.mənt/",cat:"noun"},
+    {w:"exaggerate",ph:"/ɪɡˈzædʒ.ə.reɪt/",cat:"verb"},
+    {w:"guarantee",ph:"/ˌɡær.ənˈtiː/",cat:"noun"},
+    {w:"independent",ph:"/ˌɪn.dɪˈpen.dənt/",cat:"adjective"},
+    {w:"maintenance",ph:"/ˈmeɪn.tən.əns/",cat:"noun"},
+    {w:"occasionally",ph:"/əˈkeɪ.ʒən.əl.i/",cat:"adverb"},
+    {w:"phenomenon",ph:"/fɪˈnɒm.ɪ.nən/",cat:"noun"},
+    {w:"professional",ph:"/prəˈfeʃ.ən.əl/",cat:"adjective"},
+    {w:"recommendation",ph:"/ˌrek.ə.menˈdeɪ.ʃən/",cat:"noun"},
+    {w:"responsibility",ph:"/rɪˌspɒn.sɪˈbɪl.ə.ti/",cat:"noun"},
+    {w:"unfortunately",ph:"/ʌnˈfɔː.tʃən.ət.li/",cat:"adverb"},
+    {w:"necessary",ph:"/ˈnes.ə.ser.i/",cat:"adjective"},
+    {w:"entrepreneur",ph:"/ˌɒn.trə.prəˈnɜːr/",cat:"noun"},
+    {w:"consciousness",ph:"/ˈkɒn.ʃəs.nəs/",cat:"noun"},
+    {w:"hierarchy",ph:"/ˈhaɪ.ə.rɑː.ki/",cat:"noun"},
+    {w:"pronunciation",ph:"/prəˌnʌn.siˈeɪ.ʃən/",cat:"noun"},
+    {w:"surveillance",ph:"/sɜːˈveɪ.ləns/",cat:"noun"},
+  ],
+  B2: [
+    {w:"bureaucracy",ph:"/bjʊˈrɒk.rə.si/",cat:"noun"},
+    {w:"catastrophe",ph:"/kəˈtæs.trə.fi/",cat:"noun"},
+    {w:"contemporary",ph:"/kənˈtem.pər.ər.i/",cat:"adjective"},
+    {w:"deteriorate",ph:"/dɪˈtɪr.i.ə.reɪt/",cat:"verb"},
+    {w:"entrepreneur",ph:"/ˌɒn.trə.prəˈnɜːr/",cat:"noun"},
+    {w:"extraordinary",ph:"/ɪkˈstrɔː.dən.ər.i/",cat:"adjective"},
+    {w:"hypothesis",ph:"/haɪˈpɒθ.ə.sɪs/",cat:"noun"},
+    {w:"infrastructure",ph:"/ˈɪn.frə.strʌk.tʃər/",cat:"noun"},
+    {w:"miscellaneous",ph:"/ˌmɪs.əˈleɪ.ni.əs/",cat:"adjective"},
+    {w:"nevertheless",ph:"/ˌnev.ə.ðəˈles/",cat:"adverb"},
+    {w:"pharmaceutical",ph:"/ˌfɑː.məˈsjuː.tɪ.kəl/",cat:"adjective"},
+    {w:"reconnaissance",ph:"/rɪˈkɒn.ɪ.sɑːns/",cat:"noun"},
+    {w:"sophisticated",ph:"/səˈfɪs.tɪ.keɪ.tɪd/",cat:"adjective"},
+    {w:"thorough",ph:"/ˈθɜː.rə/",cat:"adjective"},
+    {w:"unprecedented",ph:"/ʌnˈpres.ɪ.den.tɪd/",cat:"adjective"},
+    {w:"vulnerability",ph:"/ˌvʌl.nər.əˈbɪl.ə.ti/",cat:"noun"},
+    {w:"acquaintance",ph:"/əˈkweɪn.təns/",cat:"noun"},
+    {w:"conscientious",ph:"/ˌkɒn.ʃiˈen.ʃəs/",cat:"adjective"},
+    {w:"idiosyncrasy",ph:"/ˌɪd.i.əˈsɪŋ.krə.si/",cat:"noun"},
+    {w:"onomatopoeia",ph:"/ˌɒn.ə.mæt.əˈpiː.ə/",cat:"noun"},
+  ],
+  C1: [
+    {w:"ameliorate",ph:"/əˈmiː.li.ə.reɪt/",cat:"verb"},
+    {w:"anachronism",ph:"/əˈnæk.rə.nɪ.zəm/",cat:"noun"},
+    {w:"belligerent",ph:"/bɪˈlɪdʒ.ər.ənt/",cat:"adjective"},
+    {w:"connoisseur",ph:"/ˌkɒn.əˈsɜːr/",cat:"noun"},
+    {w:"dichotomy",ph:"/daɪˈkɒt.ə.mi/",cat:"noun"},
+    {w:"ephemeral",ph:"/ɪˈfem.ər.əl/",cat:"adjective"},
+    {w:"fallacious",ph:"/fəˈleɪ.ʃəs/",cat:"adjective"},
+    {w:"idiosyncratic",ph:"/ˌɪd.i.ə.sɪŋˈkræt.ɪk/",cat:"adjective"},
+    {w:"juxtaposition",ph:"/ˌdʒʌk.stə.pəˈzɪʃ.ən/",cat:"noun"},
+    {w:"magnanimous",ph:"/mæɡˈnæn.ɪ.məs/",cat:"adjective"},
+    {w:"paradigm",ph:"/ˈpær.ə.daɪm/",cat:"noun"},
+    {w:"quintessential",ph:"/ˌkwɪn.tɪˈsen.ʃəl/",cat:"adjective"},
+    {w:"surreptitious",ph:"/ˌsʌr.əpˈtɪʃ.əs/",cat:"adjective"},
+    {w:"ubiquitous",ph:"/juːˈbɪk.wɪ.təs/",cat:"adjective"},
+    {w:"verisimilitude",ph:"/ˌver.ɪ.sɪˈmɪl.ɪ.tjuːd/",cat:"noun"},
+  ]
+};
+
+const SENTENCES = {
+  A1: [
+    "I would like a glass of water, please.",
+    "She goes to school every morning.",
+    "My brother has three beautiful cats.",
+    "Where is the nearest bus station?",
+    "We had breakfast together yesterday.",
+    "The children are playing in the garden.",
+    "Can you help me with my homework?",
+    "I usually wake up at seven o'clock.",
+    "There are many people in the park today.",
+    "What time does the movie start tonight?",
+    "She bought a new dress for the party.",
+    "I think this is the right answer.",
+    "Do you know where the library is?",
+    "We are going to the beach on Saturday.",
+    "He always forgets to bring his keys.",
+  ],
+  A2: [
+    "Although it was raining, we decided to go for a walk in the park.",
+    "I have been learning English for about six months now.",
+    "Could you tell me how to get to the nearest hospital?",
+    "She was really disappointed because the restaurant was closed.",
+    "If you study hard enough, you will pass the examination.",
+    "My neighbor has been living in that house since nineteen ninety-five.",
+    "The temperature is expected to drop significantly this weekend.",
+    "I would appreciate it if you could send me the information by Thursday.",
+    "We were supposed to meet at the coffee shop, but she never showed up.",
+    "The government announced new rules about recycling and waste management.",
+    "I accidentally spilled coffee on my white shirt this morning.",
+    "Have you ever been to a foreign country during the winter holidays?",
+    "The documentary about ocean pollution was absolutely fascinating.",
+    "She recommended a wonderful Italian restaurant near the city center.",
+    "It took us approximately three hours to drive from London to Manchester.",
+  ],
+  B1: [
+    "Despite the overwhelming evidence against him, the defendant maintained his innocence throughout the entire trial.",
+    "The committee has recommended that the government should invest more in renewable energy sources.",
+    "Had I known about the traffic, I would have left home at least an hour earlier.",
+    "The phenomenon of global warming has led to unprecedented changes in weather patterns worldwide.",
+    "She acknowledged that her initial assessment of the situation had been completely wrong.",
+    "The researchers conducted a thorough investigation into the environmental impact of plastic waste.",
+    "It is absolutely essential that every employee completes the safety training before next Wednesday.",
+    "The journalist's article about corruption in the pharmaceutical industry caused a considerable controversy.",
+    "Notwithstanding the financial difficulties, the company managed to increase its profits by twelve percent.",
+    "The surgeon performed a groundbreaking procedure that could revolutionize the treatment of heart disease.",
+    "Many experts believe that artificial intelligence will fundamentally transform the way we live and work.",
+    "The professor emphasized the importance of distinguishing between correlation and causation in scientific research.",
+  ],
+  B2: [
+    "The juxtaposition of extreme wealth and abject poverty in the city's neighborhoods presents a stark reminder of the socioeconomic challenges that remain unaddressed by policymakers.",
+    "Notwithstanding the considerable bureaucratic obstacles, the entrepreneurial team managed to secure unprecedented funding for their groundbreaking environmental sustainability initiative.",
+    "The philosopher's treatise on epistemology challenged the conventional paradigms through which we acquire and validate knowledge, sparking a fierce debate among contemporary scholars.",
+    "Scientists have determined that the correlation between sleep deprivation and deteriorating cognitive performance is significantly stronger than previously hypothesized.",
+    "The archaeological expedition unearthed a remarkable collection of artifacts that fundamentally altered our understanding of the civilization that inhabited the region approximately three thousand years ago.",
+    "Critics have argued that the government's surveillance program constitutes an unprecedented infringement upon citizens' constitutional rights to privacy and freedom of expression.",
+  ],
+  C1: [
+    "The epistemological implications of quantum mechanics have fundamentally challenged our ontological presuppositions about the nature of reality, suggesting that consciousness itself may play an inextricable role in the measurement process.",
+    "The inexorable proliferation of misinformation through algorithmically curated social media platforms has engendered an unprecedented epistemological crisis, whereby distinguishing verifiable facts from fabricated narratives has become increasingly untenable for the average citizen.",
+    "Sociolinguistic analyses reveal that code-switching between languages serves as a sophisticated cognitive mechanism for navigating multicultural identities, rather than indicating linguistic deficiency as was erroneously believed by earlier researchers.",
+    "The dialectical tension between unfettered individual autonomy and the communitarian obligations inherent in a functioning democratic society constitutes what many political philosophers regard as a fundamental and perhaps irresolvable aporia.",
+  ]
+};
+
+// Minimal pairs for advanced mode
+const MINIMAL_PAIRS = [
+  {a:"ship",b:"sheep",hint:"Short /ɪ/ vs long /iː/"},
+  {a:"bit",b:"beat",hint:"Short /ɪ/ vs long /iː/"},
+  {a:"live",b:"leave",hint:"Short /ɪ/ vs long /iː/"},
+  {a:"sit",b:"seat",hint:"Short /ɪ/ vs long /iː/"},
+  {a:"bed",b:"bad",hint:"/e/ vs /æ/"},
+  {a:"pen",b:"pan",hint:"/e/ vs /æ/"},
+  {a:"think",b:"thing",hint:"Final /k/ vs /ŋ/"},
+  {a:"three",b:"tree",hint:"/θ/ vs /t/"},
+  {a:"thought",b:"taught",hint:"/θ/ vs /t/"},
+  {a:"right",b:"light",hint:"/r/ vs /l/"},
+  {a:"rice",b:"lice",hint:"/r/ vs /l/"},
+  {a:"very",b:"berry",hint:"/v/ vs /b/"},
+  {a:"vest",b:"best",hint:"/v/ vs /b/"},
+  {a:"than",b:"dan",hint:"/ð/ vs /d/"},
+  {a:"path",b:"pass",hint:"/θ/ vs /s/"},
+  {a:"mouth",b:"mouse",hint:"/θ/ vs /s/"},
+  {a:"cat",b:"cut",hint:"/æ/ vs /ʌ/"},
+  {a:"hat",b:"hut",hint:"/æ/ vs /ʌ/"},
+  {a:"back",b:"buck",hint:"/æ/ vs /ʌ/"},
+  {a:"wonder",b:"wander",hint:"/ʌ/ vs /ɒ/"},
+  {a:"pull",b:"pool",hint:"Short /ʊ/ vs long /uː/"},
+  {a:"full",b:"fool",hint:"Short /ʊ/ vs long /uː/"},
+  {a:"heart",b:"hurt",hint:"/ɑː/ vs /ɜː/"},
+  {a:"far",b:"fur",hint:"/ɑː/ vs /ɜː/"},
+  {a:"place",b:"plays",hint:"/s/ vs /z/"},
+  {a:"price",b:"prize",hint:"/s/ vs /z/"},
+  {a:"sink",b:"zinc",hint:"/s/ vs /z/"},
+  {a:"fan",b:"van",hint:"/f/ vs /v/"},
+  {a:"jaw",b:"your",hint:"/dʒ/ vs /j/"},
+  {a:"chew",b:"shoe",hint:"/tʃ/ vs /ʃ/"},
+];
+
+// Tricky homophones for advanced
+const HOMOPHONES = [
+  {words:["their","there","they're"],sentence:"___ going to park ___ car over ___.",answers:["They're","their","there"]},
+  {words:["your","you're"],sentence:"___ going to love ___ new apartment.",answers:["You're","your"]},
+  {words:["to","too","two"],sentence:"The ___ of them went ___ the store ___.",answers:["two","to","too"]},
+  {words:["its","it's"],sentence:"___ been a long day, and the dog lost ___ bone.",answers:["It's","its"]},
+  {words:["affect","effect"],sentence:"The rain will ___ the ___ of the medicine.",answers:["affect","effect"]},
+  {words:["accept","except"],sentence:"I ___ all the terms ___ the last one.",answers:["accept","except"]},
+  {words:["weather","whether"],sentence:"I don't know ___ the ___ will be good tomorrow.",answers:["whether","weather"]},
+  {words:["piece","peace"],sentence:"Give me a ___ of cake so I can eat in ___.",answers:["piece","peace"]},
+  {words:["right","write"],sentence:"Please ___ down the ___ answer.",answers:["write","right"]},
+  {words:["brake","break"],sentence:"Don't ___ the glass. Use the ___ to stop.",answers:["break","brake"]},
+];
+
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+const MODES = [
+  {id:'words',label:'Words',ico:'📝',desc:'Single word dictation'},
+  {id:'sentences',label:'Sentences',ico:'📖',desc:'Full sentence dictation'},
+  {id:'pairs',label:'Minimal Pairs',ico:'👂',desc:'Tricky sound pairs'},
+  {id:'homophones',label:'Homophones',ico:'🔀',desc:'Words that sound the same'},
+  {id:'challenge',label:'Challenge',ico:'🏆',desc:'Paragraph dictation with limited replays'},
+];
+const LEVELS = ['A1','A2','B1','B2','C1'];
+
+let S = {
+  mode:'words', level:'A1', speed:0.85,
+  items:[], idx:0, answers:[], answered:false, revealed:false,
+  maxReplays:5, replaysUsed:0,
+  stats:{attempts:0,correct:0,streak:0,best:0,perfect:0}
+};
+
+// ═══════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════
+const shuffle=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]]}return b};
+
+function speak(text,rate){
+  if(!('speechSynthesis' in window))return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='en-US';u.rate=rate||S.speed;
+  const voices=speechSynthesis.getVoices();
+  const v=voices.find(v=>v.lang.startsWith('en')&&v.name.includes('Google'))||voices.find(v=>v.lang.startsWith('en-US'))||voices.find(v=>v.lang.startsWith('en'));
+  if(v)u.voice=v;
+  speechSynthesis.speak(u);
+  return u;
+}
+
+function diffWords(target,input){
+  const tw=target.toLowerCase().replace(/[^\w\s']/g,'').split(/\s+/);
+  const iw=input.toLowerCase().replace(/[^\w\s']/g,'').split(/\s+/).filter(Boolean);
+  // Simple LCS-based diff
+  const m=tw.length,n=iw.length;
+  const dp=Array.from({length:m+1},()=>Array(n+1).fill(0));
+  for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)
+    dp[i][j]=tw[i-1]===iw[j-1]?dp[i-1][j-1]+1:Math.max(dp[i-1][j],dp[i][j-1]);
+
+  const result=[];
+  let i=m,j=n;
+  const ops=[];
+  while(i>0||j>0){
+    if(i>0&&j>0&&tw[i-1]===iw[j-1]){ops.unshift({type:'ok',word:tw[i-1],orig:target.split(/\s+/)[i-1]});i--;j--}
+    else if(j>0&&(i===0||dp[i][j-1]>=dp[i-1][j])){ops.unshift({type:'extra',word:iw[j-1]});j--}
+    else{ops.unshift({type:'miss',word:tw[i-1],orig:target.split(/\s+/)[i-1]});i--}
+  }
+  return ops;
+}
+
+function scoreText(target,input){
+  const ops=diffWords(target,input);
+  const total=ops.filter(o=>o.type!=='extra').length;
+  const correct=ops.filter(o=>o.type==='ok').length;
+  return total?Math.round(correct/total*100):0;
+}
+
+function renderDiff(target,input){
+  const ops=diffWords(target,input);
+  return ops.map(o=>{
+    if(o.type==='ok') return `<span class="diff-correct">${o.orig||o.word}</span>`;
+    if(o.type==='miss') return `<span class="diff-missing">${o.orig||o.word}</span>`;
+    if(o.type==='extra') return `<span class="diff-extra">[${o.word}]</span>`;
+  }).join(' ');
+}
+
+function starsHTML(n,max=5){
+  return `<div class="stars">${Array.from({length:max},(_,i)=>`<svg class="star ${i<n?'filled':''}" viewBox="0 0 24 24" fill="${i<n?'currentColor':'none'}" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`).join('')}</div>`;
+}
+
+const playSVG=`<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
+const speakerSVG=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>`;
+const arrowR=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>`;
+
+// ═══════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════
+function render(){
+  renderTabs();renderFilters();renderMain();renderStats();
+}
+
+function renderTabs(){
+  document.getElementById('modeTabs').innerHTML=MODES.map(m=>
+    `<button class="tab ${S.mode===m.id?'active':''}" onclick="setMode('${m.id}')"><span class="ico">${m.ico}</span>${m.label}</button>`
+  ).join('');
+}
+
+function renderFilters(){
+  const el=document.getElementById('filters');
+  if(S.mode==='pairs'||S.mode==='homophones'){el.innerHTML='';return}
+  const available = S.mode==='words'?Object.keys(WORDS):Object.keys(SENTENCES);
+  el.innerHTML=`
+    <span class="flbl">Level</span>
+    ${LEVELS.filter(l=>available.includes(l)).map(l=>`<button class="fbtn ${S.level===l?'on':''}" onclick="setLevel('${l}')">${l}</button>`).join('')}
+    <span class="flbl" style="margin-left:12px">Speed</span>
+    <button class="speed-chip ${S.speed===0.6?'on':''}" onclick="setSpeed(0.6)">Slow</button>
+    <button class="speed-chip ${S.speed===0.85?'on':''}" onclick="setSpeed(0.85)">Normal</button>
+    <button class="speed-chip ${S.speed===1.1?'on':''}" onclick="setSpeed(1.1)">Fast</button>
+  `;
+}
+
+function renderMain(){
+  const el=document.getElementById('main');
+  switch(S.mode){
+    case 'words': renderWords(el);break;
+    case 'sentences': renderSentences(el);break;
+    case 'pairs': renderPairs(el);break;
+    case 'homophones': renderHomophones(el);break;
+    case 'challenge': renderChallenge(el);break;
+  }
+}
+
+function renderStats(){
+  const pct=S.stats.attempts?Math.round(S.stats.correct/S.stats.attempts*100):0;
+  document.getElementById('statsRow').innerHTML=`
+    <div class="stat-box"><div class="stat-n">${S.stats.attempts}</div><div class="stat-l">Attempted</div></div>
+    <div class="stat-box"><div class="stat-n" style="color:var(--ok)">${S.stats.correct}</div><div class="stat-l">Correct</div></div>
+    <div class="stat-box"><div class="stat-n" style="color:var(--accent)">${S.stats.streak}</div><div class="stat-l">Streak</div></div>
+    <div class="stat-box"><div class="stat-n" style="color:var(--gold)">${S.stats.perfect}</div><div class="stat-l">Perfect</div></div>`;
+}
+
+// ══ WORDS MODE ══
+function initWords(){
+  const pool=WORDS[S.level]||WORDS.A1;
+  S.items=shuffle(pool).slice(0,12);
+  S.idx=0;S.answers=[];S.answered=false;
+}
+
+function renderWords(el){
+  if(!S.items.length)initWords();
+  if(!S.items.length){el.innerHTML='<div class="card tc"><p style="color:var(--tx2)">No words available.</p></div>';return}
+  if(S.idx>=S.items.length){renderWordsEnd(el);return}
+
+  const w=S.items[S.idx];
+  const progress=S.items.map((_,i)=>{if(i<S.answers.length)return S.answers[i]?'ok':'err';if(i===S.idx)return'cur';return''});
+
+  el.innerHTML=`
+    <div class="card">
+      <div class="card-l">Word Dictation
+        <span class="pill" style="background:var(--accent-bg);color:var(--accent)">${S.idx+1} / ${S.items.length}</span>
+        <span class="pill" style="background:var(--gold-bg);color:var(--gold)">${S.level}</span>
+      </div>
+      <div class="progress-bar">${progress.map(p=>`<div class="pb-dot ${p}"></div>`).join('')}</div>
+
+      <div class="play-area">
+        <button class="play-btn" id="playBtn" onclick="playWord()">
+          ${playSVG}
+        </button>
+        <div class="play-hint"><b>Click</b> to hear the word</div>
+      </div>
+
+      <div class="input-zone">
+        <input class="dict-input" id="dictInput" placeholder="Type what you hear..." autocomplete="off" spellcheck="false"
+          onkeydown="if(event.key==='Enter'&&!S.answered)checkWord()">
+      </div>
+
+      <div class="answer-box hidden" id="feedback"></div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="checkBtn" onclick="checkWord()">✓ Check</button>
+        <button class="btn hidden" id="nextBtn" onclick="nextWord()">Next ${arrowR}</button>
+        <button class="btn" onclick="playWord()">${speakerSVG} Replay</button>
+      </div>
+    </div>`;
+  setTimeout(()=>document.getElementById('dictInput')?.focus(),100);
+}
+
+function playWord(){
+  if(!S.items.length)return;
+  const w=S.items[S.idx];
+  const btn=document.getElementById('playBtn');
+  btn.classList.add('playing');
+  const u=speak(w.w);
+  if(u)u.onend=()=>btn.classList.remove('playing');
+  else setTimeout(()=>btn.classList.remove('playing'),1200);
+}
+
+function checkWord(){
+  if(S.answered)return;
+  S.answered=true;S.stats.attempts++;
+  const w=S.items[S.idx];
+  const input=document.getElementById('dictInput');
+  const val=input.value.trim();
+  const ok=val.toLowerCase()===w.w.toLowerCase();
+  S.answers.push(ok);
+
+  const fb=document.getElementById('feedback');
+  fb.classList.remove('hidden');
+  input.classList.add(ok?'correct-border':'wrong-border');
+
+  if(ok){
+    S.stats.correct++;S.stats.streak++;S.stats.best=Math.max(S.stats.best,S.stats.streak);S.stats.perfect++;
+    fb.className='answer-box good';
+    fb.innerHTML=`✅ Perfect! <strong>${w.w}</strong> ${w.ph} <span style="color:var(--tx2);font-size:12px">(${w.cat})</span>`;
+  }else{
+    S.stats.streak=0;
+    fb.className='answer-box bad';
+    fb.innerHTML=`❌ You wrote "<strong>${val||'(empty)'}</strong>" — Correct: <strong style="color:var(--ok)">${w.w}</strong> ${w.ph}`;
+  }
+  document.getElementById('checkBtn').classList.add('hidden');
+  document.getElementById('nextBtn').classList.remove('hidden');
+  renderStats();
+}
+
+function nextWord(){S.idx++;S.answered=false;renderMain()}
+
+function renderWordsEnd(el){
+  const ok=S.answers.filter(Boolean).length;
+  const pct=Math.round(ok/S.answers.length*100);
+  const color=pct>=80?'var(--ok)':pct>=50?'var(--warn)':'var(--err)';
+  el.innerHTML=`<div class="card tc">
+    ${starsHTML(Math.round(pct/20))}
+    <div class="score-big" style="color:${color}">${pct}%</div>
+    <div class="score-sub">Word Dictation Complete — ${S.level}</div>
+    <div class="score-grid">
+      <div class="sg-item"><div class="sg-num" style="color:var(--ok)">${ok}</div><div class="sg-lbl">Correct</div></div>
+      <div class="sg-item"><div class="sg-num" style="color:var(--err)">${S.answers.length-ok}</div><div class="sg-lbl">Wrong</div></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="S.items=[];setMode('words')">🔄 New Round</button>
+      <button class="btn" onclick="setMode('sentences')">📖 Try Sentences</button>
+    </div>
+  </div>`;
+}
+
+// ══ SENTENCES MODE ══
+function initSentences(){
+  const pool=SENTENCES[S.level]||SENTENCES.A1;
+  S.items=shuffle(pool).slice(0,8);
+  S.idx=0;S.answers=[];S.answered=false;
+}
+
+function renderSentences(el){
+  if(!S.items.length||typeof S.items[0]==='object')initSentences();
+  if(!S.items.length){el.innerHTML='<div class="card tc"><p style="color:var(--tx2)">No sentences available.</p></div>';return}
+  if(S.idx>=S.items.length){renderSentencesEnd(el);return}
+
+  const sent=S.items[S.idx];
+  const progress=S.items.map((_,i)=>{if(i<S.answers.length)return S.answers[i]>=80?'ok':'err';if(i===S.idx)return'cur';return''});
+  const difficulty=S.level==='A1'?1:S.level==='A2'?2:S.level==='B1'?3:S.level==='B2'?4:5;
+
+  el.innerHTML=`
+    <div class="card">
+      <div class="card-l">Sentence Dictation
+        <span class="pill" style="background:var(--violet-bg);color:var(--violet)">${S.idx+1} / ${S.items.length}</span>
+        <span class="pill" style="background:var(--gold-bg);color:var(--gold)">${S.level}</span>
+      </div>
+      <div class="progress-bar">${progress.map(p=>`<div class="pb-dot ${p}"></div>`).join('')}</div>
+      ${starsHTML(difficulty)}
+
+      <div class="play-area">
+        <button class="play-btn" id="playBtn" onclick="playSentence()">
+          ${playSVG}
+        </button>
+        <div class="play-controls">
+          <button class="btn" onclick="playSentence()" style="font-size:12px">${speakerSVG} Normal</button>
+          <button class="btn" onclick="playSentenceSlow()" style="font-size:12px">🐢 Slow</button>
+        </div>
+      </div>
+
+      <div class="input-zone">
+        <textarea class="dict-input" id="dictInput" rows="3" placeholder="Type the full sentence you hear..."
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey&&!S.answered){event.preventDefault();checkSentence()}"></textarea>
+      </div>
+
+      <div class="answer-box hidden" id="feedback"></div>
+      <div class="diff-display hidden" id="diffDisplay"></div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="checkBtn" onclick="checkSentence()">✓ Check</button>
+        <button class="btn hidden" id="nextBtn" onclick="nextSentence()">Next ${arrowR}</button>
+        <button class="btn hidden" id="showBtn" onclick="showAnswer()">👁 Show Answer</button>
+      </div>
+    </div>`;
+  setTimeout(()=>document.getElementById('dictInput')?.focus(),100);
+}
+
+function playSentence(){
+  const sent=S.items[S.idx];
+  const btn=document.getElementById('playBtn');
+  btn.classList.add('playing');
+  const u=speak(sent);
+  if(u)u.onend=()=>btn.classList.remove('playing');
+  else setTimeout(()=>btn.classList.remove('playing'),3000);
+}
+function playSentenceSlow(){
+  const sent=S.items[S.idx];speak(sent,0.55);
+}
+
+function checkSentence(){
+  if(S.answered)return;
+  S.answered=true;S.stats.attempts++;
+  const sent=S.items[S.idx];
+  const input=document.getElementById('dictInput');
+  const val=input.value.trim();
+  const score=scoreText(sent,val);
+  S.answers.push(score);
+
+  const fb=document.getElementById('feedback');
+  fb.classList.remove('hidden');
+
+  if(score>=95){
+    S.stats.correct++;S.stats.streak++;S.stats.best=Math.max(S.stats.best,S.stats.streak);
+    if(score===100)S.stats.perfect++;
+    fb.className='answer-box good';
+    fb.innerHTML=`${score===100?'🌟 Perfect':'✅ Excellent'}! Score: <strong>${score}%</strong>`;
+    input.classList.add('correct-border');
+  }else if(score>=70){
+    S.stats.correct++;S.stats.streak++;
+    fb.className='answer-box info';
+    fb.innerHTML=`👍 Good! Score: <strong>${score}%</strong> — Check the differences below`;
+    showDiff(sent,val);
+  }else{
+    S.stats.streak=0;
+    fb.className='answer-box bad';
+    fb.innerHTML=`Score: <strong>${score}%</strong> — Review the corrections below`;
+    input.classList.add('wrong-border');
+    showDiff(sent,val);
+  }
+
+  document.getElementById('checkBtn').classList.add('hidden');
+  document.getElementById('nextBtn').classList.remove('hidden');
+  document.getElementById('showBtn').classList.remove('hidden');
+  renderStats();
+}
+
+function showDiff(target,input){
+  const dd=document.getElementById('diffDisplay');
+  dd.classList.remove('hidden');
+  dd.innerHTML=renderDiff(target,input);
+}
+
+function showAnswer(){
+  const sent=S.items[S.idx];
+  const dd=document.getElementById('diffDisplay');
+  dd.classList.remove('hidden');
+  dd.innerHTML=`<div style="margin-bottom:8px;font-family:'Geist Mono',monospace;font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:1.5px">Correct Answer</div>
+    <div style="color:var(--ok);font-weight:500">${sent}</div>`;
+}
+
+function nextSentence(){S.idx++;S.answered=false;renderMain()}
+
+function renderSentencesEnd(el){
+  const avg=S.answers.length?Math.round(S.answers.reduce((a,b)=>a+b,0)/S.answers.length):0;
+  const perfect=S.answers.filter(s=>s>=95).length;
+  const color=avg>=80?'var(--ok)':avg>=50?'var(--warn)':'var(--err)';
+  el.innerHTML=`<div class="card tc">
+    ${starsHTML(Math.round(avg/20))}
+    <div class="score-big" style="color:${color}">${avg}%</div>
+    <div class="score-sub">Sentence Dictation Complete — ${S.level}</div>
+    <div class="score-grid">
+      <div class="sg-item"><div class="sg-num" style="color:var(--ok)">${perfect}</div><div class="sg-lbl">Excellent</div></div>
+      <div class="sg-item"><div class="sg-num" style="color:var(--warn)">${S.answers.filter(s=>s>=50&&s<95).length}</div><div class="sg-lbl">Good</div></div>
+      <div class="sg-item"><div class="sg-num" style="color:var(--err)">${S.answers.filter(s=>s<50).length}</div><div class="sg-lbl">Needs Work</div></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="S.items=[];setMode('sentences')">🔄 New Round</button>
+      <button class="btn" onclick="setMode('pairs')">👂 Minimal Pairs</button>
+      <button class="btn" onclick="setMode('challenge')">🏆 Challenge</button>
+    </div></div>`;
+}
+
+// ══ MINIMAL PAIRS ══
+function initPairs(){
+  S.items=shuffle(MINIMAL_PAIRS).slice(0,10);
+  S.idx=0;S.answers=[];S.answered=false;
+}
+
+function renderPairs(el){
+  if(!S.items.length||!S.items[0]?.a)initPairs();
+  if(S.idx>=S.items.length){renderPairsEnd(el);return}
+
+  const pair=S.items[S.idx];
+  // Randomly pick which one to play
+  if(!pair._chosen) pair._chosen=Math.random()<0.5?'a':'b';
+  const target=pair[pair._chosen];
+  const progress=S.items.map((_,i)=>{if(i<S.answers.length)return S.answers[i]?'ok':'err';if(i===S.idx)return'cur';return''});
+
+  el.innerHTML=`
+    <div class="card">
+      <div class="card-l">Minimal Pairs
+        <span class="pill" style="background:var(--emerald-bg);color:var(--emerald)">${S.idx+1} / ${S.items.length}</span>
+      </div>
+      <div class="progress-bar">${progress.map(p=>`<div class="pb-dot ${p}"></div>`).join('')}</div>
+
+      <div style="text-align:center;margin:10px 0">
+        <div style="color:var(--tx2);font-size:13px;margin-bottom:6px">${pair.hint}</div>
+      </div>
+
+      <div class="play-area">
+        <button class="play-btn" onclick="speak('${target}',0.75)">
+          ${playSVG}
+        </button>
+        <div class="play-hint">Listen carefully and choose the word you hear</div>
+      </div>
+
+      <div style="display:flex;gap:12px;justify-content:center;margin:16px 0" id="pairOptions">
+        <button class="btn" style="font-size:18px;padding:16px 40px;font-weight:600" onclick="answerPair('a','${target}')">${pair.a}</button>
+        <button class="btn" style="font-size:18px;padding:16px 40px;font-weight:600" onclick="answerPair('b','${target}')">${pair.b}</button>
+      </div>
+
+      <div class="answer-box hidden" id="feedback"></div>
+      <div class="btn-row">
+        <button class="btn hidden" id="nextBtn" onclick="S.idx++;S.answered=false;renderMain()">Next ${arrowR}</button>
+      </div>
+    </div>`;
+}
+
+function answerPair(choice,target){
+  if(S.answered)return;
+  S.answered=true;S.stats.attempts++;
+  const pair=S.items[S.idx];
+  const picked=pair[choice];
+  const ok=picked===target;
+  S.answers.push(ok);
+
+  const btns=document.querySelectorAll('#pairOptions .btn');
+  btns.forEach(b=>{
+    b.style.pointerEvents='none';
+    if(b.textContent===target){b.style.borderColor='var(--ok)';b.style.color='var(--ok)';b.style.background='var(--ok-bg)'}
+    else if(b.textContent===picked&&!ok){b.style.borderColor='var(--err)';b.style.color='var(--err)';b.style.background='var(--err-bg)'}
+  });
+
+  const fb=document.getElementById('feedback');fb.classList.remove('hidden');
+  if(ok){S.stats.correct++;S.stats.streak++;S.stats.best=Math.max(S.stats.best,S.stats.streak);
+    fb.className='answer-box good';fb.innerHTML=`✅ Correct! The word was <strong>"${target}"</strong>`}
+  else{S.stats.streak=0;fb.className='answer-box bad';fb.innerHTML=`❌ It was <strong>"${target}"</strong>, not "${picked}" — ${pair.hint}`}
+  document.getElementById('nextBtn').classList.remove('hidden');
+  renderStats();
+}
+
+function renderPairsEnd(el){
+  const ok=S.answers.filter(Boolean).length;
+  const pct=Math.round(ok/S.answers.length*100);
+  const color=pct>=80?'var(--ok)':pct>=50?'var(--warn)':'var(--err)';
+  el.innerHTML=`<div class="card tc">
+    ${starsHTML(Math.round(pct/20))}
+    <div class="score-big" style="color:${color}">${pct}%</div>
+    <div class="score-sub">Minimal Pairs Complete</div>
+    <div class="tip-box" style="text-align:left;margin-bottom:16px">
+      <div class="t-ico">${speakerSVG}</div>
+      <p><strong>Tip:</strong> Minimal pairs train your ear to distinguish similar English sounds. Practice the ones you got wrong by saying both words aloud slowly.</p>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="S.items=[];setMode('pairs')">🔄 Again</button>
+      <button class="btn" onclick="setMode('homophones')">🔀 Homophones</button>
+    </div></div>`;
+}
+
+// ══ HOMOPHONES ══
+function initHomophones(){
+  S.items=shuffle(HOMOPHONES).slice(0,8);
+  S.idx=0;S.answers=[];S.answered=false;
+}
+
+function renderHomophones(el){
+  if(!S.items.length||!S.items[0]?.words)initHomophones();
+  if(S.idx>=S.items.length){
+    const ok=S.answers.filter(Boolean).length;
+    const pct=Math.round(ok/S.answers.length*100);
+    const color=pct>=80?'var(--ok)':pct>=50?'var(--warn)':'var(--err)';
+    el.innerHTML=`<div class="card tc">${starsHTML(Math.round(pct/20))}
+      <div class="score-big" style="color:${color}">${pct}%</div><div class="score-sub">Homophones Complete</div>
+      <div class="btn-row"><button class="btn btn-primary" onclick="S.items=[];setMode('homophones')">🔄 Again</button>
+      <button class="btn" onclick="setMode('challenge')">🏆 Challenge</button></div></div>`;
+    return;
+  }
+
+  const h=S.items[S.idx];
+  const blanks=h.sentence.split('___');
+  const progress=S.items.map((_,i)=>{if(i<S.answers.length)return S.answers[i]?'ok':'err';if(i===S.idx)return'cur';return''});
+
+  el.innerHTML=`
+    <div class="card">
+      <div class="card-l">Homophones
+        <span class="pill" style="background:var(--rose-bg);color:var(--rose)">${S.idx+1} / ${S.items.length}</span>
+      </div>
+      <div class="progress-bar">${progress.map(p=>`<div class="pb-dot ${p}"></div>`).join('')}</div>
+
+      <div style="text-align:center;margin:12px 0">
+        <div style="font-size:13px;color:var(--tx2);margin-bottom:8px">Fill in the blanks with the correct homophones:</div>
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:16px">
+          ${h.words.map(w=>`<span style="padding:6px 14px;background:var(--s3);border-radius:8px;font-weight:600;color:var(--rose)">${w}</span>`).join('')}
+        </div>
+      </div>
+
+      <div style="font-size:1.1rem;line-height:2;margin:16px 0;text-align:center">
+        ${blanks.map((part,i)=>`${part}${i<blanks.length-1?`<input class="dict-input homo-input" id="homo${i}" style="display:inline-block;width:120px;min-height:auto;padding:6px 12px;font-size:15px;text-align:center;margin:0 4px" placeholder="___" autocomplete="off" spellcheck="false">`:''}` ).join('')}
+      </div>
+
+      <div class="answer-box hidden" id="feedback"></div>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="checkBtn" onclick="checkHomophone()">✓ Check</button>
+        <button class="btn hidden" id="nextBtn" onclick="S.idx++;S.answered=false;renderMain()">Next ${arrowR}</button>
+        <button class="btn" onclick="speak('${h.answers.join(', ')}')">${speakerSVG} Listen</button>
+      </div>
+    </div>`;
+  setTimeout(()=>document.getElementById('homo0')?.focus(),100);
+}
+
+function checkHomophone(){
+  if(S.answered)return;
+  S.answered=true;S.stats.attempts++;
+  const h=S.items[S.idx];
+  const inputs=[];
+  for(let i=0;i<h.answers.length;i++){
+    const el=document.getElementById('homo'+i);
+    inputs.push(el?el.value.trim():'');
+  }
+  const ok=inputs.every((v,i)=>v.toLowerCase()===h.answers[i].toLowerCase());
+  S.answers.push(ok);
+
+  for(let i=0;i<h.answers.length;i++){
+    const el=document.getElementById('homo'+i);
+    if(el){
+      const correct=el.value.trim().toLowerCase()===h.answers[i].toLowerCase();
+      el.style.borderColor=correct?'var(--ok)':'var(--err)';
+      el.style.color=correct?'var(--ok)':'var(--err)';
+      if(!correct)el.value=h.answers[i];
+    }
+  }
+
+  const fb=document.getElementById('feedback');fb.classList.remove('hidden');
+  if(ok){S.stats.correct++;S.stats.streak++;S.stats.best=Math.max(S.stats.best,S.stats.streak);S.stats.perfect++;
+    fb.className='answer-box good';fb.innerHTML=`✅ Perfect! All homophones correct.`}
+  else{S.stats.streak=0;fb.className='answer-box bad';fb.innerHTML=`❌ Correct: <strong>${h.answers.join(' / ')}</strong>`}
+  document.getElementById('checkBtn').classList.add('hidden');
+  document.getElementById('nextBtn').classList.remove('hidden');
+  renderStats();
+}
+
+// ══ CHALLENGE MODE (Paragraphs with limited replays) ══
+function initChallenge(){
+  const levels=['B1','B2','C1'];
+  const lvl=levels.includes(S.level)?S.level:'B1';
+  const pool=SENTENCES[lvl]||SENTENCES.B1;
+  // Pick 2 longest sentences as "paragraph"
+  const sorted=[...pool].sort((a,b)=>b.length-a.length);
+  S.items=[sorted.slice(0,2).join(' ')];
+  S.idx=0;S.answers=[];S.answered=false;
+  S.maxReplays=5;S.replaysUsed=0;
+}
+
+function renderChallenge(el){
+  if(!S.items.length||typeof S.items[0]!=='string'||S.items[0].length<50)initChallenge();
+  if(S.idx>=S.items.length){renderChallengeEnd(el);return}
+
+  const para=S.items[S.idx];
+  const replaysLeft=S.maxReplays-S.replaysUsed;
+
+  el.innerHTML=`
+    <div class="card">
+      <div class="card-l">Challenge Mode
+        <span class="pill" style="background:var(--gold-bg);color:var(--gold)">🏆 Hard</span>
+      </div>
+
+      <div style="text-align:center;margin:8px 0 4px;color:var(--tx2);font-size:13px">
+        Listen to the full passage and write it down. Limited replays!
+      </div>
+      ${starsHTML(5)}
+
+      <div class="play-area">
+        <button class="play-btn" id="playBtn" onclick="playChallenge()">
+          ${playSVG}
+        </button>
+        <div class="play-controls">
+          <span class="replays-left" id="replaysLeft">${replaysLeft} replays left</span>
+          <button class="btn" onclick="playChallenge()" ${replaysLeft<=0?'disabled style="opacity:.3"':''}>${speakerSVG} Play</button>
+          <button class="btn" onclick="playChallengeSlow()" ${replaysLeft<=0?'disabled style="opacity:.3"':''}> 🐢 Slow</button>
+        </div>
+      </div>
+
+      <div class="input-zone">
+        <textarea class="dict-input" id="dictInput" rows="5" placeholder="Type the entire passage here..."></textarea>
+      </div>
+
+      <div class="answer-box hidden" id="feedback"></div>
+      <div class="diff-display hidden" id="diffDisplay"></div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="checkBtn" onclick="checkChallenge()">✓ Submit</button>
+        <button class="btn hidden" id="showBtn" onclick="showChallengeAnswer()">👁 Show Answer</button>
+        <button class="btn hidden" id="nextBtn" onclick="S.items=[];initChallenge();renderMain()">🔄 New Challenge</button>
+      </div>
+    </div>`;
+  setTimeout(()=>document.getElementById('dictInput')?.focus(),100);
+}
+
+function playChallenge(){
+  if(S.replaysUsed>=S.maxReplays)return;
+  S.replaysUsed++;
+  const para=S.items[S.idx];speak(para);
+  document.getElementById('replaysLeft').textContent=`${S.maxReplays-S.replaysUsed} replays left`;
+  if(S.replaysUsed>=S.maxReplays){
+    document.querySelectorAll('.play-controls .btn').forEach(b=>{b.disabled=true;b.style.opacity='.3'});
+  }
+}
+function playChallengeSlow(){
+  if(S.replaysUsed>=S.maxReplays)return;
+  S.replaysUsed++;
+  const para=S.items[S.idx];speak(para,0.5);
+  document.getElementById('replaysLeft').textContent=`${S.maxReplays-S.replaysUsed} replays left`;
+  if(S.replaysUsed>=S.maxReplays){
+    document.querySelectorAll('.play-controls .btn').forEach(b=>{b.disabled=true;b.style.opacity='.3'});
+  }
+}
+
+function checkChallenge(){
+  if(S.answered)return;
+  S.answered=true;S.stats.attempts++;
+  const para=S.items[S.idx];
+  const val=document.getElementById('dictInput').value.trim();
+  const score=scoreText(para,val);
+  S.answers.push(score);
+
+  const fb=document.getElementById('feedback');fb.classList.remove('hidden');
+  const input=document.getElementById('dictInput');
+
+  if(score>=90){
+    S.stats.correct++;S.stats.streak++;S.stats.best=Math.max(S.stats.best,S.stats.streak);
+    if(score===100)S.stats.perfect++;
+    fb.className='answer-box good';
+    fb.innerHTML=`🏆 ${score===100?'FLAWLESS!':'Excellent!'} Score: <strong>${score}%</strong> — Replays used: ${S.replaysUsed}/${S.maxReplays}`;
+    input.classList.add('correct-border');
+  }else if(score>=60){
+    fb.className='answer-box info';
+    fb.innerHTML=`👍 Score: <strong>${score}%</strong> — Good effort! Check differences below.`;
+    showDiff(para,val);
+  }else{
+    S.stats.streak=0;
+    fb.className='answer-box bad';
+    fb.innerHTML=`Score: <strong>${score}%</strong> — Keep practicing! Review below.`;
+    input.classList.add('wrong-border');
+    showDiff(para,val);
+  }
+
+  document.getElementById('checkBtn').classList.add('hidden');
+  document.getElementById('showBtn').classList.remove('hidden');
+  document.getElementById('nextBtn').classList.remove('hidden');
+  renderStats();
+}
+
+function showChallengeAnswer(){
+  const para=S.items[S.idx];
+  const dd=document.getElementById('diffDisplay');
+  dd.classList.remove('hidden');
+  dd.innerHTML=`<div style="font-family:'Geist Mono',monospace;font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px">Full Passage</div>
+    <div style="color:var(--ok);font-weight:500;line-height:1.8">${para}</div>`;
+}
+
+function renderChallengeEnd(el){
+  const avg=S.answers.length?Math.round(S.answers.reduce((a,b)=>a+b,0)/S.answers.length):0;
+  el.innerHTML=`<div class="card tc"><div class="score-big" style="color:var(--gold)">${avg}%</div><div class="score-sub">Challenge Complete</div>
+    <div class="btn-row"><button class="btn btn-primary" onclick="S.items=[];initChallenge();renderMain()">🔄 New Challenge</button></div></div>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// ACTIONS
+// ═══════════════════════════════════════════════════════════
+function setMode(m){S.mode=m;S.items=[];S.idx=0;S.answers=[];S.answered=false;
+  if(m==='words')initWords();if(m==='sentences')initSentences();
+  if(m==='pairs')initPairs();if(m==='homophones')initHomophones();
+  if(m==='challenge')initChallenge();render()}
+function setLevel(l){S.level=l;S.items=[];S.idx=0;S.answers=[];
+  if(S.mode==='words')initWords();if(S.mode==='sentences')initSentences();
+  if(S.mode==='challenge')initChallenge();render()}
+function setSpeed(s){S.speed=s;render()}
+
+if('speechSynthesis' in window)speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices();
+render();
+</script>
+</body>
+</html>

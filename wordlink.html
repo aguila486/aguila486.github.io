@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WordLink — Word Matching Game</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#05080d;--s1:#0a0f1a;--s2:#101828;--s3:#182038;--s4:#1f2b48;
+  --trans:#38bdf8;--trans-bg:rgba(56,189,248,.06);--trans-bd:rgba(56,189,248,.2);
+  --syn:#34d399;--syn-bg:rgba(52,211,153,.06);--syn-bd:rgba(52,211,153,.2);
+  --ant:#f472b6;--ant-bg:rgba(244,114,182,.06);--ant-bd:rgba(244,114,182,.2);
+  --coll:#fbbf24;--coll-bg:rgba(251,191,36,.06);--coll-bd:rgba(251,191,36,.2);
+  --phr:#a78bfa;--phr-bg:rgba(167,139,250,.06);--phr-bd:rgba(167,139,250,.2);
+  --ok:#22c55e;--ok-bg:rgba(34,197,94,.1);--ok-bd:rgba(34,197,94,.22);
+  --err:#ef4444;--err-bg:rgba(239,68,68,.08);--err-bd:rgba(239,68,68,.2);
+  --tx:#e2e8f2;--tx2:#8b97b0;--tx3:#55637b;--bd:rgba(255,255,255,.05);--r:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Lexend',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 0%,rgba(56,189,248,.02),transparent 50%),radial-gradient(ellipse at 80% 100%,rgba(167,139,250,.02),transparent 50%);pointer-events:none}
+.app{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:20px 16px 80px}
+
+@keyframes fadeD{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeU{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pop{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes matched{0%{transform:scale(1)}40%{transform:scale(1.08)}100%{transform:scale(1)}}
+@keyframes sparkle{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(2)}}
+
+.hdr{text-align:center;margin-bottom:24px;animation:fadeD .5s ease}
+.hdr-tag{display:inline-flex;align-items:center;gap:8px;padding:5px 15px;border-radius:100px;font-family:'Fira Code',monospace;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--tx3);border:1px solid var(--bd);background:var(--s1);margin-bottom:12px}
+.hdr-tag .dots{display:flex;gap:4px}.hdr-tag .dots span{width:7px;height:7px;border-radius:50%}
+.hdr h1{font-size:2.2rem;font-weight:900;letter-spacing:-.3px;margin-bottom:4px}
+.hdr p{color:var(--tx2);font-size:.88rem;font-weight:400}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:18px;animation:fadeU .4s ease .08s both}
+@media(max-width:600px){.stats{grid-template-columns:repeat(3,1fr)}}
+.st{padding:12px 8px;background:var(--s1);border:1px solid var(--bd);border-radius:12px;text-align:center}
+.st-n{font-family:'Fira Code',monospace;font-size:1.15rem;font-weight:700}
+.st-l{font-size:9px;color:var(--tx3);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+
+/* Tabs & Filters */
+.tabs{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;margin-bottom:12px;animation:fadeU .4s ease .1s both}
+.tab{padding:8px 16px;border-radius:100px;border:1.5px solid var(--bd);background:var(--s1);color:var(--tx3);font-size:12px;font-weight:600;cursor:pointer;transition:all .25s;font-family:inherit}
+.tab:hover{border-color:rgba(255,255,255,.1);color:var(--tx2)}
+.tab.on{background:var(--s3);color:var(--tx);border-color:rgba(255,255,255,.12)}
+
+.cats{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;margin-bottom:20px;animation:fadeU .4s ease .15s both}
+.cat{padding:6px 13px;border-radius:100px;border:1.5px solid var(--bd);background:var(--s1);font-size:11.5px;font-weight:600;cursor:pointer;transition:all .25s;font-family:inherit;display:flex;align-items:center;gap:6px}
+.cat:hover{border-color:rgba(255,255,255,.1)}
+.cat .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* Card */
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:16px;animation:fadeU .4s ease}
+.card-h{padding:14px 20px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.card-t{font-family:'Fira Code',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.8px;color:var(--tx3);display:flex;align-items:center;gap:8px}
+.card-b{padding:20px}
+.pill{padding:2px 9px;border-radius:6px;font-size:9px;font-weight:700;letter-spacing:.5px}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border:1px solid var(--bd);border-radius:12px;background:var(--s2);color:var(--tx2);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
+.btn:hover{background:var(--s3);color:var(--tx);border-color:rgba(255,255,255,.1)}
+.btn-sm{padding:7px 14px;font-size:12px;border-radius:10px}
+.btn-accent{background:rgba(56,189,248,.08);border-color:var(--trans-bd);color:var(--trans)}
+.btn-accent:hover{background:rgba(56,189,248,.16)}
+.btn-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+
+/* ═══ MATCH PAIRS MODE ═══ */
+.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:500px){.match-grid{grid-template-columns:1fr}}
+.match-col{display:flex;flex-direction:column;gap:6px}
+.match-col-title{font-family:'Fira Code',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--tx3);text-align:center;margin-bottom:4px}
+
+.match-tile{padding:14px 16px;border:2px solid var(--bd);border-radius:12px;background:var(--s2);font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;text-align:center;position:relative;user-select:none}
+.match-tile:hover:not(.matched):not(.disabled){border-color:rgba(255,255,255,.12);background:var(--s3);transform:translateY(-1px)}
+.match-tile.selected{border-color:var(--trans);background:var(--trans-bg);color:var(--trans);box-shadow:0 0 16px rgba(56,189,248,.1)}
+.match-tile.matched{border-color:var(--ok-bd);background:var(--ok-bg);color:var(--ok);animation:matched .4s ease;pointer-events:none;opacity:.6}
+.match-tile.wrong{border-color:var(--err);background:var(--err-bg);color:var(--err);animation:shake .35s ease}
+.match-tile.disabled{pointer-events:none}
+.match-tile .type-dot{position:absolute;top:6px;right:8px;width:6px;height:6px;border-radius:50%}
+
+/* ═══ MEMORY FLIP MODE ═══ */
+.mem-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+@media(max-width:500px){.mem-grid{grid-template-columns:repeat(3,1fr)}}
+.mem-card{aspect-ratio:1.1;border-radius:12px;cursor:pointer;perspective:600px;position:relative}
+.mem-inner{width:100%;height:100%;position:relative;transition:transform .4s ease;transform-style:preserve-3d}
+.mem-card.flipped .mem-inner{transform:rotateY(180deg)}
+.mem-card.matched .mem-inner{transform:rotateY(180deg)}
+.mem-front,.mem-back{position:absolute;inset:0;border-radius:12px;display:flex;align-items:center;justify-content:center;backface-visibility:hidden;border:2px solid var(--bd);padding:8px;text-align:center}
+.mem-front{background:linear-gradient(135deg,var(--s2),var(--s3));font-size:1.5rem}
+.mem-back{background:var(--s2);transform:rotateY(180deg);font-size:13px;font-weight:600;line-height:1.4}
+.mem-card.matched .mem-back{border-color:var(--ok-bd);background:var(--ok-bg);color:var(--ok);opacity:.7}
+.mem-card.wrong .mem-back{border-color:var(--err);background:var(--err-bg)}
+
+/* ═══ SPEED MATCH MODE ═══ */
+.speed-prompt{font-size:1.8rem;font-weight:800;text-align:center;padding:20px;margin:10px 0;background:var(--s2);border-radius:14px;border:1.5px solid var(--bd);line-height:1.4}
+.speed-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}
+.speed-opt{padding:14px 12px;border:2px solid var(--bd);border-radius:12px;background:var(--s2);font-size:15px;font-weight:600;cursor:pointer;text-align:center;transition:all .2s;font-family:inherit}
+.speed-opt:hover:not(.dis){border-color:rgba(255,255,255,.12);background:var(--s3);transform:translateY(-1px)}
+.speed-opt.right{border-color:var(--ok);background:var(--ok-bg);color:var(--ok)}
+.speed-opt.wrong{border-color:var(--err);background:var(--err-bg);color:var(--err)}
+.speed-opt.dis{pointer-events:none}
+.timer-bar{height:5px;background:var(--s3);border-radius:5px;overflow:hidden;margin:10px 0}
+.timer-fill{height:100%;border-radius:5px;transition:width .1s linear}
+
+/* ═══ CONNECT MODE ═══ */
+.connect-zone{display:flex;gap:24px;justify-content:space-between;align-items:flex-start;min-height:300px;position:relative}
+@media(max-width:500px){.connect-zone{gap:12px}}
+.connect-col{display:flex;flex-direction:column;gap:8px;flex:1;max-width:45%}
+.connect-tile{padding:12px 14px;border:2px solid var(--bd);border-radius:10px;background:var(--s2);font-size:13px;font-weight:600;cursor:pointer;text-align:center;transition:all .2s;user-select:none;position:relative}
+.connect-tile:hover:not(.matched){border-color:rgba(255,255,255,.12);background:var(--s3)}
+.connect-tile.sel{border-color:var(--trans);background:var(--trans-bg);color:var(--trans)}
+.connect-tile.matched{border-color:var(--ok-bd);background:var(--ok-bg);color:var(--ok);opacity:.55;pointer-events:none}
+.connect-tile.wrong{animation:shake .35s ease}
+.connect-lines{position:absolute;inset:0;pointer-events:none}
+
+/* Progress */
+.prog{display:flex;gap:3px;margin-bottom:14px}
+.prog-d{height:5px;flex:1;border-radius:5px;background:var(--s3);transition:background .3s}
+.prog-d.ok{background:var(--ok)}.prog-d.err{background:var(--err)}.prog-d.cur{background:var(--tx3)}
+
+/* Score */
+.score-big{font-family:'Fira Code',monospace;font-size:3.5rem;font-weight:700;text-align:center}
+.score-sub{text-align:center;color:var(--tx2);margin:4px 0 20px}
+
+/* JSON */
+.json-area{width:100%;padding:12px;border:1px solid var(--bd);border-radius:10px;background:var(--s2);color:var(--tx);font-family:'Fira Code',monospace;font-size:11px;line-height:1.7;resize:vertical;min-height:120px;outline:none}
+.json-area:focus{border-color:var(--trans-bd)}
+
+.tc{text-align:center}
+.hidden{display:none!important}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--s3);border-radius:5px}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hdr">
+    <div class="hdr-tag">
+      <div class="dots">
+        <span style="background:var(--trans)"></span><span style="background:var(--syn)"></span>
+        <span style="background:var(--ant)"></span><span style="background:var(--coll)"></span>
+        <span style="background:var(--phr)"></span>
+      </div>
+      Word Game
+    </div>
+    <h1>Word<span style="color:var(--trans)">Link</span></h1>
+    <p>Relaciona palabras para dominar el vocabulario inglés</p>
+  </div>
+
+  <div class="stats" id="statsBar"></div>
+  <div class="tabs" id="modeTabs"></div>
+  <div class="cats" id="catTabs"></div>
+  <div id="main"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// DATABASE — 200+ word pairs across 5 categories
+// ═══════════════════════════════════════════════════════════
+const BASE_DATA = {
+  translation: {
+    name:"Inglés → Español", icon:"🔤", color:"var(--trans)", bg:"var(--trans-bg)", bd:"var(--trans-bd)",
+    pairs:[
+      {a:"hello",b:"hola"},{a:"goodbye",b:"adiós"},{a:"please",b:"por favor"},{a:"thank you",b:"gracias"},
+      {a:"water",b:"agua"},{a:"food",b:"comida"},{a:"house",b:"casa"},{a:"family",b:"familia"},
+      {a:"friend",b:"amigo"},{a:"work",b:"trabajo"},{a:"school",b:"escuela"},{a:"money",b:"dinero"},
+      {a:"time",b:"tiempo"},{a:"love",b:"amor"},{a:"life",b:"vida"},{a:"world",b:"mundo"},
+      {a:"book",b:"libro"},{a:"car",b:"coche"},{a:"city",b:"ciudad"},{a:"country",b:"país"},
+      {a:"morning",b:"mañana"},{a:"night",b:"noche"},{a:"week",b:"semana"},{a:"month",b:"mes"},
+      {a:"happy",b:"feliz"},{a:"sad",b:"triste"},{a:"angry",b:"enojado"},{a:"tired",b:"cansado"},
+      {a:"hungry",b:"hambriento"},{a:"thirsty",b:"sediento"},{a:"cold",b:"frío"},{a:"hot",b:"caliente"},
+      {a:"beautiful",b:"hermoso"},{a:"ugly",b:"feo"},{a:"big",b:"grande"},{a:"small",b:"pequeño"},
+      {a:"fast",b:"rápido"},{a:"slow",b:"lento"},{a:"strong",b:"fuerte"},{a:"weak",b:"débil"},
+      {a:"dream",b:"sueño"},{a:"health",b:"salud"},{a:"heart",b:"corazón"},{a:"brain",b:"cerebro"},
+      {a:"knowledge",b:"conocimiento"},{a:"freedom",b:"libertad"},{a:"success",b:"éxito"},{a:"failure",b:"fracaso"},
+      {a:"weather",b:"clima"},{a:"rainbow",b:"arcoíris"},
+    ]
+  },
+  synonyms: {
+    name:"Sinónimos", icon:"🟰", color:"var(--syn)", bg:"var(--syn-bg)", bd:"var(--syn-bd)",
+    pairs:[
+      {a:"happy",b:"glad"},{a:"sad",b:"unhappy"},{a:"big",b:"large"},{a:"small",b:"tiny"},
+      {a:"fast",b:"quick"},{a:"slow",b:"sluggish"},{a:"smart",b:"intelligent"},{a:"dumb",b:"foolish"},
+      {a:"beautiful",b:"gorgeous"},{a:"ugly",b:"hideous"},{a:"rich",b:"wealthy"},{a:"poor",b:"impoverished"},
+      {a:"begin",b:"start"},{a:"end",b:"finish"},{a:"help",b:"assist"},{a:"buy",b:"purchase"},
+      {a:"angry",b:"furious"},{a:"scared",b:"frightened"},{a:"brave",b:"courageous"},{a:"kind",b:"generous"},
+      {a:"old",b:"ancient"},{a:"new",b:"brand-new"},{a:"hard",b:"difficult"},{a:"easy",b:"simple"},
+      {a:"important",b:"crucial"},{a:"strange",b:"weird"},{a:"calm",b:"peaceful"},{a:"loud",b:"noisy"},
+      {a:"tired",b:"exhausted"},{a:"hungry",b:"starving"},{a:"cold",b:"freezing"},{a:"hot",b:"boiling"},
+      {a:"pretty",b:"attractive"},{a:"strong",b:"powerful"},{a:"thin",b:"slim"},{a:"fat",b:"overweight"},
+      {a:"correct",b:"accurate"},{a:"wrong",b:"incorrect"},{a:"dangerous",b:"hazardous"},{a:"safe",b:"secure"},
+    ]
+  },
+  antonyms: {
+    name:"Antónimos", icon:"⚡", color:"var(--ant)", bg:"var(--ant-bg)", bd:"var(--ant-bd)",
+    pairs:[
+      {a:"hot",b:"cold"},{a:"big",b:"small"},{a:"fast",b:"slow"},{a:"happy",b:"sad"},
+      {a:"rich",b:"poor"},{a:"old",b:"young"},{a:"tall",b:"short"},{a:"strong",b:"weak"},
+      {a:"light",b:"dark"},{a:"loud",b:"quiet"},{a:"hard",b:"soft"},{a:"wet",b:"dry"},
+      {a:"love",b:"hate"},{a:"begin",b:"end"},{a:"buy",b:"sell"},{a:"give",b:"take"},
+      {a:"push",b:"pull"},{a:"open",b:"close"},{a:"win",b:"lose"},{a:"remember",b:"forget"},
+      {a:"accept",b:"reject"},{a:"brave",b:"coward"},{a:"polite",b:"rude"},{a:"honest",b:"dishonest"},
+      {a:"beautiful",b:"ugly"},{a:"easy",b:"difficult"},{a:"empty",b:"full"},{a:"first",b:"last"},
+      {a:"success",b:"failure"},{a:"safe",b:"dangerous"},{a:"always",b:"never"},{a:"everything",b:"nothing"},
+      {a:"arrive",b:"depart"},{a:"awake",b:"asleep"},{a:"borrow",b:"lend"},{a:"cheap",b:"expensive"},
+      {a:"ancient",b:"modern"},{a:"create",b:"destroy"},{a:"deep",b:"shallow"},{a:"narrow",b:"wide"},
+    ]
+  },
+  collocations: {
+    name:"Colocaciones", icon:"🧩", color:"var(--coll)", bg:"var(--coll-bg)", bd:"var(--coll-bd)",
+    pairs:[
+      {a:"make",b:"a decision"},{a:"do",b:"homework"},{a:"take",b:"a shower"},{a:"have",b:"breakfast"},
+      {a:"pay",b:"attention"},{a:"catch",b:"a cold"},{a:"break",b:"a promise"},{a:"keep",b:"a secret"},
+      {a:"tell",b:"the truth"},{a:"miss",b:"the bus"},{a:"save",b:"money"},{a:"waste",b:"time"},
+      {a:"make",b:"a mistake"},{a:"do",b:"the dishes"},{a:"take",b:"notes"},{a:"have",b:"fun"},
+      {a:"get",b:"married"},{a:"run",b:"a business"},{a:"set",b:"an alarm"},{a:"raise",b:"awareness"},
+      {a:"make",b:"progress"},{a:"do",b:"your best"},{a:"take",b:"a break"},{a:"have",b:"a good time"},
+      {a:"play",b:"a role"},{a:"come",b:"to terms"},{a:"draw",b:"a conclusion"},{a:"reach",b:"a goal"},
+      {a:"face",b:"a challenge"},{a:"meet",b:"a deadline"},{a:"heavy",b:"rain"},{a:"strong",b:"opinion"},
+      {a:"deep",b:"breath"},{a:"wide",b:"range"},{a:"bright",b:"future"},{a:"sharp",b:"increase"},
+      {a:"fast",b:"food"},{a:"common",b:"sense"},{a:"public",b:"opinion"},{a:"social",b:"media"},
+    ]
+  },
+  phrasal_verbs: {
+    name:"Phrasal Verbs", icon:"🚀", color:"var(--phr)", bg:"var(--phr-bg)", bd:"var(--phr-bd)",
+    pairs:[
+      {a:"give up",b:"rendirse"},{a:"look for",b:"buscar"},{a:"find out",b:"descubrir"},{a:"turn off",b:"apagar"},
+      {a:"turn on",b:"encender"},{a:"pick up",b:"recoger"},{a:"put on",b:"ponerse"},{a:"take off",b:"quitarse/despegar"},
+      {a:"get up",b:"levantarse"},{a:"sit down",b:"sentarse"},{a:"come back",b:"regresar"},{a:"go out",b:"salir"},
+      {a:"look after",b:"cuidar"},{a:"look up",b:"buscar info"},{a:"run out of",b:"quedarse sin"},{a:"get along",b:"llevarse bien"},
+      {a:"break down",b:"descomponerse"},{a:"break up",b:"terminar relación"},{a:"bring up",b:"mencionar/criar"},
+      {a:"call off",b:"cancelar"},{a:"carry on",b:"continuar"},{a:"check in",b:"registrarse"},{a:"check out",b:"salir/revisar"},
+      {a:"come up with",b:"idear/inventar"},{a:"cut down on",b:"reducir"},{a:"figure out",b:"resolver/entender"},
+      {a:"fill in",b:"rellenar"},{a:"get over",b:"superar"},{a:"go ahead",b:"proceder"},{a:"hold on",b:"esperar"},
+      {a:"keep up",b:"mantener ritmo"},{a:"let down",b:"decepcionar"},{a:"make up",b:"inventar/reconciliar"},
+      {a:"pass away",b:"fallecer"},{a:"put off",b:"posponer"},{a:"set up",b:"configurar/montar"},
+      {a:"show up",b:"aparecer"},{a:"sort out",b:"resolver"},{a:"throw away",b:"tirar/desechar"},{a:"work out",b:"funcionar/ejercitar"},
+    ]
+  }
+};
+
+const CATS=Object.keys(BASE_DATA);
+const CAT_META={};CATS.forEach(k=>{const d=BASE_DATA[k];CAT_META[k]={name:d.name,icon:d.icon,color:d.color,bg:d.bg,bd:d.bd}});
+
+// Custom data from localStorage
+let customData=JSON.parse(localStorage.getItem('wordlink_custom')||'{}');
+function saveCustom(){localStorage.setItem('wordlink_custom',JSON.stringify(customData))}
+function getPairs(cat){return[...BASE_DATA[cat].pairs,...(customData[cat]||[])]}
+function getAllPairs(filter){
+  const keys=filter==='all'?CATS:[filter];
+  return keys.flatMap(k=>getPairs(k).map(p=>({...p,cat:k})));
+}
+
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+const MODES=[
+  {id:'match',label:'🔗 Relacionar'},
+  {id:'memory',label:'🃏 Memoria'},
+  {id:'speed',label:'⚡ Velocidad'},
+  {id:'connect',label:'🔀 Conectar'},
+  {id:'data',label:'📦 Datos'},
+];
+
+let S={
+  mode:'match',cat:'all',
+  items:[],idx:0,answers:[],answered:false,
+  sel:null, // selected tile
+  memCards:[],memFlipped:[],memMatched:[],memLocked:false,
+  speedTimer:null,speedTimeLeft:0,
+  connLeft:[],connRight:[],connSel:null,connMatched:[],
+  stats:{attempts:0,correct:0,streak:0,best:0}
+};
+
+const shuffle=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]]}return b};
+
+// ═══════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════
+function render(){renderStats();renderTabs();renderCats();renderMain()}
+
+function renderStats(){
+  const pct=S.stats.attempts?Math.round(S.stats.correct/S.stats.attempts*100):0;
+  const total=CATS.reduce((s,k)=>s+getPairs(k).length,0);
+  document.getElementById('statsBar').innerHTML=`
+    <div class="st"><div class="st-n">${total}</div><div class="st-l">Pares</div></div>
+    <div class="st"><div class="st-n">${S.stats.attempts}</div><div class="st-l">Intentos</div></div>
+    <div class="st"><div class="st-n" style="color:var(--ok)">${S.stats.correct}</div><div class="st-l">Correctos</div></div>
+    <div class="st"><div class="st-n" style="color:var(--trans)">${S.stats.streak}🔥</div><div class="st-l">Racha</div></div>
+    <div class="st"><div class="st-n" style="color:var(--coll)">${pct}%</div><div class="st-l">Precisión</div></div>`;
+}
+
+function renderTabs(){
+  document.getElementById('modeTabs').innerHTML=MODES.map(m=>
+    `<button class="tab ${S.mode===m.id?'on':''}" onclick="setMode('${m.id}')">${m.label}</button>`
+  ).join('');
+}
+
+function renderCats(){
+  const el=document.getElementById('catTabs');
+  if(S.mode==='data'){el.innerHTML='';return}
+  el.innerHTML=`<button class="cat ${S.cat==='all'?'on':''}" style="${S.cat==='all'?'border-color:rgba(255,255,255,.15);background:var(--s3);color:var(--tx)':''}" onclick="setCat('all')">Todos</button>`+
+    CATS.map(k=>{const m=CAT_META[k];const c=getPairs(k).length;
+      return`<button class="cat ${S.cat===k?'on':''}" style="${S.cat===k?`border-color:${m.bd};background:${m.bg};color:${m.color}`:''}" onclick="setCat('${k}')"><span class="dot" style="background:${m.color}"></span>${m.icon} ${m.name} (${c})</button>`;
+    }).join('');
+}
+
+function renderMain(){
+  const el=document.getElementById('main');
+  switch(S.mode){
+    case 'match':renderMatch(el);break;
+    case 'memory':renderMemory(el);break;
+    case 'speed':renderSpeed(el);break;
+    case 'connect':renderConnect(el);break;
+    case 'data':renderData(el);break;
+  }
+}
+
+// ═══ MATCH PAIRS MODE ═══
+function initMatch(){
+  const pool=getAllPairs(S.cat);
+  S.items=shuffle(pool).slice(0,8);S.sel=null;S.answers=[];S.answered=false;
+}
+
+function renderMatch(el){
+  if(!S.items.length)initMatch();
+  if(!S.items.length){el.innerHTML='<div class="card"><div class="card-b tc" style="color:var(--tx2)">No hay pares disponibles.</div></div>';return}
+
+  const matchedSet=new Set(S.answers);
+  const leftTiles=S.items.map((p,i)=>({text:p.a,idx:i,side:'a'}));
+  const rightTiles=shuffle(S.items.map((p,i)=>({text:p.b,idx:i,side:'b'})));
+
+  el.innerHTML=`<div class="card">
+    <div class="card-h">
+      <div class="card-t">Relaciona los pares <span class="pill" style="background:var(--s3);color:var(--tx3)">${S.answers.length}/${S.items.length}</span></div>
+      <button class="btn btn-sm" onclick="S.items=[];initMatch();renderMain()">🔄 Nuevo</button>
+    </div>
+    <div class="card-b">
+      <div class="match-grid">
+        <div class="match-col">
+          <div class="match-col-title">Columna A</div>
+          ${leftTiles.map(t=>{
+            const m=matchedSet.has(t.idx);const cm=CAT_META[S.items[t.idx].cat];
+            return`<div class="match-tile ${m?'matched':''}" data-idx="${t.idx}" data-side="a" onclick="selectMatch(this,${t.idx},'a')">
+              ${t.text}<span class="type-dot" style="background:${cm.color}"></span>
+            </div>`;
+          }).join('')}
+        </div>
+        <div class="match-col">
+          <div class="match-col-title">Columna B</div>
+          ${rightTiles.map(t=>{
+            const m=matchedSet.has(t.idx);const cm=CAT_META[S.items[t.idx].cat];
+            return`<div class="match-tile ${m?'matched':''}" data-idx="${t.idx}" data-side="b" onclick="selectMatch(this,${t.idx},'b')">
+              ${t.text}<span class="type-dot" style="background:${cm.color}"></span>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+      ${S.answers.length===S.items.length?`
+        <div class="tc" style="margin-top:20px">
+          <div style="font-size:1.5rem;margin-bottom:8px">🎉</div>
+          <div style="font-size:1rem;font-weight:600;margin-bottom:14px">¡Todos los pares encontrados!</div>
+          <div class="btn-row"><button class="btn btn-accent" onclick="S.items=[];initMatch();renderMain()">🔄 Nueva Ronda</button></div>
+        </div>`:''}
+    </div></div>`;
+}
+
+function selectMatch(el,idx,side){
+  if(S.answers.includes(idx))return;
+
+  if(!S.sel){
+    S.sel={el,idx,side};el.classList.add('selected');
+  } else {
+    if(S.sel.side===side){S.sel.el.classList.remove('selected');S.sel={el,idx,side};el.classList.add('selected');return}
+    S.stats.attempts++;
+    if(S.sel.idx===idx){
+      // Correct!
+      S.stats.correct++;S.stats.streak++;S.stats.best=Math.max(S.stats.best,S.stats.streak);
+      S.answers.push(idx);
+      S.sel.el.classList.remove('selected');S.sel.el.classList.add('matched');
+      el.classList.add('matched');
+      S.sel=null;renderStats();
+      setTimeout(()=>renderMain(),300);
+    } else {
+      S.stats.streak=0;
+      S.sel.el.classList.remove('selected');S.sel.el.classList.add('wrong');
+      el.classList.add('wrong');
+      const prev=S.sel.el;
+      setTimeout(()=>{prev.classList.remove('wrong');el.classList.remove('wrong')},500);
+      S.sel=null;renderStats();
+    }
+  }
+}
+
+// ═══ MEMORY FLIP MODE ═══
+function initMemory(){
+  const pool=getAllPairs(S.cat);
+  const pairs=shuffle(pool).slice(0,6);
+  const cards=[];
+  pairs.forEach((p,i)=>{
+    cards.push({text:p.a,pairId:i,cat:p.cat});
+    cards.push({text:p.b,pairId:i,cat:p.cat});
+  });
+  S.memCards=shuffle(cards);S.memFlipped=[];S.memMatched=new Set();S.memLocked=false;
+}
+
+function renderMemory(el){
+  if(!S.memCards.length)initMemory();
+  const allMatched=S.memMatched.size===S.memCards.length/2;
+
+  el.innerHTML=`<div class="card">
+    <div class="card-h">
+      <div class="card-t">Memory <span class="pill" style="background:var(--s3);color:var(--tx3)">${S.memMatched.size}/${S.memCards.length/2} pares</span></div>
+      <button class="btn btn-sm" onclick="S.memCards=[];initMemory();renderMain()">🔄 Nuevo</button>
+    </div>
+    <div class="card-b">
+      <div class="mem-grid">
+        ${S.memCards.map((c,i)=>{
+          const isFlipped=S.memFlipped.includes(i);
+          const isMatched=S.memMatched.has(c.pairId);
+          const cm=CAT_META[c.cat];
+          return`<div class="mem-card ${isFlipped?'flipped':''} ${isMatched?'matched':''}" onclick="flipCard(${i})">
+            <div class="mem-inner">
+              <div class="mem-front">❓</div>
+              <div class="mem-back" style="${isMatched?'':`border-color:${cm.bd}`}">${c.text}</div>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+      ${allMatched?`<div class="tc" style="margin-top:20px">
+        <div style="font-size:1.5rem;margin-bottom:8px">🧠</div>
+        <div style="font-size:1rem;font-weight:600;margin-bottom:14px">¡Memoria perfecta!</div>
+        <div class="btn-row"><button class="btn btn-accent" onclick="S.memCards=[];initMemory();renderMain()">🔄 Otra Vez</button></div>
+      </div>`:''}
+    </div></div>`;
+}
+
+function flipCard(i){
+  if(S.memLocked||S.memFlipped.includes(i)||S.memMatched.has(S.memCards[i].pairId))return;
+  S.memFlipped.push(i);renderMain();
+
+  if(S.memFlipped.length===2){
+    S.memLocked=true;S.stats.attempts++;
+    const[a,b]=S.memFlipped;
+    if(S.memCards[a].pairId===S.memCards[b].pairId){
+      S.stats.correct++;S.stats.streak++;S.stats.best=Math.max(S.stats.best,S.stats.streak);
+      S.memMatched.add(S.memCards[a].pairId);
+      S.memFlipped=[];S.memLocked=false;
+      setTimeout(()=>{renderMain();renderStats()},300);
+    } else {
+      S.stats.streak=0;
+      setTimeout(()=>{S.memFlipped=[];S.memLocked=false;renderMain();renderStats()},900);
+    }
+  }
+}
+
+// ═══ SPEED MATCH MODE ═══
+let speedInterval=null;
+function initSpeed(){
+  const pool=getAllPairs(S.cat);
+  S.items=shuffle(pool).slice(0,10);S.idx=0;S.answers=[];S.answered=false;
+  S.speedTimeLeft=100;
+}
+
+function renderSpeed(el){
+  if(!S.items.length)initSpeed();
+  if(S.idx>=S.items.length){renderSpeedEnd(el);return}
+
+  const p=S.items[S.idx];const cm=CAT_META[p.cat];
+  const progress=S.items.map((_,i)=>{if(i<S.answers.length)return S.answers[i]?'ok':'err';if(i===S.idx)return'cur';return''});
+
+  // Build 4 options: correct + 3 random
+  let opts=[p.b];
+  const allB=shuffle(getAllPairs('all').filter(x=>x.b!==p.b).map(x=>x.b));
+  for(const o of allB){if(opts.length>=4)break;if(!opts.includes(o))opts.push(o)}
+  opts=shuffle(opts);
+
+  el.innerHTML=`<div class="card">
+    <div class="card-h">
+      <div class="card-t">Velocidad <span class="pill" style="background:${cm.bg};color:${cm.color}">${cm.icon} ${cm.name}</span></div>
+      <span class="card-t">${S.idx+1}/${S.items.length}</span>
+    </div>
+    <div class="card-b">
+      <div class="prog">${progress.map(p=>`<div class="prog-d ${p}"></div>`).join('')}</div>
+      <div class="timer-bar"><div class="timer-fill" id="timerFill" style="width:${S.speedTimeLeft}%;background:${S.speedTimeLeft>30?'var(--ok)':'var(--err)'}"></div></div>
+      <div class="speed-prompt" style="border-color:${cm.bd}">${p.a}</div>
+      <div class="speed-opts" id="speedOpts">
+        ${opts.map(o=>`<button class="speed-opt" onclick="answerSpeed(this,'${o.replace(/'/g,"\\'")}','${p.b.replace(/'/g,"\\'")}')">${o}</button>`).join('')}
+      </div>
+    </div></div>`;
+
+  // Start timer
+  clearInterval(speedInterval);
+  S.speedTimeLeft=100;
+  speedInterval=setInterval(()=>{
+    S.speedTimeLeft-=1;
+    const fill=document.getElementById('timerFill');
+    if(fill){fill.style.width=S.speedTimeLeft+'%';fill.style.background=S.speedTimeLeft>30?'var(--ok)':'var(--err)'}
+    if(S.speedTimeLeft<=0){clearInterval(speedInterval);S.answers.push(false);S.stats.attempts++;S.stats.streak=0;S.idx++;renderStats();renderMain()}
+  },80);
+}
+
+function answerSpeed(btn,picked,correct){
+  clearInterval(speedInterval);
+  S.stats.attempts++;
+  const ok=picked===correct;S.answers.push(ok);
+  document.querySelectorAll('#speedOpts .speed-opt').forEach(o=>o.classList.add('dis'));
+  if(ok){S.stats.correct++;S.stats.streak++;S.stats.best=Math.max(S.stats.best,S.stats.streak);btn.classList.add('right')}
+  else{S.stats.streak=0;btn.classList.add('wrong');document.querySelectorAll('#speedOpts .speed-opt').forEach(o=>{if(o.textContent===correct)o.classList.add('right')})}
+  renderStats();
+  setTimeout(()=>{S.idx++;renderMain()},600);
+}
+
+function renderSpeedEnd(el){
+  clearInterval(speedInterval);
+  const ok=S.answers.filter(Boolean).length;const pct=Math.round(ok/S.answers.length*100);
+  const color=pct>=80?'var(--ok)':pct>=50?'var(--coll)':'var(--err)';
+  el.innerHTML=`<div class="card"><div class="card-b tc">
+    <div class="score-big" style="color:${color}">${pct}%</div>
+    <div class="score-sub">${ok}/${S.answers.length} correctas</div>
+    <div class="btn-row">
+      <button class="btn btn-accent" onclick="S.items=[];renderMain()">🔄 Nueva Ronda</button>
+    </div>
+  </div></div>`;
+}
+
+// ═══ CONNECT MODE ═══
+function initConnect(){
+  const pool=getAllPairs(S.cat);
+  const pairs=shuffle(pool).slice(0,8);
+  S.connLeft=shuffle(pairs.map((p,i)=>({text:p.a,pairId:i,cat:p.cat})));
+  S.connRight=shuffle(pairs.map((p,i)=>({text:p.b,pairId:i,cat:p.cat})));
+  S.connSel=null;S.connMatched=new Set();
+}
+
+function renderConnect(el){
+  if(!S.connLeft.length)initConnect();
+  const allDone=S.connMatched.size===S.connLeft.length;
+
+  el.innerHTML=`<div class="card">
+    <div class="card-h">
+      <div class="card-t">Conectar pares <span class="pill" style="background:var(--s3);color:var(--tx3)">${S.connMatched.size}/${S.connLeft.length}</span></div>
+      <button class="btn btn-sm" onclick="S.connLeft=[];initConnect();renderMain()">🔄 Nuevo</button>
+    </div>
+    <div class="card-b">
+      <div class="connect-zone">
+        <div class="connect-col">
+          ${S.connLeft.map((t,i)=>{
+            const m=S.connMatched.has(t.pairId);const cm=CAT_META[t.cat];
+            const sel=S.connSel&&S.connSel.side==='left'&&S.connSel.idx===i;
+            return`<div class="connect-tile ${m?'matched':''} ${sel?'sel':''}" onclick="selectConn(${i},'left',${t.pairId})" style="${m?'':`border-left:3px solid ${cm.color}`}">${t.text}</div>`;
+          }).join('')}
+        </div>
+        <div class="connect-col">
+          ${S.connRight.map((t,i)=>{
+            const m=S.connMatched.has(t.pairId);const cm=CAT_META[t.cat];
+            const sel=S.connSel&&S.connSel.side==='right'&&S.connSel.idx===i;
+            return`<div class="connect-tile ${m?'matched':''} ${sel?'sel':''}" onclick="selectConn(${i},'right',${t.pairId})" style="${m?'':`border-right:3px solid ${cm.color}`}">${t.text}</div>`;
+          }).join('')}
+        </div>
+      </div>
+      ${allDone?`<div class="tc" style="margin-top:20px">
+        <div style="font-size:1.5rem;margin-bottom:8px">🎯</div>
+        <div style="font-size:1rem;font-weight:600;margin-bottom:14px">¡Todos conectados!</div>
+        <div class="btn-row"><button class="btn btn-accent" onclick="S.connLeft=[];initConnect();renderMain()">🔄 Otra Vez</button></div>
+      </div>`:''}
+    </div></div>`;
+}
+
+function selectConn(idx,side,pairId){
+  if(S.connMatched.has(pairId))return;
+
+  if(!S.connSel){
+    S.connSel={idx,side,pairId};renderMain();
+  } else {
+    if(S.connSel.side===side){S.connSel={idx,side,pairId};renderMain();return}
+    S.stats.attempts++;
+    if(S.connSel.pairId===pairId){
+      S.stats.correct++;S.stats.streak++;S.stats.best=Math.max(S.stats.best,S.stats.streak);
+      S.connMatched.add(pairId);S.connSel=null;renderStats();renderMain();
+    } else {
+      S.stats.streak=0;S.connSel=null;renderStats();
+      // Flash wrong
+      const tiles=document.querySelectorAll('.connect-tile');
+      tiles.forEach(t=>t.classList.add('wrong'));
+      setTimeout(()=>{tiles.forEach(t=>t.classList.remove('wrong'));renderMain()},400);
+    }
+  }
+}
+
+// ═══ DATA MODE (JSON import/export) ═══
+function renderData(el){
+  const sampleJSON=JSON.stringify({
+    translation:[{a:"butterfly",b:"mariposa"},{a:"rainbow",b:"arcoíris"}],
+    synonyms:[{a:"clever",b:"smart"}],
+    antonyms:[{a:"brave",b:"cowardly"}],
+    collocations:[{a:"make",b:"an effort"}],
+    phrasal_verbs:[{a:"look into",b:"investigar"}]
+  },null,2);
+
+  const customCount=CATS.reduce((s,k)=>s+(customData[k]||[]).length,0);
+
+  el.innerHTML=`<div class="card">
+    <div class="card-h"><div class="card-t">📦 Importar / Exportar Datos</div></div>
+    <div class="card-b">
+      <p style="font-size:.88rem;color:var(--tx2);margin-bottom:14px;line-height:1.6">
+        Carga un JSON para agregar tus propias palabras. El formato es un objeto con las categorías como claves, cada una con un array de pares <code style="background:var(--s3);padding:1px 6px;border-radius:4px;font-size:11px">{a:"...", b:"..."}</code>.
+      </p>
+
+      <div style="font-family:'Fira Code',monospace;font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px">Pegar JSON</div>
+      <textarea class="json-area" id="jsonInput" placeholder='${sampleJSON}'></textarea>
+      <div class="btn-row" style="margin-top:10px;justify-content:flex-start">
+        <button class="btn btn-accent" onclick="importJSON()">📥 Importar</button>
+        <button class="btn" onclick="exportJSON()">📤 Exportar Todo</button>
+        <button class="btn" onclick="loadSampleJSON()">📋 Ejemplo</button>
+        <button class="btn" onclick="resetCustom()">🗑 Borrar personalizadas</button>
+      </div>
+      <div id="jsonFb" style="margin-top:12px"></div>
+
+      <!-- Also support file upload -->
+      <div style="margin-top:20px">
+        <div style="font-family:'Fira Code',monospace;font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px">O carga un archivo .json</div>
+        <input type="file" accept=".json" id="fileInput" onchange="importFile(event)" style="font-family:inherit;font-size:13px;color:var(--tx2)">
+      </div>
+
+      <div style="margin-top:24px">
+        <div style="font-family:'Fira Code',monospace;font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px">Resumen de datos</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px">
+          ${CATS.map(k=>{const m=CAT_META[k];const base=BASE_DATA[k].pairs.length;const custom=(customData[k]||[]).length;
+            return`<div style="padding:12px;background:var(--s2);border-radius:10px;border:1px solid var(--bd)">
+              <div style="font-size:.85rem;font-weight:600;color:${m.color};margin-bottom:4px">${m.icon} ${m.name}</div>
+              <div style="font-family:'Fira Code',monospace;font-size:12px;color:var(--tx2)">${base} base + <span style="color:var(--ok)">${custom} custom</span></div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+
+      ${customCount>0?`<div style="margin-top:20px">
+        <div style="font-family:'Fira Code',monospace;font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px">Pares personalizados (${customCount})</div>
+        ${CATS.filter(k=>(customData[k]||[]).length>0).map(k=>{const m=CAT_META[k];
+          return`<div style="margin-bottom:8px">
+            <div style="font-size:.82rem;font-weight:600;color:${m.color};margin-bottom:4px">${m.icon} ${m.name}</div>
+            ${(customData[k]||[]).map((p,i)=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--s2);border-radius:8px;margin-bottom:3px;font-size:.82rem">
+              <span style="color:var(--tx)">${p.a}</span><span style="color:var(--tx3)">→</span><span style="color:${m.color}">${p.b}</span>
+              <button style="margin-left:auto;background:none;border:none;color:var(--err);cursor:pointer;font-size:16px" onclick="delCustom('${k}',${i})">×</button>
+            </div>`).join('')}
+          </div>`;
+        }).join('')}
+      </div>`:''}
+    </div></div>`;
+}
+
+function importJSON(){
+  try{
+    const raw=document.getElementById('jsonInput').value.trim();
+    if(!raw){showJsonFb('Pega un JSON primero','var(--err)');return}
+    const data=JSON.parse(raw);
+    let added=0;
+    CATS.forEach(k=>{
+      if(data[k]&&Array.isArray(data[k])){
+        if(!customData[k])customData[k]=[];
+        data[k].forEach(p=>{
+          if(p.a&&p.b){customData[k].push({a:String(p.a),b:String(p.b)});added++}
+        });
+      }
+    });
+    saveCustom();
+    document.getElementById('jsonInput').value='';
+    showJsonFb(`✅ ${added} pares importados correctamente`,'var(--ok)');
+    renderData(document.getElementById('main'));renderStats();renderCats();
+  }catch(e){showJsonFb(`❌ JSON inválido: ${e.message}`,'var(--err)')}
+}
+
+function importFile(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    document.getElementById('jsonInput').value=ev.target.result;
+    importJSON();
+  };
+  reader.readAsText(file);
+}
+
+function exportJSON(){
+  const full={};
+  CATS.forEach(k=>{full[k]=[...BASE_DATA[k].pairs,...(customData[k]||[])]});
+  const blob=new Blob([JSON.stringify(full,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='wordlink-data.json';a.click();
+  URL.revokeObjectURL(url);
+  showJsonFb('📥 Archivo descargado','var(--trans)');
+}
+
+function loadSampleJSON(){
+  document.getElementById('jsonInput').value=JSON.stringify({
+    translation:[
+      {a:"butterfly",b:"mariposa"},{a:"earthquake",b:"terremoto"},{a:"rainbow",b:"arcoíris"},
+      {a:"lightning",b:"relámpago"},{a:"ceiling",b:"techo"},{a:"drawer",b:"cajón"}
+    ],
+    synonyms:[{a:"clever",b:"smart"},{a:"enormous",b:"huge"},{a:"furious",b:"enraged"}],
+    antonyms:[{a:"generous",b:"selfish"},{a:"optimist",b:"pessimist"},{a:"temporary",b:"permanent"}],
+    collocations:[{a:"make",b:"an effort"},{a:"take",b:"advantage"},{a:"lose",b:"track of time"}],
+    phrasal_verbs:[{a:"look into",b:"investigar"},{a:"put up with",b:"tolerar"},{a:"come across",b:"encontrarse con"}]
+  },null,2);
+}
+
+function resetCustom(){
+  if(!confirm('¿Borrar todos los pares personalizados?'))return;
+  customData={};saveCustom();
+  showJsonFb('Datos personalizados borrados','var(--trans)');
+  renderData(document.getElementById('main'));renderStats();renderCats();
+}
+
+function delCustom(cat,idx){
+  if(customData[cat]){customData[cat].splice(idx,1);saveCustom();renderData(document.getElementById('main'));renderStats();renderCats()}
+}
+
+function showJsonFb(msg,color){
+  const el=document.getElementById('jsonFb');
+  el.innerHTML=`<div style="padding:10px 14px;border-radius:10px;background:var(--s2);border:1px solid var(--bd);color:${color};font-size:.85rem;animation:fadeU .3s ease">${msg}</div>`;
+  setTimeout(()=>el.innerHTML='',4000);
+}
+
+// ═══ ACTIONS ═══
+function setMode(m){
+  clearInterval(speedInterval);
+  S.mode=m;S.items=[];S.memCards=[];S.connLeft=[];render();
+}
+function setCat(c){
+  clearInterval(speedInterval);
+  S.cat=c;S.items=[];S.memCards=[];S.connLeft=[];render();
+}
+
+render();
+</script>
+</body>
+</html>

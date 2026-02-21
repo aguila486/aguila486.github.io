@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PicTalk — Describe Images in English</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#04070c;--s1:#0a0f1b;--s2:#101828;--s3:#182038;--s4:#1f2b48;
+  --accent:#f97316;--accent-bg:rgba(249,115,22,.06);--accent-bd:rgba(249,115,22,.22);--accent-glow:rgba(249,115,22,.1);
+  --blue:#3b82f6;--blue-bg:rgba(59,130,246,.06);--blue-bd:rgba(59,130,246,.22);
+  --teal:#14b8a6;--teal-bg:rgba(20,184,166,.06);--teal-bd:rgba(20,184,166,.22);
+  --ok:#22c55e;--ok-bg:rgba(34,197,94,.08);--ok-bd:rgba(34,197,94,.22);
+  --err:#ef4444;--err-bg:rgba(239,68,68,.06);
+  --tx:#e2e8f2;--tx2:#8b97b0;--tx3:#55637b;--bd:rgba(255,255,255,.05);--r:16px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 40% 0%,rgba(249,115,22,.02),transparent 50%),radial-gradient(ellipse at 60% 100%,rgba(20,184,166,.02),transparent 50%);pointer-events:none}
+.app{position:relative;z-index:1;max-width:820px;margin:0 auto;padding:20px 16px 80px}
+
+@keyframes fadeD{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeU{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.15);opacity:.8}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.hdr{text-align:center;margin-bottom:24px;animation:fadeD .5s ease}
+.hdr-tag{display:inline-flex;align-items:center;gap:8px;padding:5px 16px;border-radius:100px;font-family:'Space Mono',monospace;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;color:var(--tx3);border:1px solid var(--bd);background:var(--s1);margin-bottom:12px}
+.hdr h1{font-size:2.4rem;font-weight:800;letter-spacing:-.3px;margin-bottom:4px}
+.hdr h1 .o{color:var(--accent)}.hdr h1 .t{color:var(--teal)}
+.hdr p{color:var(--tx2);font-size:.88rem}
+
+/* Card */
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:16px;animation:fadeU .4s ease}
+.card-h{padding:13px 18px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.card-t{font-family:'Space Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.8px;color:var(--tx3);display:flex;align-items:center;gap:8px}
+.card-b{padding:18px}
+.pill{padding:2px 10px;border-radius:6px;font-size:9px;font-weight:700;letter-spacing:.5px}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border:1px solid var(--bd);border-radius:11px;background:var(--s2);color:var(--tx2);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap}
+.btn:hover{background:var(--s3);color:var(--tx);border-color:rgba(255,255,255,.1)}
+.btn-sm{padding:7px 14px;font-size:12px}
+.btn-accent{background:var(--accent-bg);border-color:var(--accent-bd);color:var(--accent)}
+.btn-accent:hover{background:rgba(249,115,22,.14)}
+.btn-teal{background:var(--teal-bg);border-color:var(--teal-bd);color:var(--teal)}
+.btn-teal:hover{background:rgba(20,184,166,.14)}
+.btn-row{display:flex;gap:7px;justify-content:center;flex-wrap:wrap}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;animation:fadeU .4s ease .06s both}
+@media(max-width:500px){.stats{grid-template-columns:repeat(2,1fr)}}
+.st{padding:11px 6px;background:var(--s1);border:1px solid var(--bd);border-radius:12px;text-align:center}
+.st-n{font-family:'Space Mono',monospace;font-size:1.1rem;font-weight:700}
+.st-l{font-size:8px;color:var(--tx3);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+
+/* ═══ IMAGE ZONE ═══ */
+.img-frame{position:relative;border-radius:14px;overflow:hidden;background:var(--s2);border:1px solid var(--bd);min-height:300px;display:flex;align-items:center;justify-content:center}
+.img-frame img{width:100%;height:auto;display:block;max-height:500px;object-fit:cover;transition:opacity .4s ease}
+.img-frame img.loading{opacity:0}
+.img-frame img.loaded{opacity:1}
+
+.img-loader{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;z-index:2}
+.img-loader.hide{display:none}
+.spinner{width:36px;height:36px;border:3px solid var(--s4);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+.loader-text{font-family:'Space Mono',monospace;font-size:11px;color:var(--tx3)}
+
+.img-overlay{position:absolute;bottom:0;left:0;right:0;padding:10px 14px;background:linear-gradient(transparent,rgba(0,0,0,.7));display:flex;justify-content:space-between;align-items:center}
+.img-credit{font-family:'Space Mono',monospace;font-size:9px;color:rgba(255,255,255,.5)}
+.img-id{font-family:'Space Mono',monospace;font-size:9px;color:rgba(255,255,255,.3)}
+
+/* Category pills */
+.cat-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px;justify-content:center}
+.cat-pill{padding:6px 14px;border-radius:100px;border:1.5px solid var(--bd);background:var(--s1);font-size:11.5px;font-weight:600;cursor:pointer;transition:all .25s;font-family:inherit;color:var(--tx3)}
+.cat-pill:hover{border-color:rgba(255,255,255,.1);color:var(--tx2)}
+.cat-pill.on{background:var(--accent-bg);border-color:var(--accent-bd);color:var(--accent)}
+
+/* ═══ WRITING ZONE ═══ */
+.write-area{width:100%;padding:14px 16px;border:1.5px solid var(--bd);border-radius:12px;background:var(--s2);color:var(--tx);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;line-height:1.8;resize:vertical;min-height:120px;outline:none;transition:border-color .25s}
+.write-area:focus{border-color:var(--accent-bd)}
+.write-area::placeholder{color:var(--tx3)}
+.word-count{font-family:'Space Mono',monospace;font-size:11px;color:var(--tx3);margin-top:6px;text-align:right}
+
+/* Mic */
+.mic-btn{width:52px;height:52px;border-radius:50%;border:2px solid var(--bd);background:var(--s2);color:var(--tx2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;position:relative}
+.mic-btn:hover{background:var(--s3);border-color:rgba(255,255,255,.1);color:var(--tx)}
+.mic-btn.rec{border-color:var(--err);background:var(--err-bg);color:var(--err);animation:pulse 1.5s ease infinite}
+.mic-btn svg{width:22px;height:22px}
+.mic-label{font-family:'Space Mono',monospace;font-size:9px;color:var(--tx3);text-align:center;margin-top:4px}
+
+/* Vocabulary helpers */
+.vocab-section{margin-top:16px}
+.vocab-title{font-family:'Space Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--tx3);margin-bottom:8px}
+.vocab-chips{display:flex;flex-wrap:wrap;gap:5px}
+.v-chip{padding:4px 11px;border-radius:7px;font-size:11.5px;font-weight:600;border:1px solid var(--bd);background:var(--s2);cursor:pointer;transition:all .15s;color:var(--tx2)}
+.v-chip:hover{border-color:rgba(255,255,255,.1);background:var(--s3);color:var(--tx)}
+.v-chip.used{opacity:.4;pointer-events:none}
+
+/* Prompt box */
+.prompt-box{padding:14px 16px;background:var(--s2);border-radius:12px;border:1px solid var(--bd);margin-bottom:14px}
+.prompt-box .p-label{font-family:'Space Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);margin-bottom:6px}
+.prompt-box .p-text{font-size:.9rem;color:var(--tx2);line-height:1.6}
+
+/* History */
+.hist-item{padding:14px;background:var(--s2);border-radius:12px;border:1px solid var(--bd);margin-bottom:8px}
+.hist-item img{width:80px;height:60px;object-fit:cover;border-radius:8px;float:left;margin-right:12px}
+.hist-item .h-text{font-size:.85rem;color:var(--tx2);line-height:1.6}
+.hist-item .h-meta{font-family:'Space Mono',monospace;font-size:9px;color:var(--tx3);margin-top:6px;clear:both}
+
+.tc{text-align:center}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hdr">
+    <div class="hdr-tag">📸 Image Description</div>
+    <h1>Pic<span class="o">Talk</span></h1>
+    <p>Observa la imagen y practica describiendo lo que ves en inglés</p>
+  </div>
+
+  <div class="stats" id="statsBar"></div>
+
+  <!-- Category filter -->
+  <div class="cat-row" id="catRow"></div>
+
+  <!-- Image Card -->
+  <div class="card">
+    <div class="card-h">
+      <div class="card-t">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        Imagen
+        <span class="pill" id="catPill" style="background:var(--s3);color:var(--tx3)"></span>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-accent btn-sm" onclick="loadNewImage()">🔄 Nueva Imagen</button>
+      </div>
+    </div>
+    <div class="card-b">
+      <div class="img-frame" id="imgFrame">
+        <div class="img-loader" id="imgLoader">
+          <div class="spinner"></div>
+          <div class="loader-text">Loading image...</div>
+        </div>
+        <img id="mainImg" alt="Random image for description practice" crossorigin="anonymous">
+        <div class="img-overlay">
+          <span class="img-credit" id="imgCredit"></span>
+          <span class="img-id" id="imgId"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Prompt Card -->
+  <div class="card">
+    <div class="card-h">
+      <div class="card-t">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Tu Descripción
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="text-align:center">
+          <button class="mic-btn" id="micBtn" onclick="toggleMic()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+          </button>
+          <div class="mic-label">Hablar</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-b">
+      <!-- Prompt suggestion -->
+      <div class="prompt-box" id="promptBox">
+        <div class="p-label">💡 Suggestion — Try answering</div>
+        <div class="p-text" id="promptText"></div>
+      </div>
+
+      <textarea class="write-area" id="descInput" placeholder="Describe the image in English...&#10;&#10;What do you see? What colors, objects, people, or actions are in the image? What mood or feeling does it convey?"></textarea>
+      <div class="word-count" id="wordCount">0 words</div>
+
+      <div class="btn-row" style="margin-top:12px">
+        <button class="btn btn-teal" onclick="saveDescription()">💾 Guardar y Nueva</button>
+        <button class="btn btn-sm" onclick="clearDesc()">🗑 Limpiar</button>
+        <button class="btn btn-sm" onclick="togglePrompt()">💡 Otra pregunta</button>
+      </div>
+
+      <!-- Vocabulary helpers -->
+      <div class="vocab-section">
+        <div class="vocab-title">📝 Useful vocabulary — click to insert</div>
+        <div id="vocabArea"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- History -->
+  <div class="card" id="histCard">
+    <div class="card-h">
+      <div class="card-t">📋 Historial</div>
+      <button class="btn btn-sm" onclick="clearHistory()">🗑 Limpiar</button>
+    </div>
+    <div class="card-b" id="histList">
+      <div style="color:var(--tx3);font-size:.88rem;text-align:center">Tus descripciones guardadas aparecerán aquí</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// IMAGE CATEGORIES — using Lorem Picsum + Unsplash Source
+// ═══════════════════════════════════════════════════════════
+const CATEGORIES = [
+  {id:'random',label:'🎲 Random'},
+  {id:'nature',label:'🌿 Nature'},
+  {id:'city',label:'🏙️ City'},
+  {id:'people',label:'👥 People'},
+  {id:'food',label:'🍕 Food'},
+  {id:'animals',label:'🐾 Animals'},
+  {id:'travel',label:'✈️ Travel'},
+  {id:'architecture',label:'🏛️ Architecture'},
+];
+
+// Unsplash source URLs by category (free, no API key)
+function getImageUrl(category) {
+  const w = 800, h = 500;
+  const t = Date.now(); // cache bust
+  if (category === 'random') {
+    return `https://picsum.photos/${w}/${h}?t=${t}`;
+  }
+  // Use Unsplash source for categories
+  return `https://source.unsplash.com/${w}x${h}/?${category}&t=${t}`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// VOCABULARY & PROMPTS
+// ═══════════════════════════════════════════════════════════
+const VOCAB = {
+  position:["in the foreground","in the background","on the left","on the right","in the center","in the corner","at the top","at the bottom","in the middle","next to","behind","in front of","between","above","below","surrounding"],
+  description:["I can see","there is","there are","it looks like","it appears to be","it seems like","the image shows","the photo depicts","this picture captures","it reminds me of"],
+  colors:["bright","dark","colorful","vivid","pale","warm tones","cool tones","vibrant","muted","golden","shadowy","contrasting"],
+  mood:["peaceful","energetic","mysterious","dramatic","calm","busy","lonely","cheerful","melancholic","inspiring","nostalgic","serene","chaotic","romantic","gloomy"],
+  objects:["building","mountain","tree","river","road","sky","cloud","person","animal","car","bridge","flower","boat","window","shadow","light","sun","field"],
+  actions:["walking","standing","sitting","running","looking at","holding","smiling","playing","working","eating","talking","resting","waiting","moving","watching"],
+  adjectives:["beautiful","enormous","tiny","ancient","modern","rustic","elegant","rough","smooth","tall","wide","narrow","crowded","empty","natural","artificial"],
+  connectors:["and","but","also","moreover","in addition","however","meanwhile","furthermore","on the other hand","as well as","while","although","because","therefore"],
+};
+
+const PROMPTS = [
+  "What is the main subject of this image?",
+  "Describe the colors you see in this image.",
+  "What mood or atmosphere does this image create?",
+  "If you were in this place, what would you hear?",
+  "What time of day do you think this was taken? Why?",
+  "Describe the image using at least 5 adjectives.",
+  "What is happening in the foreground vs the background?",
+  "Tell a short story inspired by this image.",
+  "How does this image make you feel? Why?",
+  "What season do you think it is? What clues do you see?",
+  "Describe this image to someone who cannot see it.",
+  "What happened just before this photo was taken?",
+  "What do you think will happen next?",
+  "Compare this scene to a place you know.",
+  "What textures can you identify in this image?",
+  "Describe the lighting in this photograph.",
+  "Who might have taken this photo and why?",
+  "What would change if this was taken at night?",
+  "Use spatial vocabulary: describe where things are positioned.",
+  "Describe this image in exactly three sentences.",
+  "What smells might you experience in this scene?",
+  "Is this a natural or urban scene? What tells you that?",
+  "What would be a good title for this image?",
+  "Describe the contrast between two elements in the image.",
+  "What cultural elements can you identify?",
+];
+
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+let S = {
+  cat: 'random',
+  currentUrl: '',
+  currentThumb: '',
+  usedVocab: new Set(),
+  history: JSON.parse(localStorage.getItem('pictalk_hist') || '[]'),
+  stats: {images:0, words:0, descriptions:0}
+};
+
+// Load stats
+const saved = JSON.parse(localStorage.getItem('pictalk_stats') || 'null');
+if (saved) S.stats = saved;
+
+function saveStats(){ localStorage.setItem('pictalk_stats', JSON.stringify(S.stats)) }
+function saveHistory(){ localStorage.setItem('pictalk_hist', JSON.stringify(S.history.slice(0, 30))) }
+
+// ═══════════════════════════════════════════════════════════
+// IMAGE LOADING
+// ═══════════════════════════════════════════════════════════
+function loadNewImage(){
+  const img = document.getElementById('mainImg');
+  const loader = document.getElementById('imgLoader');
+
+  img.classList.remove('loaded');
+  img.classList.add('loading');
+  loader.classList.remove('hide');
+
+  const url = getImageUrl(S.cat);
+
+  img.onload = () => {
+    img.classList.remove('loading');
+    img.classList.add('loaded');
+    loader.classList.add('hide');
+    S.currentUrl = img.src;
+    S.currentThumb = img.src;
+    S.stats.images++;
+    saveStats();
+    renderStats();
+  };
+
+  img.onerror = () => {
+    // Fallback to picsum
+    const fallback = `https://picsum.photos/800/500?t=${Date.now()}`;
+    img.src = fallback;
+  };
+
+  img.src = url;
+
+  document.getElementById('catPill').textContent = CATEGORIES.find(c => c.id === S.cat)?.label || 'Random';
+  document.getElementById('imgCredit').textContent = S.cat === 'random' ? 'picsum.photos' : 'unsplash.com';
+  document.getElementById('imgId').textContent = `#${S.stats.images + 1}`;
+
+  // New prompt
+  setRandomPrompt();
+  S.usedVocab.clear();
+  renderVocab();
+}
+
+// ═══════════════════════════════════════════════════════════
+// SPEECH RECOGNITION
+// ═══════════════════════════════════════════════════════════
+let recognition = null;
+let isRecording = false;
+
+if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SR();
+  recognition.lang = 'en-US';
+  recognition.interimResults = true;
+  recognition.continuous = true;
+
+  let finalTranscript = '';
+
+  recognition.onresult = (e) => {
+    let interim = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      if (e.results[i].isFinal) {
+        finalTranscript += e.results[i][0].transcript + ' ';
+      } else {
+        interim += e.results[i][0].transcript;
+      }
+    }
+    const ta = document.getElementById('descInput');
+    const existing = ta.value.replace(/\s*\[.*?\]\s*$/, ''); // Remove interim marker
+    if (interim) {
+      ta.value = (existing ? existing + ' ' : '') + finalTranscript + '[' + interim + ']';
+    } else {
+      ta.value = (existing ? existing + ' ' : '') + finalTranscript;
+    }
+    updateWordCount();
+  };
+
+  recognition.onend = () => {
+    if (isRecording) {
+      // Clean up interim markers
+      const ta = document.getElementById('descInput');
+      ta.value = ta.value.replace(/\s*\[.*?\]\s*$/g, '');
+      if (finalTranscript.trim()) {
+        const existing = ta.value.trim();
+        // Already added via onresult
+      }
+      finalTranscript = '';
+      isRecording = false;
+      document.getElementById('micBtn').classList.remove('rec');
+      updateWordCount();
+    }
+  };
+
+  recognition.onerror = (e) => {
+    if (e.error !== 'aborted') console.error('Speech error:', e.error);
+    isRecording = false;
+    document.getElementById('micBtn').classList.remove('rec');
+  };
+}
+
+function toggleMic(){
+  if (!recognition) { alert('Speech Recognition no está disponible en este navegador. Usa Chrome o Edge.'); return; }
+
+  if (isRecording) {
+    recognition.stop();
+    isRecording = false;
+    document.getElementById('micBtn').classList.remove('rec');
+    // Clean interim
+    const ta = document.getElementById('descInput');
+    ta.value = ta.value.replace(/\s*\[.*?\]\s*$/g, '').trim();
+    updateWordCount();
+  } else {
+    recognition.abort(); // Reset
+    const ta = document.getElementById('descInput');
+    // Don't clear — append mode
+    recognition.start();
+    isRecording = true;
+    document.getElementById('micBtn').classList.add('rec');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════
+function render(){
+  renderStats();
+  renderCats();
+  renderVocab();
+  renderHistory();
+}
+
+function renderStats(){
+  document.getElementById('statsBar').innerHTML = `
+    <div class="st"><div class="st-n">${S.stats.images}</div><div class="st-l">Imágenes</div></div>
+    <div class="st"><div class="st-n" style="color:var(--ok)">${S.stats.descriptions}</div><div class="st-l">Descripciones</div></div>
+    <div class="st"><div class="st-n" style="color:var(--accent)">${S.stats.words}</div><div class="st-l">Palabras</div></div>
+    <div class="st"><div class="st-n" style="color:var(--teal)">${S.history.length}</div><div class="st-l">Historial</div></div>`;
+}
+
+function renderCats(){
+  document.getElementById('catRow').innerHTML = CATEGORIES.map(c =>
+    `<button class="cat-pill ${S.cat===c.id?'on':''}" onclick="setCat('${c.id}')">${c.label}</button>`
+  ).join('');
+}
+
+function renderVocab(){
+  const groups = Object.entries(VOCAB);
+  document.getElementById('vocabArea').innerHTML = groups.map(([key, words]) => `
+    <div style="margin-bottom:10px">
+      <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--tx3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">${key}</div>
+      <div class="vocab-chips">
+        ${words.map(w => `<span class="v-chip ${S.usedVocab.has(w)?'used':''}" onclick="insertVocab(this,'${w.replace(/'/g,"\\'")}')">${w}</span>`).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderHistory(){
+  const el = document.getElementById('histList');
+  if (!S.history.length) {
+    el.innerHTML = '<div style="color:var(--tx3);font-size:.88rem;text-align:center">Tus descripciones guardadas aparecerán aquí</div>';
+    return;
+  }
+  el.innerHTML = S.history.slice(0, 15).map((h, i) => `
+    <div class="hist-item">
+      <img src="${h.thumb}" alt="Image ${i+1}" onerror="this.style.display='none'">
+      <div class="h-text">${h.text}</div>
+      <div class="h-meta">${h.words} words · ${h.cat} · ${h.date}</div>
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+// ACTIONS
+// ═══════════════════════════════════════════════════════════
+function setCat(id){
+  S.cat = id;
+  renderCats();
+  loadNewImage();
+}
+
+function setRandomPrompt(){
+  const p = PROMPTS[Math.floor(Math.random() * PROMPTS.length)];
+  document.getElementById('promptText').textContent = p;
+}
+
+function togglePrompt(){ setRandomPrompt() }
+
+function insertVocab(el, word){
+  const ta = document.getElementById('descInput');
+  const pos = ta.selectionStart;
+  const before = ta.value.substring(0, pos);
+  const after = ta.value.substring(pos);
+  const spaceBefore = before && !before.endsWith(' ') && !before.endsWith('\n') ? ' ' : '';
+  const spaceAfter = after && !after.startsWith(' ') && !after.startsWith('\n') ? ' ' : '';
+  ta.value = before + spaceBefore + word + spaceAfter + after;
+  ta.focus();
+  const newPos = pos + spaceBefore.length + word.length + spaceAfter.length;
+  ta.setSelectionRange(newPos, newPos);
+
+  S.usedVocab.add(word);
+  el.classList.add('used');
+  updateWordCount();
+}
+
+function updateWordCount(){
+  const text = document.getElementById('descInput').value.trim();
+  const words = text ? text.split(/\s+/).length : 0;
+  document.getElementById('wordCount').textContent = `${words} word${words !== 1 ? 's' : ''}`;
+}
+
+function saveDescription(){
+  const ta = document.getElementById('descInput');
+  const text = ta.value.trim();
+  if (!text) return;
+
+  const words = text.split(/\s+/).length;
+  S.stats.descriptions++;
+  S.stats.words += words;
+  saveStats();
+
+  S.history.unshift({
+    text: text.length > 300 ? text.substring(0, 300) + '...' : text,
+    thumb: S.currentThumb || '',
+    words,
+    cat: S.cat,
+    date: new Date().toLocaleDateString('es-MX', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})
+  });
+  saveHistory();
+
+  ta.value = '';
+  updateWordCount();
+  S.usedVocab.clear();
+  render();
+  loadNewImage();
+}
+
+function clearDesc(){
+  document.getElementById('descInput').value = '';
+  updateWordCount();
+  S.usedVocab.clear();
+  renderVocab();
+}
+
+function clearHistory(){
+  if (!confirm('¿Borrar todo el historial?')) return;
+  S.history = [];
+  saveHistory();
+  renderHistory();
+}
+
+// Input listener for word count
+document.getElementById('descInput').addEventListener('input', updateWordCount);
+
+// Init
+render();
+loadNewImage();
+</script>
+</body>
+</html>

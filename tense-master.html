@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tense Master — 12 English Tenses</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Source+Code+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#060811;--s1:#0b0e19;--s2:#101524;--s3:#171e33;--s4:#1f2940;
+  /* Tense group colors */
+  --present:#22d3ee;--present-bg:rgba(34,211,238,.06);--present-bd:rgba(34,211,238,.2);
+  --past:#f472b6;--past-bg:rgba(244,114,182,.06);--past-bd:rgba(244,114,182,.2);
+  --future:#a78bfa;--future-bg:rgba(167,139,250,.06);--future-bd:rgba(167,139,250,.2);
+  --accent:#818cf8;--accent-bg:rgba(129,140,248,.06);--accent-bd:rgba(129,140,248,.2);
+  --ok:#22c55e;--ok-bg:rgba(34,197,94,.08);--ok-bd:rgba(34,197,94,.2);
+  --err:#ef4444;--err-bg:rgba(239,68,68,.08);--err-bd:rgba(239,68,68,.2);
+  --warn:#eab308;
+  --tx:#e2e7f1;--tx2:#8b96ae;--tx3:#55627a;--bd:rgba(255,255,255,.05);--r:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 0%,rgba(34,211,238,.02),transparent 50%),radial-gradient(ellipse at 80% 0%,rgba(244,114,182,.02),transparent 50%),radial-gradient(ellipse at 50% 100%,rgba(167,139,250,.02),transparent 50%);pointer-events:none}
+.app{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:20px 16px 80px}
+
+@keyframes fadeD{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeU{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pop{from{transform:scale(.88);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+.hdr{text-align:center;margin-bottom:26px;animation:fadeD .5s ease}
+.hdr-tag{display:inline-flex;align-items:center;gap:8px;padding:5px 15px;border-radius:100px;font-family:'Source Code Pro',monospace;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--tx3);border:1px solid var(--bd);background:var(--s1);margin-bottom:12px}
+.hdr-dots{display:flex;gap:4px}.hdr-dots span{width:8px;height:8px;border-radius:50%}
+.hdr h1{font-size:2.2rem;font-weight:900;letter-spacing:-.5px;margin-bottom:4px}
+.hdr p{color:var(--tx2);font-size:.88rem;font-weight:400}
+
+/* Tabs */
+.tabs{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;margin-bottom:14px;animation:fadeU .4s ease .1s both}
+.tab{padding:8px 18px;border-radius:100px;border:1.5px solid var(--bd);background:var(--s1);color:var(--tx3);font-size:12.5px;font-weight:600;cursor:pointer;transition:all .25s;font-family:inherit}
+.tab:hover{border-color:rgba(255,255,255,.1);color:var(--tx2)}
+.tab.on{background:var(--s3);color:var(--tx);border-color:rgba(255,255,255,.12)}
+
+/* Tense filters */
+.tfilters{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;margin-bottom:20px;animation:fadeU .4s ease .15s both}
+.tf{padding:6px 14px;border-radius:100px;border:1.5px solid var(--bd);background:var(--s1);font-size:11.5px;font-weight:600;cursor:pointer;transition:all .25s;font-family:inherit}
+.tf:hover{border-color:rgba(255,255,255,.1)}
+.tf .dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px}
+
+/* Card */
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:16px;animation:fadeU .4s ease}
+.card-h{padding:14px 20px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.card-t{font-family:'Source Code Pro',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.8px;color:var(--tx3);display:flex;align-items:center;gap:8px}
+.card-b{padding:20px}
+.pill{padding:2px 9px;border-radius:6px;font-size:9px;font-weight:700;letter-spacing:.5px}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border:1px solid var(--bd);border-radius:12px;background:var(--s2);color:var(--tx2);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
+.btn:hover{background:var(--s3);color:var(--tx);border-color:rgba(255,255,255,.1)}
+.btn-sm{padding:7px 14px;font-size:12px;border-radius:10px}
+.btn-accent{background:var(--accent-bg);border-color:var(--accent-bd);color:var(--accent)}
+.btn-accent:hover{background:rgba(129,140,248,.14)}
+.btn-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.speak-btn{width:30px;height:30px;border-radius:8px;border:1px solid var(--bd);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--tx3);transition:all .15s;flex-shrink:0}
+.speak-btn:hover{color:var(--tx);background:var(--s3)}
+.speak-btn svg{width:14px;height:14px}
+
+/* ═══ TENSE CARD (Study) ═══ */
+.tense-card{padding:20px;background:var(--s2);border-radius:14px;border:1px solid var(--bd);margin-bottom:16px;transition:all .2s}
+.tense-card:hover{border-color:rgba(255,255,255,.07)}
+.tc-top{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.tc-badge{padding:4px 12px;border-radius:8px;font-family:'Source Code Pro',monospace;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px}
+.tc-name{font-size:1.15rem;font-weight:800}
+.tc-name-es{font-size:.82rem;color:var(--tx2);font-weight:400}
+
+/* Structure box */
+.struct-box{padding:14px 16px;background:var(--s1);border-radius:10px;border:1px solid var(--bd);margin-bottom:12px;font-family:'Source Code Pro',monospace;font-size:13px;line-height:1.8}
+.struct-box .s-label{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--tx3);margin-bottom:4px;font-weight:600}
+.s-pos{color:var(--ok);font-weight:600}
+.s-neg{color:var(--err);font-weight:600}
+.s-q{color:var(--warn);font-weight:600}
+
+/* Timeline */
+.timeline{display:flex;align-items:center;justify-content:center;gap:0;margin:14px 0;position:relative;height:36px}
+.tl-line{flex:1;height:2px;background:var(--s4)}
+.tl-dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--tx3);background:var(--s1);flex-shrink:0;position:relative;z-index:1}
+.tl-dot.active{border-width:3px}
+.tl-label{position:absolute;top:22px;font-family:'Source Code Pro',monospace;font-size:9px;color:var(--tx3);white-space:nowrap}
+.tl-zone{position:absolute;top:-6px;height:14px;border-radius:4px;opacity:.2}
+
+/* Usage list */
+.usage-list{margin:12px 0}
+.usage-item{display:flex;gap:8px;align-items:flex-start;padding:6px 0;font-size:.88rem;color:var(--tx2);line-height:1.5}
+.usage-item::before{content:'▸';color:var(--tx3);flex-shrink:0;margin-top:1px}
+
+/* Signal words */
+.signals{display:flex;flex-wrap:wrap;gap:5px;margin:10px 0}
+.signal{padding:3px 10px;border-radius:6px;font-size:11px;font-weight:600;border:1px solid var(--bd);background:var(--s3)}
+
+/* Examples */
+.ex-list{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.ex-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--s1);border-radius:10px;border:1px solid var(--bd);cursor:pointer;transition:all .15s}
+.ex-item:hover{background:var(--s3);border-color:rgba(255,255,255,.08)}
+.ex-en{font-size:.9rem;font-weight:600;flex:1}
+.ex-es{font-size:.82rem;color:var(--tx2);flex:1}
+
+/* ═══ PRACTICE ═══ */
+.prog{display:flex;gap:3px;margin-bottom:16px}
+.prog-d{height:5px;flex:1;border-radius:5px;background:var(--s3);transition:background .3s}
+.prog-d.ok{background:var(--ok)}.prog-d.err{background:var(--err)}.prog-d.cur{background:var(--tx3)}
+
+.p-sentence{font-size:1.15rem;font-weight:600;line-height:1.7;margin:12px 0;text-align:center}
+.p-es{font-size:.95rem;color:var(--tx2);text-align:center;margin-bottom:16px}
+.p-blank{display:inline;border-bottom:2.5px solid var(--accent);min-width:120px;padding:2px 4px;color:var(--accent);font-weight:700;transition:all .3s}
+.p-blank.ok-a{border-color:var(--ok);color:var(--ok)}
+.p-blank.err-a{border-color:var(--err);color:var(--err);animation:shake .35s ease}
+
+.p-input{width:100%;max-width:500px;padding:12px 16px;border:2px solid var(--bd);border-radius:12px;background:var(--s2);color:var(--tx);font-family:inherit;font-size:15px;outline:none;transition:border-color .25s;text-align:center;margin:0 auto;display:block}
+.p-input:focus{border-color:var(--accent-bd)}
+.p-input::placeholder{color:var(--tx3)}
+.p-input.ok-b{border-color:var(--ok);background:var(--ok-bg)}
+.p-input.err-b{border-color:var(--err);animation:shake .35s ease}
+
+.fb-box{padding:12px 16px;border-radius:12px;font-size:13px;line-height:1.6;margin:12px 0;display:none;animation:pop .3s ease}
+.fb-box.show{display:block}
+.fb-box.ok{background:var(--ok-bg);border:1px solid var(--ok-bd);color:#86efac}
+.fb-box.no{background:var(--err-bg);border:1px solid var(--err-bd);color:#fca5a5}
+
+/* Quiz options */
+.q-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}
+@media(max-width:500px){.q-grid{grid-template-columns:1fr}}
+.q-opt{padding:12px 16px;border:1.5px solid var(--bd);border-radius:12px;background:var(--s2);color:var(--tx2);font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;text-align:left;font-family:inherit}
+.q-opt:hover:not(.dis){border-color:rgba(255,255,255,.12);color:var(--tx);background:var(--s3)}
+.q-opt.right{border-color:var(--ok);background:var(--ok-bg);color:var(--ok)}
+.q-opt.wrong{border-color:var(--err);background:var(--err-bg);color:var(--err)}
+.q-opt.reveal{border-color:var(--ok-bd);color:var(--ok)}
+.q-opt.dis{pointer-events:none}
+
+/* Stats */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:500px){.stats-row{grid-template-columns:repeat(2,1fr)}}
+.stat{text-align:center;padding:14px 8px;background:var(--s2);border-radius:12px;border:1px solid var(--bd)}
+.stat-n{font-family:'Source Code Pro',monospace;font-size:1.3rem;font-weight:700}
+.stat-l{font-size:9px;color:var(--tx3);text-transform:uppercase;letter-spacing:1px;margin-top:3px}
+
+.score-big{font-family:'Source Code Pro',monospace;font-size:3.5rem;font-weight:700;text-align:center}
+.score-sub{text-align:center;color:var(--tx2);margin-bottom:20px}
+
+/* Add */
+.add-input{width:100%;padding:10px 14px;border:1px solid var(--bd);border-radius:10px;background:var(--s2);color:var(--tx);font-family:inherit;font-size:13px;outline:none;transition:border-color .2s;margin-bottom:8px}
+.add-input:focus{border-color:var(--accent-bd)}
+.add-input::placeholder{color:var(--tx3)}
+.add-row{display:flex;gap:8px;margin-bottom:8px}
+
+.hidden{display:none!important}
+.tc{text-align:center}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--s3);border-radius:5px}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hdr">
+    <div class="hdr-tag">
+      <div class="hdr-dots"><span style="background:var(--present)"></span><span style="background:var(--past)"></span><span style="background:var(--future)"></span></div>
+      12 Tenses
+    </div>
+    <h1>Tense <span style="color:var(--present)">Mas</span><span style="color:var(--past)">t</span><span style="color:var(--future)">er</span></h1>
+    <p>Domina los 12 tiempos verbales del inglés</p>
+  </div>
+
+  <div class="tabs" id="modeTabs"></div>
+  <div class="tfilters" id="tenseFilters"></div>
+  <div id="main"></div>
+
+  <div class="card" style="margin-top:8px">
+    <div class="card-h"><div class="card-t">Session</div></div>
+    <div class="card-b"><div class="stats-row" id="statsRow"></div></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// 12 TENSES DATABASE
+// ═══════════════════════════════════════════════════════════
+const TENSES = {
+  present_simple: {
+    name:"Present Simple", es:"Presente Simple", group:"present",
+    structure:{pos:"Subject + verb (base / +s)",neg:"Subject + don't/doesn't + verb",q:"Do/Does + subject + verb?"},
+    uses:["Hábitos y rutinas","Verdades generales y hechos","Horarios y programas fijos","Estados permanentes"],
+    signals:["always","usually","often","sometimes","never","every day","on Mondays","twice a week"],
+    timeline:{zone:[30,50],dot:50,label:"routine/habit"},
+    examples:[
+      {en:"I drink coffee every morning.",es:"Tomo café cada mañana.",blank:"I ___ coffee every morning.",answer:"drink"},
+      {en:"She works at a hospital.",es:"Ella trabaja en un hospital.",blank:"She ___ at a hospital.",answer:"works"},
+      {en:"They don't eat meat.",es:"Ellos no comen carne.",blank:"They ___ eat meat.",answer:"don't"},
+      {en:"Does he speak English?",es:"¿Él habla inglés?",blank:"___ he speak English?",answer:"Does"},
+      {en:"The sun rises in the east.",es:"El sol sale por el este.",blank:"The sun ___ in the east.",answer:"rises"},
+      {en:"Water boils at 100 degrees.",es:"El agua hierve a 100 grados.",blank:"Water ___ at 100 degrees.",answer:"boils"},
+      {en:"I usually wake up at seven.",es:"Usualmente me despierto a las siete.",blank:"I usually ___ up at seven.",answer:"wake"},
+      {en:"She never arrives late.",es:"Ella nunca llega tarde.",blank:"She never ___ late.",answer:"arrives"},
+    ]
+  },
+  present_continuous: {
+    name:"Present Continuous", es:"Presente Continuo", group:"present",
+    structure:{pos:"Subject + am/is/are + verb-ing",neg:"Subject + am/is/are + not + verb-ing",q:"Am/Is/Are + subject + verb-ing?"},
+    uses:["Acciones que ocurren ahora mismo","Situaciones temporales","Planes futuros confirmados","Tendencias y cambios"],
+    signals:["now","right now","at the moment","currently","today","this week","look!","listen!"],
+    timeline:{zone:[48,52],dot:50,label:"happening now"},
+    examples:[
+      {en:"I am studying English right now.",es:"Estoy estudiando inglés ahora mismo.",blank:"I ___ studying English right now.",answer:"am"},
+      {en:"She is working from home today.",es:"Ella está trabajando desde casa hoy.",blank:"She ___ working from home today.",answer:"is"},
+      {en:"They are not listening to me.",es:"Ellos no me están escuchando.",blank:"They are ___ listening to me.",answer:"not"},
+      {en:"Are you coming to the party?",es:"¿Vienes a la fiesta?",blank:"___ you coming to the party?",answer:"Are"},
+      {en:"The weather is getting colder.",es:"El clima se está poniendo más frío.",blank:"The weather is ___ colder.",answer:"getting"},
+      {en:"We are moving to a new house next month.",es:"Nos mudamos a una casa nueva el próximo mes.",blank:"We ___ moving to a new house next month.",answer:"are"},
+      {en:"He is always complaining about everything.",es:"Él siempre se está quejando de todo.",blank:"He is always ___ about everything.",answer:"complaining"},
+      {en:"I am reading a really good book.",es:"Estoy leyendo un libro muy bueno.",blank:"I am ___ a really good book.",answer:"reading"},
+    ]
+  },
+  present_perfect: {
+    name:"Present Perfect", es:"Presente Perfecto", group:"present",
+    structure:{pos:"Subject + have/has + past participle",neg:"Subject + haven't/hasn't + past participle",q:"Have/Has + subject + past participle?"},
+    uses:["Experiencias de vida (sin tiempo específico)","Acciones pasadas con resultado presente","Acciones que empezaron en el pasado y continúan","Noticias recientes"],
+    signals:["ever","never","already","yet","just","since","for","recently","so far","lately"],
+    timeline:{zone:[20,50],dot:50,label:"past → now"},
+    examples:[
+      {en:"I have visited Paris twice.",es:"He visitado París dos veces.",blank:"I ___ visited Paris twice.",answer:"have"},
+      {en:"She has never eaten sushi.",es:"Ella nunca ha comido sushi.",blank:"She has ___ eaten sushi.",answer:"never"},
+      {en:"They haven't finished the project yet.",es:"Ellos no han terminado el proyecto todavía.",blank:"They ___ finished the project yet.",answer:"haven't"},
+      {en:"Have you ever been to Japan?",es:"¿Alguna vez has estado en Japón?",blank:"___ you ever been to Japan?",answer:"Have"},
+      {en:"He has just arrived home.",es:"Él acaba de llegar a casa.",blank:"He has ___ arrived home.",answer:"just"},
+      {en:"We have known each other for ten years.",es:"Nos conocemos desde hace diez años.",blank:"We have ___ each other for ten years.",answer:"known"},
+      {en:"I have already seen that movie.",es:"Ya he visto esa película.",blank:"I have ___ seen that movie.",answer:"already"},
+      {en:"She has lived here since 2019.",es:"Ella ha vivido aquí desde 2019.",blank:"She has ___ here since 2019.",answer:"lived"},
+    ]
+  },
+  present_perfect_continuous: {
+    name:"Present Perfect Continuous", es:"Presente Perfecto Continuo", group:"present",
+    structure:{pos:"Subject + have/has + been + verb-ing",neg:"Subject + haven't/hasn't + been + verb-ing",q:"Have/Has + subject + been + verb-ing?"},
+    uses:["Acciones que empezaron en el pasado y siguen ahora","Énfasis en la duración de una actividad","Actividades recientes con evidencia presente"],
+    signals:["for","since","all day","all morning","lately","recently","how long"],
+    timeline:{zone:[25,52],dot:50,label:"started past → still going"},
+    examples:[
+      {en:"I have been waiting for two hours.",es:"He estado esperando por dos horas.",blank:"I have ___ waiting for two hours.",answer:"been"},
+      {en:"She has been studying since morning.",es:"Ella ha estado estudiando desde la mañana.",blank:"She has been ___ since morning.",answer:"studying"},
+      {en:"It has been raining all day.",es:"Ha estado lloviendo todo el día.",blank:"It has ___ raining all day.",answer:"been"},
+      {en:"How long have you been learning English?",es:"¿Cuánto tiempo llevas aprendiendo inglés?",blank:"How long have you been ___ English?",answer:"learning"},
+      {en:"They have been working on this project for months.",es:"Ellos han estado trabajando en este proyecto por meses.",blank:"They have been ___ on this project for months.",answer:"working"},
+      {en:"I have been feeling tired lately.",es:"Me he estado sintiendo cansado últimamente.",blank:"I have been ___ tired lately.",answer:"feeling"},
+    ]
+  },
+  past_simple: {
+    name:"Past Simple", es:"Pasado Simple", group:"past",
+    structure:{pos:"Subject + verb-ed / irregular past",neg:"Subject + didn't + verb (base)",q:"Did + subject + verb (base)?"},
+    uses:["Acciones completadas en el pasado","Secuencia de eventos pasados","Hábitos pasados que ya no existen","Momento específico en el pasado"],
+    signals:["yesterday","last week","ago","in 2020","when I was young","this morning","then","at that time"],
+    timeline:{zone:[20,40],dot:30,label:"completed past"},
+    examples:[
+      {en:"I went to the store yesterday.",es:"Fui a la tienda ayer.",blank:"I ___ to the store yesterday.",answer:"went"},
+      {en:"She didn't call me last night.",es:"Ella no me llamó anoche.",blank:"She ___ call me last night.",answer:"didn't"},
+      {en:"Did you enjoy the movie?",es:"¿Disfrutaste la película?",blank:"___ you enjoy the movie?",answer:"Did"},
+      {en:"They moved to London in 2018.",es:"Se mudaron a Londres en 2018.",blank:"They ___ to London in 2018.",answer:"moved"},
+      {en:"He bought a new car last month.",es:"Él compró un auto nuevo el mes pasado.",blank:"He ___ a new car last month.",answer:"bought"},
+      {en:"We had a great time at the party.",es:"La pasamos muy bien en la fiesta.",blank:"We ___ a great time at the party.",answer:"had"},
+      {en:"I studied French when I was in college.",es:"Estudié francés cuando estaba en la universidad.",blank:"I ___ French when I was in college.",answer:"studied"},
+      {en:"She broke her arm last summer.",es:"Ella se rompió el brazo el verano pasado.",blank:"She ___ her arm last summer.",answer:"broke"},
+    ]
+  },
+  past_continuous: {
+    name:"Past Continuous", es:"Pasado Continuo", group:"past",
+    structure:{pos:"Subject + was/were + verb-ing",neg:"Subject + wasn't/weren't + verb-ing",q:"Was/Were + subject + verb-ing?"},
+    uses:["Acción en progreso en un momento del pasado","Contexto o escenario para otra acción","Dos acciones simultáneas en el pasado","Acciones interrumpidas"],
+    signals:["while","when","at that time","at 8pm yesterday","as","all night","during"],
+    timeline:{zone:[20,40],dot:30,label:"ongoing in past"},
+    examples:[
+      {en:"I was sleeping when you called.",es:"Estaba durmiendo cuando llamaste.",blank:"I ___ sleeping when you called.",answer:"was"},
+      {en:"They were playing football at 5pm.",es:"Estaban jugando fútbol a las 5pm.",blank:"They ___ playing football at 5pm.",answer:"were"},
+      {en:"She wasn't listening to the teacher.",es:"Ella no estaba escuchando al profesor.",blank:"She ___ listening to the teacher.",answer:"wasn't"},
+      {en:"Were you studying when I arrived?",es:"¿Estabas estudiando cuando llegué?",blank:"___ you studying when I arrived?",answer:"Were"},
+      {en:"While I was cooking, he was cleaning.",es:"Mientras yo cocinaba, él limpiaba.",blank:"While I was cooking, he ___ cleaning.",answer:"was"},
+      {en:"It was raining when we left the house.",es:"Estaba lloviendo cuando salimos de casa.",blank:"It was ___ when we left the house.",answer:"raining"},
+    ]
+  },
+  past_perfect: {
+    name:"Past Perfect", es:"Pasado Perfecto (Pluscuamperfecto)", group:"past",
+    structure:{pos:"Subject + had + past participle",neg:"Subject + hadn't + past participle",q:"Had + subject + past participle?"},
+    uses:["Acción anterior a otra acción pasada","Experiencias antes de un momento del pasado","Causa de una situación pasada","Arrepentimientos con 'wish'"],
+    signals:["before","after","by the time","already","when","until","never...before","once"],
+    timeline:{zone:[10,28],dot:20,label:"before another past"},
+    examples:[
+      {en:"I had already eaten when she arrived.",es:"Ya había comido cuando ella llegó.",blank:"I ___ already eaten when she arrived.",answer:"had"},
+      {en:"She had never seen snow before that trip.",es:"Ella nunca había visto nieve antes de ese viaje.",blank:"She had never ___ snow before that trip.",answer:"seen"},
+      {en:"They hadn't finished when the bell rang.",es:"No habían terminado cuando sonó la campana.",blank:"They ___ finished when the bell rang.",answer:"hadn't"},
+      {en:"Had you studied English before you moved?",es:"¿Habías estudiado inglés antes de mudarte?",blank:"___ you studied English before you moved?",answer:"Had"},
+      {en:"By the time we arrived, the movie had started.",es:"Para cuando llegamos, la película había empezado.",blank:"By the time we arrived, the movie had ___.",answer:"started"},
+      {en:"I wished I had studied harder.",es:"Deseé haber estudiado más.",blank:"I wished I ___ studied harder.",answer:"had"},
+    ]
+  },
+  past_perfect_continuous: {
+    name:"Past Perfect Continuous", es:"Pasado Perfecto Continuo", group:"past",
+    structure:{pos:"Subject + had + been + verb-ing",neg:"Subject + hadn't + been + verb-ing",q:"Had + subject + been + verb-ing?"},
+    uses:["Duración de una acción antes de otra acción pasada","Causa de un estado pasado (evidencia)","Actividades prolongadas que terminaron en el pasado"],
+    signals:["for","since","all day","before","when","by the time","how long"],
+    timeline:{zone:[8,28],dot:20,label:"duration before past event"},
+    examples:[
+      {en:"I had been waiting for an hour when the bus finally came.",es:"Había estado esperando una hora cuando el bus finalmente llegó.",blank:"I had ___ waiting for an hour when the bus finally came.",answer:"been"},
+      {en:"She had been working there for five years before she quit.",es:"Había estado trabajando ahí por cinco años antes de renunciar.",blank:"She had been ___ there for five years before she quit.",answer:"working"},
+      {en:"They had been living in Paris before they moved to London.",es:"Habían estado viviendo en París antes de mudarse a Londres.",blank:"They had been ___ in Paris before they moved to London.",answer:"living"},
+      {en:"He was tired because he had been running.",es:"Estaba cansado porque había estado corriendo.",blank:"He was tired because he had been ___.",answer:"running"},
+      {en:"How long had you been studying before the exam?",es:"¿Cuánto tiempo habías estado estudiando antes del examen?",blank:"How long had you been ___ before the exam?",answer:"studying"},
+    ]
+  },
+  future_simple: {
+    name:"Future Simple", es:"Futuro Simple", group:"future",
+    structure:{pos:"Subject + will + verb (base)",neg:"Subject + won't + verb (base)",q:"Will + subject + verb (base)?"},
+    uses:["Decisiones espontáneas","Predicciones","Promesas y ofertas","Hechos futuros"],
+    signals:["tomorrow","next week","in the future","soon","I think","probably","I promise","I hope"],
+    timeline:{zone:[55,80],dot:70,label:"future action"},
+    examples:[
+      {en:"I will help you with that.",es:"Te ayudaré con eso.",blank:"I ___ help you with that.",answer:"will"},
+      {en:"She won't be at the meeting tomorrow.",es:"Ella no estará en la reunión mañana.",blank:"She ___ be at the meeting tomorrow.",answer:"won't"},
+      {en:"Will you come to the party?",es:"¿Vendrás a la fiesta?",blank:"___ you come to the party?",answer:"Will"},
+      {en:"I think it will rain later.",es:"Creo que lloverá más tarde.",blank:"I think it ___ rain later.",answer:"will"},
+      {en:"They will probably arrive late.",es:"Probablemente llegarán tarde.",blank:"They will ___ arrive late.",answer:"probably"},
+      {en:"I will never forget this day.",es:"Nunca olvidaré este día.",blank:"I will never ___ this day.",answer:"forget"},
+      {en:"Don't worry, I will call you tonight.",es:"No te preocupes, te llamaré esta noche.",blank:"Don't worry, I ___ call you tonight.",answer:"will"},
+      {en:"She will be a great doctor someday.",es:"Ella será una gran doctora algún día.",blank:"She will ___ a great doctor someday.",answer:"be"},
+    ]
+  },
+  future_continuous: {
+    name:"Future Continuous", es:"Futuro Continuo", group:"future",
+    structure:{pos:"Subject + will + be + verb-ing",neg:"Subject + won't + be + verb-ing",q:"Will + subject + be + verb-ing?"},
+    uses:["Acción en progreso en un momento futuro","Planes y rutinas futuras","Preguntas corteses sobre planes"],
+    signals:["at this time tomorrow","at 8pm tonight","this time next week","all day tomorrow","when you arrive"],
+    timeline:{zone:[60,75],dot:68,label:"ongoing at future point"},
+    examples:[
+      {en:"I will be sleeping at midnight.",es:"Estaré durmiendo a la medianoche.",blank:"I will be ___ at midnight.",answer:"sleeping"},
+      {en:"This time tomorrow, she will be flying to Paris.",es:"A esta hora mañana, estará volando a París.",blank:"This time tomorrow, she will be ___ to Paris.",answer:"flying"},
+      {en:"They won't be working on Saturday.",es:"Ellos no estarán trabajando el sábado.",blank:"They won't be ___ on Saturday.",answer:"working"},
+      {en:"Will you be using the car tonight?",es:"¿Estarás usando el auto esta noche?",blank:"Will you be ___ the car tonight?",answer:"using"},
+      {en:"We will be waiting for you at the airport.",es:"Estaremos esperándote en el aeropuerto.",blank:"We will be ___ for you at the airport.",answer:"waiting"},
+      {en:"He will be studying all evening.",es:"Estará estudiando toda la noche.",blank:"He will be ___ all evening.",answer:"studying"},
+    ]
+  },
+  future_perfect: {
+    name:"Future Perfect", es:"Futuro Perfecto", group:"future",
+    structure:{pos:"Subject + will + have + past participle",neg:"Subject + won't + have + past participle",q:"Will + subject + have + past participle?"},
+    uses:["Acción completada antes de un momento futuro","Logros esperados para cierto momento","Duración hasta un punto futuro"],
+    signals:["by tomorrow","by next year","by the time","before","by then","in two years"],
+    timeline:{zone:[55,72],dot:72,label:"completed before future point"},
+    examples:[
+      {en:"I will have finished the report by Friday.",es:"Habré terminado el informe para el viernes.",blank:"I will have ___ the report by Friday.",answer:"finished"},
+      {en:"She will have graduated by next summer.",es:"Se habrá graduado para el próximo verano.",blank:"She will have ___ by next summer.",answer:"graduated"},
+      {en:"They won't have arrived by then.",es:"No habrán llegado para entonces.",blank:"They won't have ___ by then.",answer:"arrived"},
+      {en:"Will you have completed the course by December?",es:"¿Habrás completado el curso para diciembre?",blank:"Will you have ___ the course by December?",answer:"completed"},
+      {en:"By 2030, I will have lived here for twenty years.",es:"Para 2030, habré vivido aquí por veinte años.",blank:"By 2030, I will have ___ here for twenty years.",answer:"lived"},
+      {en:"He will have saved enough money by then.",es:"Habrá ahorrado suficiente dinero para entonces.",blank:"He will have ___ enough money by then.",answer:"saved"},
+    ]
+  },
+  future_perfect_continuous: {
+    name:"Future Perfect Continuous", es:"Futuro Perfecto Continuo", group:"future",
+    structure:{pos:"Subject + will + have + been + verb-ing",neg:"Subject + won't + have + been + verb-ing",q:"Will + subject + have + been + verb-ing?"},
+    uses:["Duración de una acción que continuará hasta un momento futuro","Enfatizar cuánto tiempo habrá durado algo"],
+    signals:["for","by","by the time","by next year","when"],
+    timeline:{zone:[40,75],dot:72,label:"duration up to future point"},
+    examples:[
+      {en:"By June, I will have been studying English for two years.",es:"Para junio, habré estado estudiando inglés por dos años.",blank:"By June, I will have been ___ English for two years.",answer:"studying"},
+      {en:"She will have been working here for ten years next month.",es:"Habrá estado trabajando aquí por diez años el próximo mes.",blank:"She will have been ___ here for ten years next month.",answer:"working"},
+      {en:"By midnight, they will have been driving for twelve hours.",es:"Para la medianoche, habrán estado manejando por doce horas.",blank:"By midnight, they will have been ___ for twelve hours.",answer:"driving"},
+      {en:"He will have been teaching for thirty years when he retires.",es:"Habrá estado enseñando por treinta años cuando se retire.",blank:"He will have been ___ for thirty years when he retires.",answer:"teaching"},
+      {en:"Next week, we will have been living here for a year.",es:"La próxima semana, habremos estado viviendo aquí por un año.",blank:"Next week, we will have been ___ here for a year.",answer:"living"},
+    ]
+  }
+};
+
+const TENSE_KEYS=Object.keys(TENSES);
+const GROUP_COLORS={present:{c:'var(--present)',bg:'var(--present-bg)',bd:'var(--present-bd)'},past:{c:'var(--past)',bg:'var(--past-bg)',bd:'var(--past-bd)'},future:{c:'var(--future)',bg:'var(--future-bg)',bd:'var(--future-bd)'}};
+
+// Custom phrases from localStorage
+let customExamples=JSON.parse(localStorage.getItem('tensemaster_custom')||'{}');
+function saveCustom(){localStorage.setItem('tensemaster_custom',JSON.stringify(customExamples))}
+function getExamples(key){return[...TENSES[key].examples,...(customExamples[key]||[])]}
+function getAllExamples(filter){
+  const keys=filter==='all'?TENSE_KEYS:TENSE_KEYS.filter(k=>TENSES[k].group===filter||k===filter);
+  return keys.flatMap(k=>getExamples(k).map(e=>({...e,tense:k})));
+}
+
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+const MODES=[{id:'study',label:'📚 Estudiar'},{id:'write',label:'✍️ Escribir'},{id:'quiz',label:'🧠 Quiz'},{id:'identify',label:'🔍 Identificar'},{id:'add',label:'➕ Agregar'}];
+const FILTERS=['all','present','past','future'];
+
+let S={mode:'study',filter:'all',tenseKey:null,
+  items:[],idx:0,answers:[],answered:false,
+  stats:{attempts:0,correct:0,streak:0,best:0}};
+
+// ═══════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════
+const shuffle=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]]}return b};
+function speak(text,rate=0.85){
+  if(!('speechSynthesis' in window))return;speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=rate;
+  const voices=speechSynthesis.getVoices();
+  const v=voices.find(v=>v.lang.startsWith('en')&&v.name.includes('Google'))||voices.find(v=>v.lang.startsWith('en-US'))||voices.find(v=>v.lang.startsWith('en'));
+  if(v)u.voice=v;speechSynthesis.speak(u);
+}
+const spkSVG=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>`;
+const arrowR=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>`;
+
+// ═══════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════
+function render(){renderTabs();renderFilters();renderMain();renderStats()}
+
+function renderTabs(){
+  document.getElementById('modeTabs').innerHTML=MODES.map(m=>`<button class="tab ${S.mode===m.id?'on':''}" onclick="setMode('${m.id}')">${m.label}</button>`).join('');
+}
+
+function renderFilters(){
+  const el=document.getElementById('tenseFilters');
+  if(S.mode==='add'){el.innerHTML='';return}
+
+  let html=FILTERS.map(f=>{
+    const active=S.filter===f;
+    if(f==='all') return `<button class="tf" style="${active?'border-color:rgba(255,255,255,.15);background:var(--s3);color:var(--tx)':''}" onclick="setFilter('all')">Todos</button>`;
+    const gc=GROUP_COLORS[f];
+    return `<button class="tf" style="${active?`border-color:${gc.bd};background:${gc.bg};color:${gc.c}`:''}" onclick="setFilter('${f}')"><span class="dot" style="background:${gc.c}"></span>${f==='present'?'Present':f==='past'?'Past':'Future'}</button>`;
+  }).join('');
+
+  // Individual tense filters for practice modes
+  if(S.mode!=='study'){
+    const keys=S.filter==='all'?TENSE_KEYS:TENSE_KEYS.filter(k=>TENSES[k].group===S.filter);
+    html+=keys.map(k=>{const t=TENSES[k];const gc=GROUP_COLORS[t.group];
+      return `<button class="tf" style="${S.tenseKey===k?`border-color:${gc.bd};background:${gc.bg};color:${gc.c};font-size:10px`:'font-size:10px'}" onclick="setTenseKey('${k}')">${t.name}</button>`;
+    }).join('');
+  }
+  el.innerHTML=html;
+}
+
+function renderMain(){
+  const el=document.getElementById('main');
+  switch(S.mode){
+    case 'study':renderStudy(el);break;
+    case 'write':renderWrite(el);break;
+    case 'quiz':renderQuiz(el);break;
+    case 'identify':renderIdentify(el);break;
+    case 'add':renderAdd(el);break;
+  }
+}
+
+function renderStats(){
+  const pct=S.stats.attempts?Math.round(S.stats.correct/S.stats.attempts*100):0;
+  document.getElementById('statsRow').innerHTML=`
+    <div class="stat"><div class="stat-n">${S.stats.attempts}</div><div class="stat-l">Intentos</div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--ok)">${S.stats.correct}</div><div class="stat-l">Correctos</div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--accent)">${S.stats.streak}</div><div class="stat-l">Racha</div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--present)">${pct}%</div><div class="stat-l">Precisión</div></div>`;
+}
+
+// ══ STUDY MODE ══
+function renderStudy(el){
+  const keys=S.filter==='all'?TENSE_KEYS:TENSE_KEYS.filter(k=>TENSES[k].group===S.filter);
+  el.innerHTML=keys.map(k=>{
+    const t=TENSES[k];const gc=GROUP_COLORS[t.group];const exs=getExamples(k);
+    return `<div class="tense-card">
+      <div class="tc-top">
+        <span class="tc-badge" style="background:${gc.bg};color:${gc.c};border:1px solid ${gc.bd}">${t.group}</span>
+        <div><div class="tc-name" style="color:${gc.c}">${t.name}</div><div class="tc-name-es">${t.es}</div></div>
+      </div>
+      <div class="struct-box">
+        <div class="s-label">Estructura</div>
+        <div class="s-pos">✅ ${t.structure.pos}</div>
+        <div class="s-neg">❌ ${t.structure.neg}</div>
+        <div class="s-q">❓ ${t.structure.q}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:0;margin:12px 0;padding:0 10px">
+        <div style="flex:1;height:2px;background:var(--s4);position:relative">
+          <div style="position:absolute;height:6px;top:-2px;border-radius:3px;background:${gc.c};opacity:.25;left:${t.timeline.zone[0]}%;width:${t.timeline.zone[1]-t.timeline.zone[0]}%"></div>
+          <div style="position:absolute;width:10px;height:10px;border-radius:50%;background:${gc.c};top:-4px;left:${t.timeline.dot}%;transform:translateX(-50%)"></div>
+          <div style="position:absolute;left:0;top:12px;font-family:'Source Code Pro',monospace;font-size:8px;color:var(--tx3)">PAST</div>
+          <div style="position:absolute;left:50%;top:12px;transform:translateX(-50%);font-family:'Source Code Pro',monospace;font-size:8px;color:var(--tx3)">NOW</div>
+          <div style="position:absolute;right:0;top:12px;font-family:'Source Code Pro',monospace;font-size:8px;color:var(--tx3)">FUTURE</div>
+          <div style="position:absolute;width:2px;height:14px;background:var(--tx3);left:50%;top:-6px;opacity:.3"></div>
+        </div>
+      </div>
+      <div style="margin-top:24px">
+        <div style="font-family:'Source Code Pro',monospace;font-size:9px;color:var(--tx3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px">Usos</div>
+        <div class="usage-list">${t.uses.map(u=>`<div class="usage-item">${u}</div>`).join('')}</div>
+      </div>
+      <div>
+        <div style="font-family:'Source Code Pro',monospace;font-size:9px;color:var(--tx3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px">Signal Words</div>
+        <div class="signals">${t.signals.map(s=>`<span class="signal" style="color:${gc.c}">${s}</span>`).join('')}</div>
+      </div>
+      <div>
+        <div style="font-family:'Source Code Pro',monospace;font-size:9px;color:var(--tx3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px">Ejemplos (${exs.length})</div>
+        <div class="ex-list">
+          ${exs.slice(0,5).map(ex=>`<div class="ex-item" onclick="speak('${ex.en.replace(/'/g,"\\'")}')">
+            <button class="speak-btn" onclick="event.stopPropagation();speak('${ex.en.replace(/'/g,"\\'")}',0.8)">${spkSVG}</button>
+            <div class="ex-en" style="color:${gc.c}">${ex.en}</div>
+            <div class="ex-es">${ex.es}</div>
+          </div>`).join('')}
+          ${exs.length>5?`<div style="font-size:.8rem;color:var(--tx3);text-align:center;padding:6px">+${exs.length-5} más</div>`:''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ══ WRITE MODE ══
+function initWrite(){
+  const pool=getAllExamples(S.tenseKey||S.filter);
+  S.items=shuffle(pool).slice(0,12);S.idx=0;S.answers=[];S.answered=false;
+}
+
+function renderWrite(el){
+  if(!S.items.length)initWrite();
+  if(!S.items.length){el.innerHTML='<div class="card"><div class="card-b tc"><p style="color:var(--tx2)">No hay frases disponibles.</p></div></div>';return}
+  if(S.idx>=S.items.length){renderEnd(el);return}
+
+  const ex=S.items[S.idx];const t=TENSES[ex.tense];const gc=GROUP_COLORS[t.group];
+  const progress=S.items.map((_,i)=>{if(i<S.answers.length)return S.answers[i]?'ok':'err';if(i===S.idx)return'cur';return''});
+  const parts=ex.blank.split('___');
+
+  el.innerHTML=`<div class="card">
+    <div class="card-h">
+      <div class="card-t">Completa el espacio <span class="pill" style="background:${gc.bg};color:${gc.c}">${t.name}</span></div>
+      <span class="card-t">${S.idx+1}/${S.items.length}</span>
+    </div>
+    <div class="card-b">
+      <div class="prog">${progress.map(p=>`<div class="prog-d ${p}"></div>`).join('')}</div>
+      <div class="p-es">${ex.es}</div>
+      <div class="p-sentence">${parts[0]}<span class="p-blank" id="blankSpan">______</span>${parts[1]||''}</div>
+      <div class="tc">
+        <input class="p-input" id="writeInput" placeholder="Escribe la palabra que falta..." autocomplete="off" spellcheck="false"
+          onkeydown="if(event.key==='Enter'&&!S.answered)checkWrite()">
+      </div>
+      <div class="fb-box" id="writeFb"></div>
+      <div class="btn-row" style="margin-top:12px">
+        <button class="btn btn-accent" id="checkBtn" onclick="checkWrite()">✓ Verificar</button>
+        <button class="btn hidden" id="nextBtn" onclick="S.idx++;S.answered=false;renderMain()">Siguiente ${arrowR}</button>
+        <button class="btn btn-sm" onclick="speak('${ex.en.replace(/'/g,"\\'")}',0.8)">${spkSVG} Escuchar</button>
+      </div>
+    </div></div>`;
+  setTimeout(()=>document.getElementById('writeInput')?.focus(),100);
+}
+
+function checkWrite(){
+  if(S.answered)return;S.answered=true;S.stats.attempts++;
+  const ex=S.items[S.idx];
+  const input=document.getElementById('writeInput');
+  const val=input.value.trim().toLowerCase();
+  const alts=ex.answer.toLowerCase().split('/').map(s=>s.trim());
+  const ok=alts.includes(val);
+  S.answers.push(ok);
+
+  const blank=document.getElementById('blankSpan');
+  const fb=document.getElementById('writeFb');fb.classList.add('show');
+
+  if(ok){
+    S.stats.correct++;S.stats.streak++;S.stats.best=Math.max(S.stats.best,S.stats.streak);
+    blank.textContent=ex.answer;blank.classList.add('ok-a');input.classList.add('ok-b');
+    fb.className='fb-box show ok';fb.innerHTML=`✅ ¡Correcto! — <strong>"${ex.en}"</strong>`;
+  }else{
+    S.stats.streak=0;
+    blank.textContent=ex.answer;blank.classList.add('err-a');input.classList.add('err-b');
+    setTimeout(()=>{blank.classList.remove('err-a');blank.classList.add('ok-a')},400);
+    fb.className='fb-box show no';fb.innerHTML=`❌ Escribiste "<strong>${val||'(vacío)'}</strong>" — Correcto: <strong>${ex.answer}</strong>`;
+  }
+  document.getElementById('checkBtn').classList.add('hidden');
+  document.getElementById('nextBtn').classList.remove('hidden');
+  renderStats();
+}
+
+// ══ QUIZ MODE ══
+function initQuiz(){
+  const pool=getAllExamples(S.tenseKey||S.filter);
+  S.items=shuffle(pool).slice(0,10);S.idx=0;S.answers=[];S.answered=false;
+}
+
+function renderQuiz(el){
+  if(!S.items.length)initQuiz();
+  if(!S.items.length){el.innerHTML='<div class="card"><div class="card-b tc"><p style="color:var(--tx2)">No hay frases.</p></div></div>';return}
+  if(S.idx>=S.items.length){renderEnd(el);return}
+
+  const ex=S.items[S.idx];const t=TENSES[ex.tense];const gc=GROUP_COLORS[t.group];
+  const progress=S.items.map((_,i)=>{if(i<S.answers.length)return S.answers[i]?'ok':'err';if(i===S.idx)return'cur';return''});
+
+  let opts=[ex.answer];
+  const allAns=[...new Set(getAllExamples('all').map(e=>e.answer))];
+  const pool=shuffle(allAns.filter(a=>a!==ex.answer));
+  for(const p of pool){if(opts.length>=4)break;if(!opts.includes(p))opts.push(p)}
+  opts=shuffle(opts);
+
+  el.innerHTML=`<div class="card">
+    <div class="card-h">
+      <div class="card-t">Quiz <span class="pill" style="background:${gc.bg};color:${gc.c}">${t.name}</span></div>
+      <span class="card-t">${S.idx+1}/${S.items.length}</span>
+    </div>
+    <div class="card-b">
+      <div class="prog">${progress.map(p=>`<div class="prog-d ${p}"></div>`).join('')}</div>
+      <div class="p-es">${ex.es}</div>
+      <div class="p-sentence">${ex.blank.replace('___','<span style="color:var(--accent);font-weight:800">______</span>')}</div>
+      <div class="q-grid" id="qOpts">
+        ${opts.map(o=>`<button class="q-opt" data-correct="${o===ex.answer}" onclick="answerQuiz(this,${o===ex.answer},'${ex.answer.replace(/'/g,"\\'")}')">${o}</button>`).join('')}
+      </div>
+      <div class="fb-box" id="qFb"></div>
+      <div class="btn-row">
+        <button class="btn hidden" id="nextBtn" onclick="S.idx++;S.answered=false;renderMain()">Siguiente ${arrowR}</button>
+        <button class="btn btn-sm" onclick="speak('${ex.en.replace(/'/g,"\\'")}',0.8)">${spkSVG} Escuchar</button>
+      </div>
+    </div></div>`;
+}
+
+function answerQuiz(btn,ok,correct){
+  if(S.answered)return;S.answered=true;S.stats.attempts++;S.answers.push(ok);
+  document.querySelectorAll('#qOpts .q-opt').forEach(o=>{o.classList.add('dis');if(o.dataset.correct==='true')o.classList.add('reveal')});
+  btn.classList.add(ok?'right':'wrong');
+  const fb=document.getElementById('qFb');fb.classList.add('show');
+  if(ok){S.stats.correct++;S.stats.streak++;S.stats.best=Math.max(S.stats.best,S.stats.streak);fb.className='fb-box show ok';fb.textContent='✅ ¡Correcto!'}
+  else{S.stats.streak=0;fb.className='fb-box show no';fb.innerHTML=`❌ Correcto: <strong>${correct}</strong>`}
+  document.getElementById('nextBtn').classList.remove('hidden');renderStats();
+}
+
+// ══ IDENTIFY MODE ══
+function initIdentify(){
+  const pool=getAllExamples(S.filter==='all'?'all':S.filter);
+  S.items=shuffle(pool).slice(0,10);S.idx=0;S.answers=[];S.answered=false;
+}
+
+function renderIdentify(el){
+  if(!S.items.length)initIdentify();
+  if(!S.items.length){el.innerHTML='<div class="card"><div class="card-b tc"><p style="color:var(--tx2)">No hay frases.</p></div></div>';return}
+  if(S.idx>=S.items.length){renderEnd(el);return}
+
+  const ex=S.items[S.idx];const t=TENSES[ex.tense];const gc=GROUP_COLORS[t.group];
+  const progress=S.items.map((_,i)=>{if(i<S.answers.length)return S.answers[i]?'ok':'err';if(i===S.idx)return'cur';return''});
+
+  let opts=[ex.tense];
+  const others=shuffle(TENSE_KEYS.filter(k=>k!==ex.tense));
+  for(const o of others){if(opts.length>=4)break;opts.push(o)}
+  opts=shuffle(opts);
+
+  el.innerHTML=`<div class="card">
+    <div class="card-h"><div class="card-t">¿Qué tiempo verbal es?</div><span class="card-t">${S.idx+1}/${S.items.length}</span></div>
+    <div class="card-b">
+      <div class="prog">${progress.map(p=>`<div class="prog-d ${p}"></div>`).join('')}</div>
+      <div class="p-sentence" style="font-size:1.2rem;padding:16px;background:var(--s2);border-radius:12px;border:1px solid var(--bd)">${ex.en}</div>
+      <div class="p-es">${ex.es}</div>
+      <div class="q-grid" id="idOpts">
+        ${opts.map(o=>{const ot=TENSES[o];const ogc=GROUP_COLORS[ot.group];
+          return`<button class="q-opt" data-key="${o}" data-correct="${o===ex.tense}" onclick="answerIdentify(this,'${o}','${ex.tense}')">
+            <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${ogc.c};margin-right:6px"></span>${ot.name}
+          </button>`}).join('')}
+      </div>
+      <div class="fb-box" id="idFb"></div>
+      <div class="btn-row">
+        <button class="btn hidden" id="nextBtn" onclick="S.idx++;S.answered=false;renderMain()">Siguiente ${arrowR}</button>
+        <button class="btn btn-sm" onclick="speak('${ex.en.replace(/'/g,"\\'")}',0.8)">${spkSVG} Escuchar</button>
+      </div>
+    </div></div>`;
+}
+
+function answerIdentify(btn,picked,correct){
+  if(S.answered)return;S.answered=true;S.stats.attempts++;
+  const ok=picked===correct;S.answers.push(ok);
+  document.querySelectorAll('#idOpts .q-opt').forEach(o=>{o.classList.add('dis');if(o.dataset.key===correct)o.classList.add('reveal')});
+  btn.classList.add(ok?'right':'wrong');
+  const fb=document.getElementById('idFb');fb.classList.add('show');
+  if(ok){S.stats.correct++;S.stats.streak++;S.stats.best=Math.max(S.stats.best,S.stats.streak);fb.className='fb-box show ok';fb.textContent='✅ ¡Correcto!'}
+  else{S.stats.streak=0;fb.className='fb-box show no';fb.innerHTML=`❌ Es: <strong>${TENSES[correct].name}</strong> (${TENSES[correct].es})`}
+  document.getElementById('nextBtn').classList.remove('hidden');renderStats();
+}
+
+// ══ END SCREEN ══
+function renderEnd(el){
+  const ok=S.answers.filter(Boolean).length;
+  const pct=Math.round(ok/S.answers.length*100);
+  const color=pct>=80?'var(--ok)':pct>=50?'var(--warn)':'var(--err)';
+  el.innerHTML=`<div class="card"><div class="card-b tc">
+    <div class="score-big" style="color:${color}">${pct}%</div>
+    <div class="score-sub">${ok}/${S.answers.length} correctas</div>
+    <div class="btn-row">
+      <button class="btn btn-accent" onclick="S.items=[];renderMain()">🔄 Nueva Ronda</button>
+      <button class="btn" onclick="setMode('study')">📚 Repasar</button>
+    </div>
+  </div></div>`;
+}
+
+// ══ ADD PHRASES ══
+function renderAdd(el){
+  el.innerHTML=`<div class="card">
+    <div class="card-h"><div class="card-t">➕ Agregar Frases a Cualquier Tiempo</div></div>
+    <div class="card-b">
+      <p style="font-size:.88rem;color:var(--tx2);margin-bottom:16px;line-height:1.6">Agrega tus propias frases de ejemplo. La frase con <code style="background:var(--s3);padding:1px 6px;border-radius:4px;font-size:11px">___</code> marca dónde va la palabra a completar.</p>
+      <div>
+        <div style="font-size:.8rem;color:var(--tx3);margin-bottom:6px;font-weight:600">TIEMPO VERBAL</div>
+        <select class="add-input" id="addTense" style="cursor:pointer">
+          ${TENSE_KEYS.map(k=>`<option value="${k}">${TENSES[k].name} (${TENSES[k].es})</option>`).join('')}
+        </select>
+      </div>
+      <div class="add-row">
+        <input class="add-input" id="addEn" placeholder="English: She has been working all day.">
+        <input class="add-input" id="addEs" placeholder="Español: Ella ha estado trabajando todo el día.">
+      </div>
+      <div class="add-row">
+        <input class="add-input" id="addBlank" placeholder="Con espacio: She has ___ working all day." style="flex:2">
+        <input class="add-input" id="addAnswer" placeholder="Respuesta: been" style="flex:1">
+      </div>
+      <button class="btn btn-accent" onclick="addPhrase()" style="margin-top:4px">➕ Agregar Frase</button>
+
+      <div style="margin-top:20px">
+        <div style="font-size:.8rem;color:var(--tx3);margin-bottom:6px;font-weight:600">AGREGAR VARIAS (formato: inglés | español | frase_con___ | respuesta)</div>
+        <textarea class="add-input" id="addBulk" rows="4" style="width:100%;resize:vertical;font-size:12px;line-height:1.8" placeholder="She is reading a book. | Ella está leyendo un libro. | She ___ reading a book. | is"></textarea>
+        <div class="btn-row" style="margin-top:8px;justify-content:flex-start">
+          <button class="btn btn-accent" onclick="addBulk()">📋 Agregar Todas</button>
+          <button class="btn" onclick="resetCustom()">🔄 Borrar personalizadas</button>
+        </div>
+      </div>
+      <div id="addFb" style="margin-top:12px"></div>
+
+      <div style="margin-top:24px">
+        <div style="font-size:.8rem;color:var(--tx3);margin-bottom:8px;font-weight:600">FRASES PERSONALIZADAS (${Object.values(customExamples).flat().length})</div>
+        ${TENSE_KEYS.filter(k=>(customExamples[k]||[]).length>0).map(k=>{
+          const t=TENSES[k];const gc=GROUP_COLORS[t.group];
+          return `<div style="margin-bottom:10px">
+            <div style="font-size:.82rem;font-weight:600;color:${gc.c};margin-bottom:4px">${t.name}</div>
+            ${(customExamples[k]||[]).map((ex,i)=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--s2);border-radius:8px;margin-bottom:4px;font-size:.82rem">
+              <span style="flex:1;color:var(--tx2)">${ex.en}</span>
+              <button class="speak-btn" style="width:24px;height:24px" onclick="deleteCustom('${k}',${i})"><span style="font-size:14px;color:var(--err)">×</span></button>
+            </div>`).join('')}
+          </div>`;
+        }).join('')||'<div style="color:var(--tx3);font-size:.85rem">No hay frases personalizadas aún.</div>'}
+      </div>
+    </div>
+  </div>`;
+}
+
+function addPhrase(){
+  const tense=document.getElementById('addTense').value;
+  const en=document.getElementById('addEn').value.trim();
+  const es=document.getElementById('addEs').value.trim();
+  const blank=document.getElementById('addBlank').value.trim();
+  const answer=document.getElementById('addAnswer').value.trim();
+  if(!en||!es||!blank||!answer){showAddFb('Completa todos los campos','var(--err)');return}
+  if(!blank.includes('___')){showAddFb('La frase debe tener ___ donde va la respuesta','var(--err)');return}
+  if(!customExamples[tense])customExamples[tense]=[];
+  customExamples[tense].push({en,es,blank,answer});
+  saveCustom();
+  ['addEn','addEs','addBlank','addAnswer'].forEach(id=>document.getElementById(id).value='');
+  showAddFb(`✅ Frase agregada al ${TENSES[tense].name}`,'var(--ok)');
+  renderAdd(document.getElementById('main'));
+}
+
+function addBulk(){
+  const tense=document.getElementById('addTense').value;
+  const raw=document.getElementById('addBulk').value.trim();
+  if(!raw){showAddFb('Pega frases en el formato indicado','var(--err)');return}
+  if(!customExamples[tense])customExamples[tense]=[];
+  let added=0;
+  raw.split('\n').filter(l=>l.trim()).forEach(line=>{
+    const p=line.split('|').map(s=>s.trim());
+    if(p.length>=4&&p[2].includes('___')){
+      customExamples[tense].push({en:p[0],es:p[1],blank:p[2],answer:p[3]});added++;
+    }
+  });
+  saveCustom();document.getElementById('addBulk').value='';
+  showAddFb(`✅ ${added} frases agregadas al ${TENSES[tense].name}`,'var(--ok)');
+  renderAdd(document.getElementById('main'));
+}
+
+function deleteCustom(tense,idx){
+  if(customExamples[tense]){customExamples[tense].splice(idx,1);saveCustom();renderAdd(document.getElementById('main'))}
+}
+
+function resetCustom(){
+  if(!confirm('¿Borrar todas las frases personalizadas?'))return;
+  customExamples={};saveCustom();renderAdd(document.getElementById('main'));
+}
+
+function showAddFb(msg,color){
+  const el=document.getElementById('addFb');
+  el.innerHTML=`<div style="padding:10px 14px;border-radius:10px;background:var(--s2);border:1px solid var(--bd);color:${color};font-size:.85rem">${msg}</div>`;
+  setTimeout(()=>el.innerHTML='',4000);
+}
+
+// ══ ACTIONS ══
+function setMode(m){S.mode=m;S.items=[];S.tenseKey=null;render()}
+function setFilter(f){S.filter=f;S.items=[];S.tenseKey=null;render()}
+function setTenseKey(k){S.tenseKey=S.tenseKey===k?null:k;S.items=[];render()}
+
+if('speechSynthesis' in window)speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices();
+render();
+</script>
+</body>
+</html>

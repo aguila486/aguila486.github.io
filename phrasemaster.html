@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PhraseMaster — 500 English Phrases</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#04060d;--s1:#0a0e1b;--s2:#0f1527;--s3:#162038;--s4:#1d2a48;
+  --c1:#22d3ee;--c1b:rgba(34,211,238,.06);--c1d:rgba(34,211,238,.22);
+  --c2:#a78bfa;--c2b:rgba(167,139,250,.06);--c2d:rgba(167,139,250,.22);
+  --c3:#f472b6;--c3b:rgba(244,114,182,.06);--c3d:rgba(244,114,182,.22);
+  --c4:#fbbf24;--c4b:rgba(251,191,36,.06);--c4d:rgba(251,191,36,.22);
+  --c5:#34d399;--c5b:rgba(52,211,153,.06);--c5d:rgba(52,211,153,.22);
+  --c6:#fb923c;--c6b:rgba(251,146,60,.06);--c6d:rgba(251,146,60,.22);
+  --c7:#60a5fa;--c7b:rgba(96,165,250,.06);--c7d:rgba(96,165,250,.22);
+  --c8:#e879f9;--c8b:rgba(232,121,249,.06);--c8d:rgba(232,121,249,.22);
+  --c9:#f87171;--c9b:rgba(248,113,113,.06);--c9d:rgba(248,113,113,.22);
+  --c10:#38bdf8;--c10b:rgba(56,189,248,.06);--c10d:rgba(56,189,248,.22);
+  --ok:#22c55e;--okb:rgba(34,197,94,.1);--okd:rgba(34,197,94,.22);
+  --err:#ef4444;--errb:rgba(239,68,68,.07);--errd:rgba(239,68,68,.22);
+  --tx:#e2e8f2;--tx2:#8b97b0;--tx3:#55637b;--bd:rgba(255,255,255,.05);--r:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 25% 0%,rgba(34,211,238,.015),transparent 50%),radial-gradient(ellipse at 75% 100%,rgba(167,139,250,.015),transparent 50%);pointer-events:none}
+.app{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:18px 14px 70px}
+
+@keyframes fadeD{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeU{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pop{from{transform:scale(.86);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes flip{0%{transform:rotateY(0)}50%{transform:rotateY(90deg)}100%{transform:rotateY(0)}}
+
+.hdr{text-align:center;margin-bottom:20px;animation:fadeD .5s ease}
+.hdr-tag{display:inline-flex;align-items:center;gap:8px;padding:4px 14px;border-radius:100px;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:2.5px;color:var(--tx3);border:1px solid var(--bd);background:var(--s1);margin-bottom:10px}
+.hdr h1{font-size:2.1rem;font-weight:800;letter-spacing:-.3px;margin-bottom:3px}
+.hdr p{color:var(--tx2);font-size:.85rem}
+
+.sts{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:14px;animation:fadeU .4s ease .05s both}
+@media(max-width:550px){.sts{grid-template-columns:repeat(3,1fr)}}
+.st{padding:10px 4px;background:var(--s1);border:1px solid var(--bd);border-radius:11px;text-align:center}
+.st-n{font-family:'IBM Plex Mono',monospace;font-size:1.05rem;font-weight:700}
+.st-l{font-size:7.5px;color:var(--tx3);text-transform:uppercase;letter-spacing:.8px;margin-top:1px}
+
+.tabs{display:flex;gap:4px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;animation:fadeU .3s ease .08s both}
+.tab{padding:7px 15px;border-radius:100px;border:1.5px solid var(--bd);background:var(--s1);color:var(--tx3);font-size:11.5px;font-weight:600;cursor:pointer;transition:all .22s;font-family:inherit}
+.tab:hover{border-color:rgba(255,255,255,.1);color:var(--tx2)}
+.tab.on{background:var(--s3);color:var(--tx);border-color:rgba(255,255,255,.12)}
+
+.cats{display:flex;gap:4px;justify-content:center;flex-wrap:wrap;margin-bottom:14px;animation:fadeU .3s ease .1s both}
+.ct{padding:5px 12px;border-radius:100px;border:1.5px solid var(--bd);background:var(--s1);font-size:10.5px;font-weight:600;cursor:pointer;transition:all .22s;font-family:inherit;color:var(--tx3)}
+.ct:hover{border-color:rgba(255,255,255,.08)}
+
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:14px;animation:fadeU .35s ease}
+.card-h{padding:11px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap}
+.card-t{font-family:'IBM Plex Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:1.6px;color:var(--tx3);display:flex;align-items:center;gap:7px}
+.card-b{padding:16px}
+.pill{padding:2px 9px;border-radius:6px;font-size:8.5px;font-weight:700;letter-spacing:.4px}
+
+.btn{display:inline-flex;align-items:center;gap:5px;padding:8px 16px;border:1px solid var(--bd);border-radius:10px;background:var(--s2);color:var(--tx2);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
+.btn:hover{background:var(--s3);color:var(--tx);border-color:rgba(255,255,255,.1)}
+.btn-sm{padding:6px 12px;font-size:11px}
+.btn-ok{background:var(--okb);border-color:var(--okd);color:var(--ok)}
+.btn-ok:hover{background:rgba(34,197,94,.18)}
+.btn-row{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+
+.spk{width:34px;height:34px;border-radius:9px;border:1px solid var(--bd);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--tx3);transition:all .15s;flex-shrink:0}
+.spk:hover{color:var(--tx);background:var(--s3)}
+.spk svg{width:15px;height:15px}
+.spk-big{width:48px;height:48px;border-radius:50%;border-width:1.5px}
+.spk-big svg{width:20px;height:20px}
+
+/* Progress */
+.prog{display:flex;gap:3px;margin-bottom:12px}
+.prog-d{height:4px;flex:1;border-radius:4px;background:var(--s3);transition:background .3s}
+.prog-d.ok{background:var(--ok)}.prog-d.err{background:var(--err)}.prog-d.cur{background:var(--tx3)}
+
+/* ═══ BROWSE ═══ */
+.srch{width:100%;padding:10px 14px;border:1.5px solid var(--bd);border-radius:10px;background:var(--s2);color:var(--tx);font-family:inherit;font-size:13px;outline:none;transition:border-color .2s;margin-bottom:12px}
+.srch:focus{border-color:var(--c1d)}
+.srch::placeholder{color:var(--tx3)}
+
+.ph-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--s2);border-radius:10px;border:1px solid var(--bd);margin-bottom:5px;transition:all .15s;cursor:default}
+.ph-item:hover{border-color:rgba(255,255,255,.06);background:var(--s3)}
+.ph-en{font-size:.88rem;font-weight:600;flex:1}
+.ph-es{font-size:.82rem;color:var(--tx2);flex:1}
+.ph-lvl{font-family:'IBM Plex Mono',monospace;font-size:8px;font-weight:700;padding:2px 7px;border-radius:5px;flex-shrink:0}
+.ph-cat{font-size:9px;color:var(--tx3);flex-shrink:0;min-width:60px;text-align:right}
+.ph-star{cursor:pointer;font-size:14px;flex-shrink:0;opacity:.4;transition:opacity .15s}
+.ph-star:hover,.ph-star.on{opacity:1}
+.pages{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px}
+
+/* ═══ FLASHCARD ═══ */
+.fc-card{min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;background:var(--s2);border-radius:16px;border:1.5px solid var(--bd);cursor:pointer;transition:all .2s;text-align:center;user-select:none;position:relative}
+.fc-card:hover{border-color:rgba(255,255,255,.08)}
+.fc-label{font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--tx3);margin-bottom:10px}
+.fc-main{font-size:1.35rem;font-weight:700;line-height:1.6}
+.fc-sub{font-size:.92rem;color:var(--tx2);margin-top:10px;line-height:1.5}
+.fc-hint{font-size:.82rem;color:var(--tx3);margin-top:12px;font-style:italic}
+.fc-flip{position:absolute;bottom:12px;right:14px;font-size:9px;color:var(--tx3);font-family:'IBM Plex Mono',monospace}
+
+/* ═══ QUIZ ═══ */
+.q-prompt{font-size:1.15rem;font-weight:700;text-align:center;line-height:1.6;margin:10px 0 14px;padding:16px;background:var(--s2);border-radius:12px;border:1px solid var(--bd)}
+.q-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:12px 0}
+@media(max-width:480px){.q-grid{grid-template-columns:1fr}}
+.q-opt{padding:12px 14px;border:1.5px solid var(--bd);border-radius:11px;background:var(--s2);color:var(--tx2);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;text-align:left;font-family:inherit;line-height:1.4}
+.q-opt:hover:not(.dis){border-color:rgba(255,255,255,.1);color:var(--tx);background:var(--s3)}
+.q-opt.right{border-color:var(--ok);background:var(--okb);color:var(--ok)}
+.q-opt.wrong{border-color:var(--err);background:var(--errb);color:var(--err)}
+.q-opt.dis{pointer-events:none}
+
+/* ═══ WRITE ═══ */
+.w-input{width:100%;padding:12px 14px;border:2px solid var(--bd);border-radius:11px;background:var(--s2);color:var(--tx);font-family:inherit;font-size:14px;outline:none;transition:border-color .2s;text-align:center}
+.w-input:focus{border-color:var(--c2d)}
+.w-input::placeholder{color:var(--tx3)}
+.w-input.ok{border-color:var(--ok);background:var(--okb)}
+.w-input.bad{border-color:var(--err);animation:shake .35s ease}
+.fb{padding:10px 14px;border-radius:10px;font-size:12.5px;line-height:1.5;margin:10px 0;display:none;animation:pop .3s ease}
+.fb.show{display:block}
+.fb.ok{background:var(--okb);border:1px solid var(--okd);color:#86efac}
+.fb.no{background:var(--errb);border:1px solid var(--errd);color:#fca5a5}
+
+/* ═══ DATA ═══ */
+.json-area{width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:10px;background:var(--s2);color:var(--tx);font-family:'IBM Plex Mono',monospace;font-size:10.5px;line-height:1.7;resize:vertical;min-height:110px;outline:none}
+.json-area:focus{border-color:var(--c1d)}
+
+.score-big{font-family:'IBM Plex Mono',monospace;font-size:3rem;font-weight:700;text-align:center}
+.score-sub{text-align:center;color:var(--tx2);margin:2px 0 16px}
+
+.hidden{display:none!important}
+.tc{text-align:center}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--s3);border-radius:4px}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hdr">
+    <div class="hdr-tag">📖 500 Phrases</div>
+    <h1><span style="color:var(--c1)">Phrase</span>Master</h1>
+    <p>Aprende 500 frases esenciales del inglés con audio y práctica</p>
+  </div>
+  <div class="sts" id="stats"></div>
+  <div class="tabs" id="modes"></div>
+  <div class="cats" id="cats"></div>
+  <div id="main"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// 500 PHRASES DATABASE
+// ═══════════════════════════════════════════════════════════
+const CATS_META = {
+  greetings:{name:"Greetings & Basics",icon:"👋",color:"var(--c1)",bg:"var(--c1b)",bd:"var(--c1d)"},
+  daily:{name:"Daily Life",icon:"☀️",color:"var(--c2)",bg:"var(--c2b)",bd:"var(--c2d)"},
+  travel:{name:"Travel & Transport",icon:"✈️",color:"var(--c3)",bg:"var(--c3b)",bd:"var(--c3d)"},
+  food:{name:"Food & Restaurant",icon:"🍽️",color:"var(--c4)",bg:"var(--c4b)",bd:"var(--c4d)"},
+  work:{name:"Work & Business",icon:"💼",color:"var(--c5)",bg:"var(--c5b)",bd:"var(--c5d)"},
+  social:{name:"Social & Opinions",icon:"💬",color:"var(--c6)",bg:"var(--c6b)",bd:"var(--c6d)"},
+  emergency:{name:"Health & Emergency",icon:"🏥",color:"var(--c9)",bg:"var(--c9b)",bd:"var(--c9d)"},
+  shopping:{name:"Shopping & Money",icon:"🛒",color:"var(--c8)",bg:"var(--c8b)",bd:"var(--c8d)"},
+  feelings:{name:"Feelings & Emotions",icon:"❤️",color:"var(--c3)",bg:"var(--c3b)",bd:"var(--c3d)"},
+  idioms:{name:"Idioms & Expressions",icon:"🔥",color:"var(--c6)",bg:"var(--c6b)",bd:"var(--c6d)"},
+};
+
+const BASE=[
+// ── GREETINGS & BASICS (50) ──
+{en:"Hello, how are you?",es:"Hola, ¿cómo estás?",cat:"greetings",lvl:"A1"},
+{en:"Good morning!",es:"¡Buenos días!",cat:"greetings",lvl:"A1"},
+{en:"Good afternoon!",es:"¡Buenas tardes!",cat:"greetings",lvl:"A1"},
+{en:"Good evening!",es:"¡Buenas noches! (saludo)",cat:"greetings",lvl:"A1"},
+{en:"Good night!",es:"¡Buenas noches! (despedida)",cat:"greetings",lvl:"A1"},
+{en:"See you later!",es:"¡Nos vemos luego!",cat:"greetings",lvl:"A1"},
+{en:"See you tomorrow!",es:"¡Nos vemos mañana!",cat:"greetings",lvl:"A1"},
+{en:"Nice to meet you.",es:"Mucho gusto.",cat:"greetings",lvl:"A1"},
+{en:"What's your name?",es:"¿Cómo te llamas?",cat:"greetings",lvl:"A1"},
+{en:"My name is...",es:"Mi nombre es...",cat:"greetings",lvl:"A1"},
+{en:"Where are you from?",es:"¿De dónde eres?",cat:"greetings",lvl:"A1"},
+{en:"I'm from Mexico.",es:"Soy de México.",cat:"greetings",lvl:"A1"},
+{en:"How old are you?",es:"¿Cuántos años tienes?",cat:"greetings",lvl:"A1"},
+{en:"I'm fine, thank you.",es:"Estoy bien, gracias.",cat:"greetings",lvl:"A1"},
+{en:"And you?",es:"¿Y tú?",cat:"greetings",lvl:"A1"},
+{en:"Please.",es:"Por favor.",cat:"greetings",lvl:"A1"},
+{en:"Thank you very much.",es:"Muchas gracias.",cat:"greetings",lvl:"A1"},
+{en:"You're welcome.",es:"De nada.",cat:"greetings",lvl:"A1"},
+{en:"Excuse me.",es:"Disculpe.",cat:"greetings",lvl:"A1"},
+{en:"I'm sorry.",es:"Lo siento.",cat:"greetings",lvl:"A1"},
+{en:"No problem.",es:"No hay problema.",cat:"greetings",lvl:"A1"},
+{en:"I don't understand.",es:"No entiendo.",cat:"greetings",lvl:"A1"},
+{en:"Could you repeat that, please?",es:"¿Podría repetir eso, por favor?",cat:"greetings",lvl:"A2"},
+{en:"Could you speak more slowly?",es:"¿Podría hablar más despacio?",cat:"greetings",lvl:"A2"},
+{en:"How do you say this in English?",es:"¿Cómo se dice esto en inglés?",cat:"greetings",lvl:"A2"},
+{en:"What does this word mean?",es:"¿Qué significa esta palabra?",cat:"greetings",lvl:"A2"},
+{en:"I speak a little English.",es:"Hablo un poco de inglés.",cat:"greetings",lvl:"A1"},
+{en:"Do you speak Spanish?",es:"¿Hablas español?",cat:"greetings",lvl:"A1"},
+{en:"Have a nice day!",es:"¡Que tengas un buen día!",cat:"greetings",lvl:"A1"},
+{en:"Take care!",es:"¡Cuídate!",cat:"greetings",lvl:"A1"},
+{en:"It was nice talking to you.",es:"Fue agradable hablar contigo.",cat:"greetings",lvl:"A2"},
+{en:"Long time no see!",es:"¡Cuánto tiempo sin verte!",cat:"greetings",lvl:"A2"},
+{en:"How's it going?",es:"¿Cómo te va?",cat:"greetings",lvl:"A2"},
+{en:"What's up?",es:"¿Qué onda? / ¿Qué hay?",cat:"greetings",lvl:"A2"},
+{en:"I've been doing well.",es:"He estado bien.",cat:"greetings",lvl:"A2"},
+{en:"It's a pleasure to meet you.",es:"Es un placer conocerte.",cat:"greetings",lvl:"A2"},
+{en:"How's your family?",es:"¿Cómo está tu familia?",cat:"greetings",lvl:"A2"},
+{en:"Say hello to your family for me.",es:"Salúdame a tu familia.",cat:"greetings",lvl:"A2"},
+{en:"I hope you're doing well.",es:"Espero que estés bien.",cat:"greetings",lvl:"B1"},
+{en:"What have you been up to?",es:"¿Qué has estado haciendo?",cat:"greetings",lvl:"B1"},
+{en:"Can I help you?",es:"¿Puedo ayudarte?",cat:"greetings",lvl:"A1"},
+{en:"Yes, please.",es:"Sí, por favor.",cat:"greetings",lvl:"A1"},
+{en:"No, thank you.",es:"No, gracias.",cat:"greetings",lvl:"A1"},
+{en:"Of course!",es:"¡Por supuesto!",cat:"greetings",lvl:"A1"},
+{en:"That's fine.",es:"Está bien.",cat:"greetings",lvl:"A1"},
+{en:"Never mind.",es:"No importa.",cat:"greetings",lvl:"A2"},
+{en:"Don't worry about it.",es:"No te preocupes por eso.",cat:"greetings",lvl:"A2"},
+{en:"I appreciate it.",es:"Lo aprecio.",cat:"greetings",lvl:"B1"},
+{en:"That's very kind of you.",es:"Eso es muy amable de tu parte.",cat:"greetings",lvl:"B1"},
+{en:"I owe you one.",es:"Te debo una.",cat:"greetings",lvl:"B1"},
+// ── DAILY LIFE (50) ──
+{en:"What time is it?",es:"¿Qué hora es?",cat:"daily",lvl:"A1"},
+{en:"It's ten o'clock.",es:"Son las diez.",cat:"daily",lvl:"A1"},
+{en:"I wake up at seven every day.",es:"Me despierto a las siete todos los días.",cat:"daily",lvl:"A1"},
+{en:"I take a shower in the morning.",es:"Me ducho en la mañana.",cat:"daily",lvl:"A1"},
+{en:"I have breakfast at eight.",es:"Desayuno a las ocho.",cat:"daily",lvl:"A1"},
+{en:"I go to work by bus.",es:"Voy al trabajo en autobús.",cat:"daily",lvl:"A1"},
+{en:"I usually eat lunch at noon.",es:"Usualmente almuerzo al mediodía.",cat:"daily",lvl:"A1"},
+{en:"I get home around six.",es:"Llego a casa como a las seis.",cat:"daily",lvl:"A1"},
+{en:"I go to bed at eleven.",es:"Me acuesto a las once.",cat:"daily",lvl:"A1"},
+{en:"What do you do on weekends?",es:"¿Qué haces los fines de semana?",cat:"daily",lvl:"A1"},
+{en:"I like to read books.",es:"Me gusta leer libros.",cat:"daily",lvl:"A1"},
+{en:"I enjoy watching movies.",es:"Disfruto ver películas.",cat:"daily",lvl:"A1"},
+{en:"I exercise three times a week.",es:"Hago ejercicio tres veces a la semana.",cat:"daily",lvl:"A2"},
+{en:"I need to do the laundry.",es:"Necesito lavar la ropa.",cat:"daily",lvl:"A2"},
+{en:"Could you turn off the light?",es:"¿Podrías apagar la luz?",cat:"daily",lvl:"A2"},
+{en:"I'm running late.",es:"Se me está haciendo tarde.",cat:"daily",lvl:"A2"},
+{en:"I have to go now.",es:"Tengo que irme ahora.",cat:"daily",lvl:"A1"},
+{en:"What are you doing tonight?",es:"¿Qué haces esta noche?",cat:"daily",lvl:"A2"},
+{en:"I'm cooking dinner right now.",es:"Estoy cocinando la cena ahora.",cat:"daily",lvl:"A2"},
+{en:"Let's go for a walk.",es:"Vamos a caminar.",cat:"daily",lvl:"A1"},
+{en:"I forgot my keys at home.",es:"Olvidé mis llaves en casa.",cat:"daily",lvl:"A2"},
+{en:"Can I borrow your phone?",es:"¿Me prestas tu teléfono?",cat:"daily",lvl:"A2"},
+{en:"The weather is really nice today.",es:"El clima está muy bonito hoy.",cat:"daily",lvl:"A1"},
+{en:"It's raining outside.",es:"Está lloviendo afuera.",cat:"daily",lvl:"A1"},
+{en:"I need to clean the house.",es:"Necesito limpiar la casa.",cat:"daily",lvl:"A2"},
+{en:"Could you help me with this?",es:"¿Podrías ayudarme con esto?",cat:"daily",lvl:"A2"},
+{en:"I'm going to the supermarket.",es:"Voy al supermercado.",cat:"daily",lvl:"A1"},
+{en:"I'll be back in a minute.",es:"Regreso en un minuto.",cat:"daily",lvl:"A2"},
+{en:"I'm looking for my glasses.",es:"Estoy buscando mis lentes.",cat:"daily",lvl:"A2"},
+{en:"My phone is out of battery.",es:"Mi teléfono se quedó sin batería.",cat:"daily",lvl:"A2"},
+{en:"I have a lot of things to do.",es:"Tengo muchas cosas que hacer.",cat:"daily",lvl:"A2"},
+{en:"I usually drive to work.",es:"Usualmente manejo al trabajo.",cat:"daily",lvl:"A2"},
+{en:"I'm not feeling well today.",es:"No me siento bien hoy.",cat:"daily",lvl:"A2"},
+{en:"I stayed up late last night.",es:"Me desvelé anoche.",cat:"daily",lvl:"A2"},
+{en:"I'm so tired today.",es:"Estoy muy cansado hoy.",cat:"daily",lvl:"A1"},
+{en:"Can you pass me the salt?",es:"¿Me pasas la sal?",cat:"daily",lvl:"A1"},
+{en:"I need to charge my phone.",es:"Necesito cargar mi teléfono.",cat:"daily",lvl:"A2"},
+{en:"What channel is the game on?",es:"¿En qué canal es el juego?",cat:"daily",lvl:"A2"},
+{en:"I'm going to take a nap.",es:"Voy a tomar una siesta.",cat:"daily",lvl:"A2"},
+{en:"I overslept this morning.",es:"Me quedé dormido esta mañana.",cat:"daily",lvl:"B1"},
+{en:"I'm stuck in traffic.",es:"Estoy atrapado en el tráfico.",cat:"daily",lvl:"B1"},
+{en:"I need to pick up the kids.",es:"Necesito recoger a los niños.",cat:"daily",lvl:"A2"},
+{en:"Let me check my schedule.",es:"Déjame revisar mi agenda.",cat:"daily",lvl:"B1"},
+{en:"I have a dentist appointment.",es:"Tengo cita con el dentista.",cat:"daily",lvl:"A2"},
+{en:"I just moved to a new apartment.",es:"Acabo de mudarme a un nuevo departamento.",cat:"daily",lvl:"B1"},
+{en:"Can you give me a ride?",es:"¿Me puedes dar un aventón?",cat:"daily",lvl:"A2"},
+{en:"I'm meeting a friend for coffee.",es:"Voy a ver a un amigo para un café.",cat:"daily",lvl:"A2"},
+{en:"I locked myself out of the house.",es:"Me quedé afuera de la casa sin llaves.",cat:"daily",lvl:"B1"},
+{en:"I'm waiting for the delivery.",es:"Estoy esperando la entrega.",cat:"daily",lvl:"A2"},
+{en:"I need to pay the bills.",es:"Necesito pagar las cuentas.",cat:"daily",lvl:"A2"},
+// ── TRAVEL & TRANSPORT (50) ──
+{en:"Where is the airport?",es:"¿Dónde está el aeropuerto?",cat:"travel",lvl:"A1"},
+{en:"I'd like to book a flight.",es:"Me gustaría reservar un vuelo.",cat:"travel",lvl:"A2"},
+{en:"What time does the train leave?",es:"¿A qué hora sale el tren?",cat:"travel",lvl:"A1"},
+{en:"How much is a one-way ticket?",es:"¿Cuánto cuesta un boleto de ida?",cat:"travel",lvl:"A2"},
+{en:"I need a round-trip ticket.",es:"Necesito un boleto de ida y vuelta.",cat:"travel",lvl:"A2"},
+{en:"Where is the bus station?",es:"¿Dónde está la estación de autobuses?",cat:"travel",lvl:"A1"},
+{en:"Is there a direct flight?",es:"¿Hay un vuelo directo?",cat:"travel",lvl:"A2"},
+{en:"My flight has been delayed.",es:"Mi vuelo ha sido retrasado.",cat:"travel",lvl:"B1"},
+{en:"Where can I find a taxi?",es:"¿Dónde puedo encontrar un taxi?",cat:"travel",lvl:"A1"},
+{en:"How far is it from here?",es:"¿Qué tan lejos está de aquí?",cat:"travel",lvl:"A2"},
+{en:"Can you take me to this address?",es:"¿Me puede llevar a esta dirección?",cat:"travel",lvl:"A2"},
+{en:"I'd like to rent a car.",es:"Me gustaría rentar un auto.",cat:"travel",lvl:"A2"},
+{en:"Where is the nearest gas station?",es:"¿Dónde está la gasolinera más cercana?",cat:"travel",lvl:"A2"},
+{en:"I have a reservation under my name.",es:"Tengo una reservación a mi nombre.",cat:"travel",lvl:"A2"},
+{en:"What time is check-in?",es:"¿A qué hora es el check-in?",cat:"travel",lvl:"A2"},
+{en:"What time is check-out?",es:"¿A qué hora es el check-out?",cat:"travel",lvl:"A2"},
+{en:"Is breakfast included?",es:"¿El desayuno está incluido?",cat:"travel",lvl:"A2"},
+{en:"I need a room for two nights.",es:"Necesito una habitación por dos noches.",cat:"travel",lvl:"A2"},
+{en:"Do you have any rooms available?",es:"¿Tienen habitaciones disponibles?",cat:"travel",lvl:"A2"},
+{en:"Could I have a map, please?",es:"¿Me podría dar un mapa, por favor?",cat:"travel",lvl:"A2"},
+{en:"How do I get to the city center?",es:"¿Cómo llego al centro de la ciudad?",cat:"travel",lvl:"A2"},
+{en:"Is it within walking distance?",es:"¿Se puede llegar caminando?",cat:"travel",lvl:"B1"},
+{en:"I'm lost. Can you help me?",es:"Estoy perdido. ¿Puede ayudarme?",cat:"travel",lvl:"A1"},
+{en:"Turn left at the next corner.",es:"Gire a la izquierda en la siguiente esquina.",cat:"travel",lvl:"A2"},
+{en:"Go straight for two blocks.",es:"Siga derecho dos cuadras.",cat:"travel",lvl:"A2"},
+{en:"It's on the right side.",es:"Está del lado derecho.",cat:"travel",lvl:"A1"},
+{en:"I need to exchange money.",es:"Necesito cambiar dinero.",cat:"travel",lvl:"A2"},
+{en:"What's the exchange rate?",es:"¿Cuál es el tipo de cambio?",cat:"travel",lvl:"B1"},
+{en:"Where is the nearest ATM?",es:"¿Dónde está el cajero más cercano?",cat:"travel",lvl:"A2"},
+{en:"I lost my passport.",es:"Perdí mi pasaporte.",cat:"travel",lvl:"A2"},
+{en:"Where is the embassy?",es:"¿Dónde está la embajada?",cat:"travel",lvl:"B1"},
+{en:"I'd like a window seat, please.",es:"Me gustaría un asiento de ventana, por favor.",cat:"travel",lvl:"A2"},
+{en:"Is this seat taken?",es:"¿Está ocupado este asiento?",cat:"travel",lvl:"A1"},
+{en:"Could you keep an eye on my bags?",es:"¿Podría vigilar mis maletas?",cat:"travel",lvl:"B1"},
+{en:"Where is the baggage claim?",es:"¿Dónde es la recolección de equipaje?",cat:"travel",lvl:"B1"},
+{en:"My luggage hasn't arrived.",es:"Mi equipaje no ha llegado.",cat:"travel",lvl:"B1"},
+{en:"I need to go through customs.",es:"Necesito pasar por la aduana.",cat:"travel",lvl:"B1"},
+{en:"How long is the layover?",es:"¿Cuánto dura la escala?",cat:"travel",lvl:"B1"},
+{en:"Which platform does the train leave from?",es:"¿De qué andén sale el tren?",cat:"travel",lvl:"B1"},
+{en:"Is there Wi-Fi on the plane?",es:"¿Hay Wi-Fi en el avión?",cat:"travel",lvl:"A2"},
+{en:"I'd like to extend my stay.",es:"Me gustaría extender mi estadía.",cat:"travel",lvl:"B1"},
+{en:"Can you recommend a good hotel?",es:"¿Puede recomendar un buen hotel?",cat:"travel",lvl:"A2"},
+{en:"What are the must-see attractions?",es:"¿Cuáles son las atracciones imperdibles?",cat:"travel",lvl:"B1"},
+{en:"Is it safe to walk around at night?",es:"¿Es seguro caminar de noche?",cat:"travel",lvl:"B1"},
+{en:"I'm here on vacation.",es:"Estoy aquí de vacaciones.",cat:"travel",lvl:"A1"},
+{en:"I'm traveling for business.",es:"Viajo por negocios.",cat:"travel",lvl:"A2"},
+{en:"How long will you be staying?",es:"¿Cuánto tiempo se quedará?",cat:"travel",lvl:"A2"},
+{en:"I'm just passing through.",es:"Solo estoy de paso.",cat:"travel",lvl:"B1"},
+{en:"Do I need a visa?",es:"¿Necesito una visa?",cat:"travel",lvl:"A2"},
+{en:"What's the best way to get around?",es:"¿Cuál es la mejor forma de moverse?",cat:"travel",lvl:"B1"},
+// ── FOOD & RESTAURANT (50) ──
+{en:"I'd like a table for two, please.",es:"Me gustaría una mesa para dos, por favor.",cat:"food",lvl:"A1"},
+{en:"Can I see the menu, please?",es:"¿Me puede dar el menú, por favor?",cat:"food",lvl:"A1"},
+{en:"What do you recommend?",es:"¿Qué recomienda?",cat:"food",lvl:"A2"},
+{en:"I'll have the chicken, please.",es:"Voy a pedir el pollo, por favor.",cat:"food",lvl:"A1"},
+{en:"Could I have some water?",es:"¿Me podría traer agua?",cat:"food",lvl:"A1"},
+{en:"I'm allergic to nuts.",es:"Soy alérgico a las nueces.",cat:"food",lvl:"A2"},
+{en:"Is this dish spicy?",es:"¿Este platillo es picante?",cat:"food",lvl:"A2"},
+{en:"I'm a vegetarian.",es:"Soy vegetariano.",cat:"food",lvl:"A1"},
+{en:"Can I have the check, please?",es:"¿Me trae la cuenta, por favor?",cat:"food",lvl:"A1"},
+{en:"Do you accept credit cards?",es:"¿Aceptan tarjetas de crédito?",cat:"food",lvl:"A2"},
+{en:"The food was delicious.",es:"La comida estaba deliciosa.",cat:"food",lvl:"A1"},
+{en:"I'd like to order takeout.",es:"Me gustaría ordenar para llevar.",cat:"food",lvl:"A2"},
+{en:"How long will it take?",es:"¿Cuánto tiempo tardará?",cat:"food",lvl:"A2"},
+{en:"Could I have some more bread?",es:"¿Me podría traer más pan?",cat:"food",lvl:"A2"},
+{en:"I'd like my steak medium rare.",es:"Me gustaría mi carne término medio.",cat:"food",lvl:"B1"},
+{en:"Is the tip included?",es:"¿La propina está incluida?",cat:"food",lvl:"A2"},
+{en:"This isn't what I ordered.",es:"Esto no es lo que pedí.",cat:"food",lvl:"A2"},
+{en:"Can you make it without onions?",es:"¿Lo puede hacer sin cebolla?",cat:"food",lvl:"A2"},
+{en:"I'm on a diet.",es:"Estoy a dieta.",cat:"food",lvl:"A2"},
+{en:"What's today's special?",es:"¿Cuál es el platillo del día?",cat:"food",lvl:"A2"},
+{en:"I'd like a glass of red wine.",es:"Me gustaría una copa de vino tinto.",cat:"food",lvl:"A2"},
+{en:"Could we split the bill?",es:"¿Podemos dividir la cuenta?",cat:"food",lvl:"B1"},
+{en:"Do you have a kids' menu?",es:"¿Tienen menú para niños?",cat:"food",lvl:"A2"},
+{en:"I'm starving!",es:"¡Me muero de hambre!",cat:"food",lvl:"A2"},
+{en:"Let's grab a bite to eat.",es:"Vamos a comer algo rápido.",cat:"food",lvl:"B1"},
+{en:"This coffee is too strong.",es:"Este café está muy cargado.",cat:"food",lvl:"A2"},
+{en:"Could I get a refill?",es:"¿Me puede rellenar?",cat:"food",lvl:"A2"},
+{en:"I'll have the same thing.",es:"Voy a pedir lo mismo.",cat:"food",lvl:"A2"},
+{en:"Everything looks good on the menu.",es:"Todo se ve bien en el menú.",cat:"food",lvl:"A2"},
+{en:"I can't eat gluten.",es:"No puedo comer gluten.",cat:"food",lvl:"A2"},
+{en:"What kind of soup do you have?",es:"¿Qué tipo de sopa tienen?",cat:"food",lvl:"A2"},
+{en:"I'd like a cup of tea.",es:"Me gustaría una taza de té.",cat:"food",lvl:"A1"},
+{en:"Can I have some ice cream for dessert?",es:"¿Me da un helado de postre?",cat:"food",lvl:"A2"},
+{en:"This tastes amazing!",es:"¡Esto sabe increíble!",cat:"food",lvl:"A2"},
+{en:"I'm full, thank you.",es:"Estoy lleno, gracias.",cat:"food",lvl:"A1"},
+{en:"Would you like anything else?",es:"¿Desea algo más?",cat:"food",lvl:"A2"},
+{en:"We'd like to sit outside.",es:"Nos gustaría sentarnos afuera.",cat:"food",lvl:"A2"},
+{en:"Is there a waiting list?",es:"¿Hay lista de espera?",cat:"food",lvl:"B1"},
+{en:"Do you have any gluten-free options?",es:"¿Tienen opciones sin gluten?",cat:"food",lvl:"B1"},
+{en:"I'll have a coffee with milk.",es:"Voy a tomar un café con leche.",cat:"food",lvl:"A1"},
+{en:"Keep the change.",es:"Quédese con el cambio.",cat:"food",lvl:"A2"},
+{en:"The service was excellent.",es:"El servicio fue excelente.",cat:"food",lvl:"A2"},
+{en:"I'd like to make a reservation.",es:"Me gustaría hacer una reservación.",cat:"food",lvl:"A2"},
+{en:"For what time?",es:"¿Para qué hora?",cat:"food",lvl:"A1"},
+{en:"Is there a dress code?",es:"¿Hay código de vestimenta?",cat:"food",lvl:"B1"},
+{en:"What's in this dish?",es:"¿Qué lleva este platillo?",cat:"food",lvl:"A2"},
+{en:"It's a bit too salty for me.",es:"Está un poco salado para mí.",cat:"food",lvl:"A2"},
+{en:"Can I see the dessert menu?",es:"¿Puedo ver el menú de postres?",cat:"food",lvl:"A2"},
+{en:"I'd like to try something new.",es:"Me gustaría probar algo nuevo.",cat:"food",lvl:"A2"},
+{en:"We're in a hurry.",es:"Tenemos prisa.",cat:"food",lvl:"A2"},
+// ── WORK & BUSINESS (50) ──
+{en:"What do you do for a living?",es:"¿A qué te dedicas?",cat:"work",lvl:"A2"},
+{en:"I work in an office.",es:"Trabajo en una oficina.",cat:"work",lvl:"A1"},
+{en:"I have a meeting at ten.",es:"Tengo una reunión a las diez.",cat:"work",lvl:"A2"},
+{en:"I need to finish this report.",es:"Necesito terminar este informe.",cat:"work",lvl:"A2"},
+{en:"Can we schedule a meeting?",es:"¿Podemos agendar una reunión?",cat:"work",lvl:"B1"},
+{en:"I'll send you an email.",es:"Te enviaré un correo.",cat:"work",lvl:"A2"},
+{en:"Could you forward me that document?",es:"¿Me podrías reenviar ese documento?",cat:"work",lvl:"B1"},
+{en:"I'm working from home today.",es:"Estoy trabajando desde casa hoy.",cat:"work",lvl:"A2"},
+{en:"When is the deadline?",es:"¿Cuándo es la fecha límite?",cat:"work",lvl:"B1"},
+{en:"I need more time to finish this.",es:"Necesito más tiempo para terminar esto.",cat:"work",lvl:"A2"},
+{en:"Let me know if you need anything.",es:"Avísame si necesitas algo.",cat:"work",lvl:"A2"},
+{en:"I'm looking for a new job.",es:"Estoy buscando un nuevo trabajo.",cat:"work",lvl:"A2"},
+{en:"I have a job interview tomorrow.",es:"Tengo una entrevista de trabajo mañana.",cat:"work",lvl:"A2"},
+{en:"What are your strengths?",es:"¿Cuáles son tus fortalezas?",cat:"work",lvl:"B1"},
+{en:"I have experience in marketing.",es:"Tengo experiencia en marketing.",cat:"work",lvl:"B1"},
+{en:"The project is behind schedule.",es:"El proyecto va atrasado.",cat:"work",lvl:"B1"},
+{en:"We need to work as a team.",es:"Necesitamos trabajar en equipo.",cat:"work",lvl:"B1"},
+{en:"I'd like to request a day off.",es:"Me gustaría pedir un día libre.",cat:"work",lvl:"B1"},
+{en:"I got a promotion!",es:"¡Me dieron una promoción!",cat:"work",lvl:"B1"},
+{en:"I'm on my lunch break.",es:"Estoy en mi hora de comida.",cat:"work",lvl:"A2"},
+{en:"Who's in charge of this project?",es:"¿Quién está a cargo de este proyecto?",cat:"work",lvl:"B1"},
+{en:"Could you give me your feedback?",es:"¿Me podrías dar tu opinión?",cat:"work",lvl:"B1"},
+{en:"Let's set up a video call.",es:"Organicemos una videollamada.",cat:"work",lvl:"B1"},
+{en:"I'll have the presentation ready by Friday.",es:"Tendré la presentación lista para el viernes.",cat:"work",lvl:"B1"},
+{en:"We exceeded our sales target.",es:"Superamos nuestra meta de ventas.",cat:"work",lvl:"B2"},
+{en:"I'd like to propose a new idea.",es:"Me gustaría proponer una nueva idea.",cat:"work",lvl:"B1"},
+{en:"The meeting has been postponed.",es:"La reunión ha sido pospuesta.",cat:"work",lvl:"B1"},
+{en:"I need to update my resume.",es:"Necesito actualizar mi currículum.",cat:"work",lvl:"A2"},
+{en:"What are the job requirements?",es:"¿Cuáles son los requisitos del puesto?",cat:"work",lvl:"B1"},
+{en:"I'm attending a conference next week.",es:"Asistiré a una conferencia la próxima semana.",cat:"work",lvl:"B1"},
+{en:"We need to cut costs.",es:"Necesitamos reducir costos.",cat:"work",lvl:"B1"},
+{en:"I'll follow up on that.",es:"Le daré seguimiento a eso.",cat:"work",lvl:"B1"},
+{en:"Can you handle this task?",es:"¿Puedes encargarte de esta tarea?",cat:"work",lvl:"B1"},
+{en:"I'm swamped with work right now.",es:"Estoy saturado de trabajo ahora.",cat:"work",lvl:"B2"},
+{en:"Let's brainstorm some ideas.",es:"Hagamos una lluvia de ideas.",cat:"work",lvl:"B1"},
+{en:"What's the budget for this project?",es:"¿Cuál es el presupuesto para este proyecto?",cat:"work",lvl:"B1"},
+{en:"I need to take a sick day.",es:"Necesito un día por enfermedad.",cat:"work",lvl:"A2"},
+{en:"My boss wants to see me.",es:"Mi jefe quiere verme.",cat:"work",lvl:"A2"},
+{en:"I'll keep you posted.",es:"Te mantendré informado.",cat:"work",lvl:"B1"},
+{en:"We should touch base next week.",es:"Deberíamos ponernos al día la próxima semana.",cat:"work",lvl:"B2"},
+{en:"I resigned from my previous job.",es:"Renuncié a mi trabajo anterior.",cat:"work",lvl:"B1"},
+{en:"I'm self-employed.",es:"Soy trabajador independiente.",cat:"work",lvl:"B1"},
+{en:"What's your salary expectation?",es:"¿Cuál es tu expectativa salarial?",cat:"work",lvl:"B1"},
+{en:"I have a tight deadline.",es:"Tengo una fecha límite ajustada.",cat:"work",lvl:"B1"},
+{en:"Let's wrap up this meeting.",es:"Terminemos esta reunión.",cat:"work",lvl:"B1"},
+{en:"Please attach the file to the email.",es:"Por favor adjunta el archivo al correo.",cat:"work",lvl:"A2"},
+{en:"I need to make some copies.",es:"Necesito hacer unas copias.",cat:"work",lvl:"A2"},
+{en:"Who should I report to?",es:"¿A quién debo reportar?",cat:"work",lvl:"B1"},
+{en:"I'm on a conference call.",es:"Estoy en una llamada de conferencia.",cat:"work",lvl:"B1"},
+{en:"The Wi-Fi in the office is down.",es:"El Wi-Fi de la oficina no funciona.",cat:"work",lvl:"A2"},
+// ── SOCIAL & OPINIONS (50) ──
+{en:"What do you think about it?",es:"¿Qué piensas al respecto?",cat:"social",lvl:"A2"},
+{en:"I agree with you.",es:"Estoy de acuerdo contigo.",cat:"social",lvl:"A2"},
+{en:"I disagree.",es:"No estoy de acuerdo.",cat:"social",lvl:"A2"},
+{en:"In my opinion...",es:"En mi opinión...",cat:"social",lvl:"A2"},
+{en:"That's a good point.",es:"Ese es un buen punto.",cat:"social",lvl:"B1"},
+{en:"I see what you mean.",es:"Entiendo lo que quieres decir.",cat:"social",lvl:"B1"},
+{en:"Could you explain that?",es:"¿Podrías explicar eso?",cat:"social",lvl:"A2"},
+{en:"Let me think about it.",es:"Déjame pensarlo.",cat:"social",lvl:"A2"},
+{en:"That makes sense.",es:"Eso tiene sentido.",cat:"social",lvl:"A2"},
+{en:"I'm not sure about that.",es:"No estoy seguro de eso.",cat:"social",lvl:"A2"},
+{en:"Would you like to go out tonight?",es:"¿Te gustaría salir esta noche?",cat:"social",lvl:"A2"},
+{en:"That sounds like fun!",es:"¡Eso suena divertido!",cat:"social",lvl:"A2"},
+{en:"I'd love to, but I can't.",es:"Me encantaría, pero no puedo.",cat:"social",lvl:"A2"},
+{en:"Maybe another time.",es:"Quizás en otra ocasión.",cat:"social",lvl:"A2"},
+{en:"Are you free this weekend?",es:"¿Estás libre este fin de semana?",cat:"social",lvl:"A2"},
+{en:"Let's keep in touch.",es:"Mantengámonos en contacto.",cat:"social",lvl:"A2"},
+{en:"Can I add you on social media?",es:"¿Te puedo agregar en redes sociales?",cat:"social",lvl:"A2"},
+{en:"What kind of music do you like?",es:"¿Qué tipo de música te gusta?",cat:"social",lvl:"A1"},
+{en:"Have you seen any good movies lately?",es:"¿Has visto alguna buena película últimamente?",cat:"social",lvl:"A2"},
+{en:"I really enjoyed that conversation.",es:"Realmente disfruté esa conversación.",cat:"social",lvl:"B1"},
+{en:"Let's change the subject.",es:"Cambiemos de tema.",cat:"social",lvl:"A2"},
+{en:"That's none of my business.",es:"Eso no es asunto mío.",cat:"social",lvl:"B1"},
+{en:"To be honest...",es:"Para ser honesto...",cat:"social",lvl:"A2"},
+{en:"I couldn't agree more.",es:"No podría estar más de acuerdo.",cat:"social",lvl:"B1"},
+{en:"It depends on the situation.",es:"Depende de la situación.",cat:"social",lvl:"B1"},
+{en:"I have mixed feelings about it.",es:"Tengo sentimientos encontrados al respecto.",cat:"social",lvl:"B1"},
+{en:"That's exactly what I was thinking.",es:"Eso es exactamente lo que estaba pensando.",cat:"social",lvl:"B1"},
+{en:"I'd rather not talk about it.",es:"Preferiría no hablar de eso.",cat:"social",lvl:"B1"},
+{en:"You have a point there.",es:"Tienes razón en eso.",cat:"social",lvl:"B1"},
+{en:"I respect your opinion.",es:"Respeto tu opinión.",cat:"social",lvl:"B1"},
+{en:"Congratulations on your achievement!",es:"¡Felicidades por tu logro!",cat:"social",lvl:"A2"},
+{en:"I'm so happy for you!",es:"¡Estoy muy feliz por ti!",cat:"social",lvl:"A2"},
+{en:"I'm sorry to hear that.",es:"Lamento escuchar eso.",cat:"social",lvl:"A2"},
+{en:"Is everything okay?",es:"¿Todo está bien?",cat:"social",lvl:"A1"},
+{en:"Do you need someone to talk to?",es:"¿Necesitas a alguien con quien hablar?",cat:"social",lvl:"B1"},
+{en:"That's really impressive!",es:"¡Eso es muy impresionante!",cat:"social",lvl:"A2"},
+{en:"I had no idea!",es:"¡No tenía idea!",cat:"social",lvl:"A2"},
+{en:"Are you kidding me?",es:"¿Me estás tomando el pelo?",cat:"social",lvl:"A2"},
+{en:"No way!",es:"¡No puede ser!",cat:"social",lvl:"A2"},
+{en:"That's unbelievable!",es:"¡Eso es increíble!",cat:"social",lvl:"A2"},
+{en:"What a coincidence!",es:"¡Qué coincidencia!",cat:"social",lvl:"A2"},
+{en:"I didn't mean to offend you.",es:"No quise ofenderte.",cat:"social",lvl:"B1"},
+{en:"Let's agree to disagree.",es:"Acordemos en no estar de acuerdo.",cat:"social",lvl:"B1"},
+{en:"I'll think it over.",es:"Lo voy a pensar.",cat:"social",lvl:"B1"},
+{en:"From my point of view...",es:"Desde mi punto de vista...",cat:"social",lvl:"B1"},
+{en:"On the other hand...",es:"Por otro lado...",cat:"social",lvl:"B1"},
+{en:"I completely understand.",es:"Entiendo completamente.",cat:"social",lvl:"A2"},
+{en:"That reminds me of something.",es:"Eso me recuerda algo.",cat:"social",lvl:"B1"},
+{en:"I'm just joking!",es:"¡Solo estoy bromeando!",cat:"social",lvl:"A2"},
+{en:"Don't take it personally.",es:"No te lo tomes personal.",cat:"social",lvl:"B1"},
+// ── HEALTH & EMERGENCY (50) ──
+{en:"I don't feel well.",es:"No me siento bien.",cat:"emergency",lvl:"A1"},
+{en:"I have a headache.",es:"Tengo dolor de cabeza.",cat:"emergency",lvl:"A1"},
+{en:"I have a stomachache.",es:"Tengo dolor de estómago.",cat:"emergency",lvl:"A1"},
+{en:"I think I have a fever.",es:"Creo que tengo fiebre.",cat:"emergency",lvl:"A2"},
+{en:"I need to see a doctor.",es:"Necesito ver a un doctor.",cat:"emergency",lvl:"A1"},
+{en:"Where is the nearest hospital?",es:"¿Dónde está el hospital más cercano?",cat:"emergency",lvl:"A1"},
+{en:"Call an ambulance!",es:"¡Llamen una ambulancia!",cat:"emergency",lvl:"A1"},
+{en:"I'm allergic to penicillin.",es:"Soy alérgico a la penicilina.",cat:"emergency",lvl:"A2"},
+{en:"I take medication for blood pressure.",es:"Tomo medicamento para la presión.",cat:"emergency",lvl:"B1"},
+{en:"I twisted my ankle.",es:"Me torcí el tobillo.",cat:"emergency",lvl:"A2"},
+{en:"It hurts right here.",es:"Me duele justo aquí.",cat:"emergency",lvl:"A1"},
+{en:"I need a prescription.",es:"Necesito una receta médica.",cat:"emergency",lvl:"A2"},
+{en:"Where is the pharmacy?",es:"¿Dónde está la farmacia?",cat:"emergency",lvl:"A1"},
+{en:"I have health insurance.",es:"Tengo seguro médico.",cat:"emergency",lvl:"A2"},
+{en:"Help! It's an emergency!",es:"¡Ayuda! ¡Es una emergencia!",cat:"emergency",lvl:"A1"},
+{en:"I cut my finger.",es:"Me corté el dedo.",cat:"emergency",lvl:"A2"},
+{en:"I feel dizzy.",es:"Me siento mareado.",cat:"emergency",lvl:"A2"},
+{en:"I can't breathe well.",es:"No puedo respirar bien.",cat:"emergency",lvl:"A2"},
+{en:"I've been feeling tired lately.",es:"He estado sintiéndome cansado últimamente.",cat:"emergency",lvl:"B1"},
+{en:"How often should I take this medicine?",es:"¿Cada cuánto debo tomar este medicamento?",cat:"emergency",lvl:"B1"},
+{en:"I need to make a doctor's appointment.",es:"Necesito hacer una cita médica.",cat:"emergency",lvl:"A2"},
+{en:"My back hurts.",es:"Me duele la espalda.",cat:"emergency",lvl:"A1"},
+{en:"I have a sore throat.",es:"Tengo dolor de garganta.",cat:"emergency",lvl:"A2"},
+{en:"I've been coughing all day.",es:"He estado tosiendo todo el día.",cat:"emergency",lvl:"A2"},
+{en:"I think I broke my arm.",es:"Creo que me rompí el brazo.",cat:"emergency",lvl:"A2"},
+{en:"Someone stole my wallet.",es:"Alguien robó mi cartera.",cat:"emergency",lvl:"A2"},
+{en:"I need to call the police.",es:"Necesito llamar a la policía.",cat:"emergency",lvl:"A1"},
+{en:"There's been an accident.",es:"Ha habido un accidente.",cat:"emergency",lvl:"A2"},
+{en:"Is there a first aid kit?",es:"¿Hay un botiquín de primeros auxilios?",cat:"emergency",lvl:"B1"},
+{en:"I need to go to the emergency room.",es:"Necesito ir a urgencias.",cat:"emergency",lvl:"A2"},
+{en:"Are you okay?",es:"¿Estás bien?",cat:"emergency",lvl:"A1"},
+{en:"Take two pills twice a day.",es:"Tome dos pastillas dos veces al día.",cat:"emergency",lvl:"A2"},
+{en:"I have an allergy to seafood.",es:"Tengo alergia a los mariscos.",cat:"emergency",lvl:"A2"},
+{en:"I'm pregnant.",es:"Estoy embarazada.",cat:"emergency",lvl:"A2"},
+{en:"I sprained my wrist.",es:"Me esguincé la muñeca.",cat:"emergency",lvl:"B1"},
+{en:"I need stitches.",es:"Necesito puntos de sutura.",cat:"emergency",lvl:"B1"},
+{en:"The wound is bleeding.",es:"La herida está sangrando.",cat:"emergency",lvl:"A2"},
+{en:"I feel nauseous.",es:"Siento náuseas.",cat:"emergency",lvl:"A2"},
+{en:"I have a rash on my skin.",es:"Tengo una erupción en la piel.",cat:"emergency",lvl:"B1"},
+{en:"My tooth hurts a lot.",es:"Me duele mucho la muela.",cat:"emergency",lvl:"A1"},
+{en:"I need to rest.",es:"Necesito descansar.",cat:"emergency",lvl:"A1"},
+{en:"You should see a specialist.",es:"Deberías ver a un especialista.",cat:"emergency",lvl:"B1"},
+{en:"Is it contagious?",es:"¿Es contagioso?",cat:"emergency",lvl:"B1"},
+{en:"I got stung by a bee.",es:"Me picó una abeja.",cat:"emergency",lvl:"A2"},
+{en:"I burned my hand.",es:"Me quemé la mano.",cat:"emergency",lvl:"A2"},
+{en:"Do I need surgery?",es:"¿Necesito cirugía?",cat:"emergency",lvl:"B1"},
+{en:"When will I get better?",es:"¿Cuándo me voy a mejorar?",cat:"emergency",lvl:"A2"},
+{en:"I have trouble sleeping.",es:"Tengo problemas para dormir.",cat:"emergency",lvl:"A2"},
+{en:"I need to stay hydrated.",es:"Necesito mantenerme hidratado.",cat:"emergency",lvl:"B1"},
+{en:"Get well soon!",es:"¡Que te mejores pronto!",cat:"emergency",lvl:"A1"},
+// ── SHOPPING & MONEY (50) ──
+{en:"How much does this cost?",es:"¿Cuánto cuesta esto?",cat:"shopping",lvl:"A1"},
+{en:"That's too expensive.",es:"Eso es muy caro.",cat:"shopping",lvl:"A1"},
+{en:"Do you have a smaller size?",es:"¿Tiene una talla más chica?",cat:"shopping",lvl:"A2"},
+{en:"I'm just looking, thanks.",es:"Solo estoy viendo, gracias.",cat:"shopping",lvl:"A1"},
+{en:"Can I try this on?",es:"¿Me lo puedo probar?",cat:"shopping",lvl:"A2"},
+{en:"Where is the fitting room?",es:"¿Dónde está el probador?",cat:"shopping",lvl:"A2"},
+{en:"I'd like to return this.",es:"Me gustaría devolver esto.",cat:"shopping",lvl:"A2"},
+{en:"Do you have this in another color?",es:"¿Tiene esto en otro color?",cat:"shopping",lvl:"A2"},
+{en:"Is there a discount?",es:"¿Hay descuento?",cat:"shopping",lvl:"A2"},
+{en:"I'll take it.",es:"Me lo llevo.",cat:"shopping",lvl:"A1"},
+{en:"Can I pay in cash?",es:"¿Puedo pagar en efectivo?",cat:"shopping",lvl:"A1"},
+{en:"Do you have a receipt?",es:"¿Tiene el recibo?",cat:"shopping",lvl:"A2"},
+{en:"This is on sale, right?",es:"Esto está en oferta, ¿verdad?",cat:"shopping",lvl:"A2"},
+{en:"I'd like to exchange this.",es:"Me gustaría cambiar esto.",cat:"shopping",lvl:"A2"},
+{en:"It doesn't fit me.",es:"No me queda.",cat:"shopping",lvl:"A2"},
+{en:"Do you offer free shipping?",es:"¿Ofrecen envío gratis?",cat:"shopping",lvl:"A2"},
+{en:"When will my order arrive?",es:"¿Cuándo llegará mi pedido?",cat:"shopping",lvl:"A2"},
+{en:"I'd like a refund.",es:"Me gustaría un reembolso.",cat:"shopping",lvl:"B1"},
+{en:"What's your return policy?",es:"¿Cuál es su política de devolución?",cat:"shopping",lvl:"B1"},
+{en:"Do you have any coupons?",es:"¿Tiene algún cupón?",cat:"shopping",lvl:"A2"},
+{en:"I'm looking for a gift.",es:"Estoy buscando un regalo.",cat:"shopping",lvl:"A2"},
+{en:"Can you gift-wrap it?",es:"¿Lo puede envolver para regalo?",cat:"shopping",lvl:"A2"},
+{en:"Is this the final price?",es:"¿Este es el precio final?",cat:"shopping",lvl:"A2"},
+{en:"I'm on a tight budget.",es:"Tengo un presupuesto ajustado.",cat:"shopping",lvl:"B1"},
+{en:"That's a great deal!",es:"¡Es una gran oferta!",cat:"shopping",lvl:"A2"},
+{en:"I need to save money.",es:"Necesito ahorrar dinero.",cat:"shopping",lvl:"A2"},
+{en:"How much do I owe you?",es:"¿Cuánto te debo?",cat:"shopping",lvl:"A2"},
+{en:"Can you break a hundred?",es:"¿Puede cambiar un billete de cien?",cat:"shopping",lvl:"A2"},
+{en:"I forgot my wallet at home.",es:"Olvidé mi cartera en casa.",cat:"shopping",lvl:"A2"},
+{en:"Do you accept contactless payment?",es:"¿Aceptan pago sin contacto?",cat:"shopping",lvl:"B1"},
+{en:"What aisle are the snacks in?",es:"¿En qué pasillo están los snacks?",cat:"shopping",lvl:"A2"},
+{en:"Is this organic?",es:"¿Esto es orgánico?",cat:"shopping",lvl:"A2"},
+{en:"I'd like a bag, please.",es:"Me gustaría una bolsa, por favor.",cat:"shopping",lvl:"A1"},
+{en:"Where can I find the electronics section?",es:"¿Dónde puedo encontrar la sección de electrónica?",cat:"shopping",lvl:"A2"},
+{en:"This product is out of stock.",es:"Este producto está agotado.",cat:"shopping",lvl:"B1"},
+{en:"When will you get more in stock?",es:"¿Cuándo tendrán más disponible?",cat:"shopping",lvl:"B1"},
+{en:"I'd like to open a bank account.",es:"Me gustaría abrir una cuenta de banco.",cat:"shopping",lvl:"B1"},
+{en:"What's the interest rate?",es:"¿Cuál es la tasa de interés?",cat:"shopping",lvl:"B1"},
+{en:"I need to withdraw some money.",es:"Necesito retirar algo de dinero.",cat:"shopping",lvl:"A2"},
+{en:"Can I pay in installments?",es:"¿Puedo pagar en cuotas?",cat:"shopping",lvl:"B1"},
+{en:"My card was declined.",es:"Mi tarjeta fue rechazada.",cat:"shopping",lvl:"A2"},
+{en:"I want to cancel my subscription.",es:"Quiero cancelar mi suscripción.",cat:"shopping",lvl:"B1"},
+{en:"Is there a warranty?",es:"¿Tiene garantía?",cat:"shopping",lvl:"B1"},
+{en:"The product is defective.",es:"El producto está defectuoso.",cat:"shopping",lvl:"B1"},
+{en:"I'd like to compare prices.",es:"Me gustaría comparar precios.",cat:"shopping",lvl:"A2"},
+{en:"This is a bargain!",es:"¡Esto es una ganga!",cat:"shopping",lvl:"B1"},
+{en:"Let me sleep on it.",es:"Déjame consultarlo con la almohada.",cat:"shopping",lvl:"B1"},
+{en:"I'll come back later.",es:"Regresaré más tarde.",cat:"shopping",lvl:"A2"},
+{en:"Do you price match?",es:"¿Igualan precios?",cat:"shopping",lvl:"B1"},
+{en:"That's a rip-off!",es:"¡Eso es un robo!",cat:"shopping",lvl:"B1"},
+// ── FEELINGS & EMOTIONS (50) ──
+{en:"I'm really happy today.",es:"Estoy muy feliz hoy.",cat:"feelings",lvl:"A1"},
+{en:"I feel sad about it.",es:"Me siento triste por eso.",cat:"feelings",lvl:"A1"},
+{en:"I'm excited about the trip!",es:"¡Estoy emocionado por el viaje!",cat:"feelings",lvl:"A2"},
+{en:"I'm nervous about the exam.",es:"Estoy nervioso por el examen.",cat:"feelings",lvl:"A2"},
+{en:"I'm disappointed with the results.",es:"Estoy decepcionado con los resultados.",cat:"feelings",lvl:"B1"},
+{en:"I feel grateful for everything.",es:"Me siento agradecido por todo.",cat:"feelings",lvl:"B1"},
+{en:"I'm proud of you!",es:"¡Estoy orgulloso de ti!",cat:"feelings",lvl:"A2"},
+{en:"I'm frustrated with this situation.",es:"Estoy frustrado con esta situación.",cat:"feelings",lvl:"B1"},
+{en:"I feel overwhelmed right now.",es:"Me siento abrumado ahora.",cat:"feelings",lvl:"B1"},
+{en:"I'm bored. Let's do something.",es:"Estoy aburrido. Hagamos algo.",cat:"feelings",lvl:"A1"},
+{en:"I'm curious about that.",es:"Tengo curiosidad por eso.",cat:"feelings",lvl:"A2"},
+{en:"I'm afraid of spiders.",es:"Le tengo miedo a las arañas.",cat:"feelings",lvl:"A2"},
+{en:"I'm so relieved!",es:"¡Qué alivio!",cat:"feelings",lvl:"B1"},
+{en:"I feel lonely sometimes.",es:"Me siento solo a veces.",cat:"feelings",lvl:"A2"},
+{en:"I'm jealous of her success.",es:"Tengo celos de su éxito.",cat:"feelings",lvl:"B1"},
+{en:"I'm embarrassed about what happened.",es:"Estoy avergonzado por lo que pasó.",cat:"feelings",lvl:"B1"},
+{en:"I feel confident about this.",es:"Me siento seguro sobre esto.",cat:"feelings",lvl:"B1"},
+{en:"I'm angry about the delay.",es:"Estoy enojado por el retraso.",cat:"feelings",lvl:"A2"},
+{en:"I feel inspired by your words.",es:"Me siento inspirado por tus palabras.",cat:"feelings",lvl:"B1"},
+{en:"I'm worried about my parents.",es:"Estoy preocupado por mis padres.",cat:"feelings",lvl:"A2"},
+{en:"I'm confused. Can you explain?",es:"Estoy confundido. ¿Puedes explicar?",cat:"feelings",lvl:"A2"},
+{en:"I'm hopeful about the future.",es:"Tengo esperanza sobre el futuro.",cat:"feelings",lvl:"B1"},
+{en:"I'm terrified of flying.",es:"Estoy aterrorizado de volar.",cat:"feelings",lvl:"B1"},
+{en:"I feel appreciated when you say that.",es:"Me siento valorado cuando dices eso.",cat:"feelings",lvl:"B1"},
+{en:"I'm exhausted after today.",es:"Estoy agotado después de hoy.",cat:"feelings",lvl:"A2"},
+{en:"I'm passionate about learning.",es:"Soy apasionado por aprender.",cat:"feelings",lvl:"B1"},
+{en:"I feel guilty about lying.",es:"Me siento culpable por mentir.",cat:"feelings",lvl:"B1"},
+{en:"I'm amazed by the view!",es:"¡Estoy asombrado por la vista!",cat:"feelings",lvl:"A2"},
+{en:"I'm homesick.",es:"Extraño mi casa.",cat:"feelings",lvl:"A2"},
+{en:"I feel nostalgic about my childhood.",es:"Siento nostalgia por mi infancia.",cat:"feelings",lvl:"B1"},
+{en:"I'm anxious about the interview.",es:"Estoy ansioso por la entrevista.",cat:"feelings",lvl:"B1"},
+{en:"I'm delighted to hear that!",es:"¡Me encanta escuchar eso!",cat:"feelings",lvl:"B1"},
+{en:"I feel misunderstood.",es:"Me siento incomprendido.",cat:"feelings",lvl:"B1"},
+{en:"I'm satisfied with my progress.",es:"Estoy satisfecho con mi progreso.",cat:"feelings",lvl:"B1"},
+{en:"I feel motivated to keep going.",es:"Me siento motivado para seguir.",cat:"feelings",lvl:"B1"},
+{en:"I'm stressed about deadlines.",es:"Estoy estresado por las fechas límite.",cat:"feelings",lvl:"A2"},
+{en:"I feel peaceful in nature.",es:"Me siento en paz en la naturaleza.",cat:"feelings",lvl:"B1"},
+{en:"I'm shocked by the news.",es:"Estoy impactado por las noticias.",cat:"feelings",lvl:"B1"},
+{en:"I'm thrilled about the opportunity!",es:"¡Estoy emocionadísimo por la oportunidad!",cat:"feelings",lvl:"B1"},
+{en:"I feel helpless in this situation.",es:"Me siento impotente en esta situación.",cat:"feelings",lvl:"B2"},
+{en:"I'm content with my life.",es:"Estoy contento con mi vida.",cat:"feelings",lvl:"B1"},
+{en:"I feel determined to succeed.",es:"Me siento determinado a tener éxito.",cat:"feelings",lvl:"B1"},
+{en:"I'm furious about what they did.",es:"Estoy furioso por lo que hicieron.",cat:"feelings",lvl:"B1"},
+{en:"I feel blessed to have you.",es:"Me siento bendecido de tenerte.",cat:"feelings",lvl:"B1"},
+{en:"I'm skeptical about that claim.",es:"Soy escéptico sobre esa afirmación.",cat:"feelings",lvl:"B2"},
+{en:"I feel indifferent about it.",es:"Me siento indiferente al respecto.",cat:"feelings",lvl:"B2"},
+{en:"I'm heartbroken.",es:"Tengo el corazón roto.",cat:"feelings",lvl:"B1"},
+{en:"I feel sympathetic towards them.",es:"Siento empatía hacia ellos.",cat:"feelings",lvl:"B2"},
+{en:"I'm optimistic about tomorrow.",es:"Soy optimista sobre el mañana.",cat:"feelings",lvl:"B1"},
+{en:"I feel alive when I travel.",es:"Me siento vivo cuando viajo.",cat:"feelings",lvl:"B1"},
+// ── IDIOMS & EXPRESSIONS (50) ──
+{en:"It's raining cats and dogs.",es:"Está lloviendo a cántaros.",cat:"idioms",lvl:"B1"},
+{en:"Break a leg!",es:"¡Mucha suerte! (en el escenario)",cat:"idioms",lvl:"B1"},
+{en:"It's a piece of cake.",es:"Es pan comido.",cat:"idioms",lvl:"B1"},
+{en:"Better late than never.",es:"Más vale tarde que nunca.",cat:"idioms",lvl:"A2"},
+{en:"Actions speak louder than words.",es:"Las acciones hablan más que las palabras.",cat:"idioms",lvl:"B1"},
+{en:"Don't judge a book by its cover.",es:"No juzgues un libro por su portada.",cat:"idioms",lvl:"B1"},
+{en:"Every cloud has a silver lining.",es:"No hay mal que por bien no venga.",cat:"idioms",lvl:"B2"},
+{en:"The early bird catches the worm.",es:"Al que madruga, Dios le ayuda.",cat:"idioms",lvl:"B1"},
+{en:"When in Rome, do as the Romans do.",es:"Donde fueres, haz lo que vieres.",cat:"idioms",lvl:"B1"},
+{en:"Kill two birds with one stone.",es:"Matar dos pájaros de un tiro.",cat:"idioms",lvl:"B1"},
+{en:"You can't have your cake and eat it too.",es:"No puedes tenerlo todo.",cat:"idioms",lvl:"B2"},
+{en:"The ball is in your court.",es:"La decisión es tuya.",cat:"idioms",lvl:"B1"},
+{en:"Bite the bullet.",es:"Apretar los dientes y aguantar.",cat:"idioms",lvl:"B2"},
+{en:"Speak of the devil!",es:"¡Hablando del rey de Roma!",cat:"idioms",lvl:"B1"},
+{en:"Hit the nail on the head.",es:"Dar en el clavo.",cat:"idioms",lvl:"B1"},
+{en:"Let's call it a day.",es:"Dejémoslo por hoy.",cat:"idioms",lvl:"B1"},
+{en:"I'm feeling under the weather.",es:"Me siento mal / indispuesto.",cat:"idioms",lvl:"B1"},
+{en:"That rings a bell.",es:"Eso me suena familiar.",cat:"idioms",lvl:"B1"},
+{en:"We'll cross that bridge when we come to it.",es:"Ya lo resolveremos cuando llegue el momento.",cat:"idioms",lvl:"B2"},
+{en:"It costs an arm and a leg.",es:"Cuesta un ojo de la cara.",cat:"idioms",lvl:"B1"},
+{en:"Don't put all your eggs in one basket.",es:"No pongas todos los huevos en una canasta.",cat:"idioms",lvl:"B1"},
+{en:"Time flies when you're having fun.",es:"El tiempo vuela cuando te diviertes.",cat:"idioms",lvl:"A2"},
+{en:"Practice makes perfect.",es:"La práctica hace al maestro.",cat:"idioms",lvl:"A2"},
+{en:"You're pulling my leg!",es:"¡Me estás tomando el pelo!",cat:"idioms",lvl:"B1"},
+{en:"I slept like a log.",es:"Dormí como un tronco.",cat:"idioms",lvl:"B1"},
+{en:"It's not rocket science.",es:"No es tan complicado.",cat:"idioms",lvl:"B1"},
+{en:"Keep your chin up.",es:"No te desanimes.",cat:"idioms",lvl:"B1"},
+{en:"The best of both worlds.",es:"Lo mejor de ambos mundos.",cat:"idioms",lvl:"B1"},
+{en:"Once in a blue moon.",es:"Muy de vez en cuando.",cat:"idioms",lvl:"B1"},
+{en:"Hang in there!",es:"¡Aguanta! / ¡Resiste!",cat:"idioms",lvl:"B1"},
+{en:"I'm on the same page.",es:"Estamos en la misma sintonía.",cat:"idioms",lvl:"B1"},
+{en:"Think outside the box.",es:"Piensa de forma creativa.",cat:"idioms",lvl:"B1"},
+{en:"It's a win-win situation.",es:"Es una situación donde todos ganan.",cat:"idioms",lvl:"B1"},
+{en:"Back to square one.",es:"De vuelta al principio.",cat:"idioms",lvl:"B1"},
+{en:"Let's get the ball rolling.",es:"Pongamos las cosas en marcha.",cat:"idioms",lvl:"B1"},
+{en:"I'll sleep on it.",es:"Lo consultaré con la almohada.",cat:"idioms",lvl:"B1"},
+{en:"You nailed it!",es:"¡Lo clavaste! / ¡Lo lograste!",cat:"idioms",lvl:"B1"},
+{en:"That's the last straw.",es:"Es la gota que derramó el vaso.",cat:"idioms",lvl:"B1"},
+{en:"Fingers crossed!",es:"¡Crucemos los dedos!",cat:"idioms",lvl:"A2"},
+{en:"I got cold feet.",es:"Me dio miedo / Me eché para atrás.",cat:"idioms",lvl:"B1"},
+{en:"Don't beat around the bush.",es:"No le des vueltas al asunto.",cat:"idioms",lvl:"B1"},
+{en:"Go the extra mile.",es:"Hacer un esfuerzo adicional.",cat:"idioms",lvl:"B1"},
+{en:"The sky's the limit!",es:"¡El cielo es el límite!",cat:"idioms",lvl:"A2"},
+{en:"A penny for your thoughts.",es:"¿En qué estás pensando?",cat:"idioms",lvl:"B2"},
+{en:"Burning the midnight oil.",es:"Quemarse las pestañas estudiando.",cat:"idioms",lvl:"B2"},
+{en:"Cut to the chase.",es:"Ve al grano.",cat:"idioms",lvl:"B1"},
+{en:"Easy come, easy go.",es:"Lo que fácil viene, fácil se va.",cat:"idioms",lvl:"B1"},
+{en:"Get out of hand.",es:"Salirse de control.",cat:"idioms",lvl:"B1"},
+{en:"In the long run.",es:"A la larga / A largo plazo.",cat:"idioms",lvl:"B1"},
+{en:"It takes two to tango.",es:"Se necesitan dos para bailar tango.",cat:"idioms",lvl:"B1"},
+];
+
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+let custom=JSON.parse(localStorage.getItem('pm_custom')||'[]');
+let starred=new Set(JSON.parse(localStorage.getItem('pm_stars')||'[]'));
+function saveCust(){localStorage.setItem('pm_custom',JSON.stringify(custom))}
+function saveStars(){localStorage.setItem('pm_stars',JSON.stringify([...starred]))}
+function ALL(){return[...BASE,...custom]}
+function filtered(){
+  let p=ALL();
+  if(S.cat!=='all')p=p.filter(x=>x.cat===S.cat);
+  if(S.cat==='starred')p=ALL().filter((_,i)=>starred.has(i));
+  return p;
+}
+
+const MODES=[
+  {id:'browse',label:'📋 Lista'},{id:'flash',label:'🃏 Flashcards'},
+  {id:'quiz',label:'🧠 Quiz'},{id:'write',label:'✍️ Escribir'},
+  {id:'listen',label:'👂 Escuchar'},{id:'data',label:'📦 Datos'},
+];
+const CATS_KEYS=['all',...Object.keys(CATS_META),'starred'];
+
+let S={mode:'browse',cat:'all',items:[],idx:0,answers:[],answered:false,flipped:false,
+  page:0,perPage:20,search:'',
+  stats:{attempts:0,correct:0,streak:0,best:0}};
+
+const shuffle=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]]}return b};
+const spkSVG=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>`;
+
+function speak(text,rate=0.85){
+  if(!('speechSynthesis' in window))return;speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=rate;
+  const v=speechSynthesis.getVoices();
+  const pick=v.find(x=>x.lang.startsWith('en')&&x.name.includes('Google'))||v.find(x=>x.lang.startsWith('en-US'))||v.find(x=>x.lang.startsWith('en'));
+  if(pick)u.voice=pick;speechSynthesis.speak(u);
+}
+if('speechSynthesis' in window)speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices();
+
+// ═══════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════
+function render(){rStats();rModes();rCats();rMain()}
+
+function rStats(){
+  const all=ALL(),pct=S.stats.attempts?Math.round(S.stats.correct/S.stats.attempts*100):0;
+  document.getElementById('stats').innerHTML=`
+    <div class="st"><div class="st-n">${all.length}</div><div class="st-l">Frases</div></div>
+    <div class="st"><div class="st-n" style="color:var(--c1)">${starred.size}⭐</div><div class="st-l">Favoritas</div></div>
+    <div class="st"><div class="st-n">${S.stats.attempts}</div><div class="st-l">Intentos</div></div>
+    <div class="st"><div class="st-n" style="color:var(--ok)">${S.stats.correct}</div><div class="st-l">Correctas</div></div>
+    <div class="st"><div class="st-n" style="color:var(--c4)">${pct}%</div><div class="st-l">Precisión</div></div>`;
+}
+
+function rModes(){
+  document.getElementById('modes').innerHTML=MODES.map(m=>`<button class="tab ${S.mode===m.id?'on':''}" onclick="setMode('${m.id}')">${m.label}</button>`).join('');
+}
+
+function rCats(){
+  const el=document.getElementById('cats');
+  if(S.mode==='data'){el.innerHTML='';return}
+  el.innerHTML=CATS_KEYS.map(k=>{
+    const on=S.cat===k;
+    if(k==='all')return`<button class="ct" style="${on?'border-color:rgba(255,255,255,.15);background:var(--s3);color:var(--tx)':''}" onclick="setCat('all')">Todas (${ALL().length})</button>`;
+    if(k==='starred')return`<button class="ct" style="${on?'border-color:var(--c4d);background:var(--c4b);color:var(--c4)':''}" onclick="setCat('starred')">⭐ (${starred.size})</button>`;
+    const m=CATS_META[k];const c=ALL().filter(x=>x.cat===k).length;
+    return`<button class="ct" style="${on?`border-color:${m.bd};background:${m.bg};color:${m.color}`:''}" onclick="setCat('${k}')">${m.icon} ${m.name.split(' ')[0]} (${c})</button>`;
+  }).join('');
+}
+
+function rMain(){
+  const el=document.getElementById('main');
+  ({browse:rBrowse,flash:rFlash,quiz:rQuiz,write:rWrite,listen:rListen,data:rData})[S.mode](el);
+}
+
+// ═══ BROWSE ═══
+function rBrowse(el){
+  let list=filtered();
+  if(S.search){const q=S.search.toLowerCase();list=list.filter(p=>p.en.toLowerCase().includes(q)||p.es.toLowerCase().includes(q))}
+  const total=list.length;const pages=Math.ceil(total/S.perPage);
+  const page=list.slice(S.page*S.perPage,(S.page+1)*S.perPage);
+  const lvlC={A1:'var(--c1)',A2:'var(--c5)',B1:'var(--c4)',B2:'var(--c6)',C1:'var(--c3)'};
+
+  el.innerHTML=`<div class="card"><div class="card-h"><div class="card-t">Lista <span class="pill" style="background:var(--s3);color:var(--tx3)">${total} frases</span></div></div>
+    <div class="card-b">
+      <input class="srch" placeholder="🔍 Buscar en inglés o español..." value="${S.search}" oninput="S.search=this.value;S.page=0;rMain()">
+      ${page.map(p=>{const idx=ALL().indexOf(p);const st=starred.has(idx);const cm=CATS_META[p.cat]||{color:'var(--tx3)'};
+        return`<div class="ph-item">
+          <button class="spk" onclick="speak('${p.en.replace(/'/g,"\\'")}')">${spkSVG}</button>
+          <div class="ph-en" style="color:${cm.color}">${p.en}</div>
+          <div class="ph-es">${p.es}</div>
+          <span class="ph-lvl" style="background:${lvlC[p.lvl]||'var(--tx3)'};color:var(--bg)">${p.lvl}</span>
+          <span class="ph-star ${st?'on':''}" onclick="toggleStar(${idx})">${st?'⭐':'☆'}</span>
+        </div>`;
+      }).join('')}
+      <div class="pages">
+        <button class="btn btn-sm" ${S.page<=0?'disabled':''} onclick="S.page--;rMain()">←</button>
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--tx3)">${S.page+1}/${pages||1}</span>
+        <button class="btn btn-sm" ${S.page>=pages-1?'disabled':''} onclick="S.page++;rMain()">→</button>
+      </div>
+    </div></div>`;
+}
+
+function toggleStar(idx){if(starred.has(idx))starred.delete(idx);else starred.add(idx);saveStars();render()}
+
+// ═══ FLASHCARDS ═══
+function initFlash(){const p=filtered();S.items=shuffle(p).slice(0,20);S.idx=0;S.flipped=false}
+function rFlash(el){
+  if(!S.items.length)initFlash();
+  if(!S.items.length){el.innerHTML='<div class="card"><div class="card-b tc" style="color:var(--tx2)">No hay frases.</div></div>';return}
+  if(S.idx>=S.items.length){el.innerHTML=`<div class="card"><div class="card-b tc"><div style="font-size:1.5rem;margin-bottom:8px">🎉</div><div style="margin-bottom:14px;font-weight:700">¡Ronda completada!</div><div class="btn-row"><button class="btn btn-ok" onclick="S.items=[];rMain()">🔄 Nueva Ronda</button></div></div></div>`;return}
+  const p=S.items[S.idx];const cm=CATS_META[p.cat]||{color:'var(--tx2)',icon:''};
+  el.innerHTML=`<div class="card">
+    <div class="card-h"><div class="card-t">Flashcard <span class="pill" style="background:var(--s3);color:var(--tx3)">${S.idx+1}/${S.items.length}</span></div>
+      <button class="spk spk-big" onclick="speak('${p.en.replace(/'/g,"\\'")}',.8)">${spkSVG}</button>
+    </div>
+    <div class="card-b">
+      <div class="prog">${S.items.map((_,i)=>`<div class="prog-d ${i<S.idx?'ok':i===S.idx?'cur':''}"></div>`).join('')}</div>
+      <div class="fc-card" onclick="S.flipped=!S.flipped;rMain()">
+        ${S.flipped?`
+          <div class="fc-label" style="color:${cm.color}">English</div>
+          <div class="fc-main" style="color:${cm.color}">${p.en}</div>
+          <div class="fc-sub">${p.es}</div>
+        `:`
+          <div class="fc-label">Español</div>
+          <div class="fc-main">${p.es}</div>
+          <div class="fc-hint">Toca para ver la frase en inglés</div>
+        `}
+        <div class="fc-flip">${S.flipped?'🇺🇸':'🇲🇽'} tap to flip</div>
+      </div>
+      <div class="btn-row" style="margin-top:14px">
+        <button class="btn" onclick="S.idx++;S.flipped=false;rMain()">Siguiente →</button>
+        <button class="btn btn-sm" onclick="speak('${p.en.replace(/'/g,"\\'")}',.65)">🐢 Lento</button>
+        <button class="btn btn-sm" onclick="speak('${p.en.replace(/'/g,"\\'")}',1)">🐇 Rápido</button>
+      </div>
+    </div></div>`;
+}
+
+// ═══ QUIZ ═══
+function initQuiz(){const p=filtered();S.items=shuffle(p).slice(0,12);S.idx=0;S.answers=[];S.answered=false}
+function rQuiz(el){
+  if(!S.items.length)initQuiz();
+  if(S.idx>=S.items.length){rEnd(el);return}
+  const p=S.items[S.idx];const cm=CATS_META[p.cat]||{};
+  const prog=S.items.map((_,i)=>{if(i<S.answers.length)return S.answers[i]?'ok':'err';if(i===S.idx)return'cur';return''});
+  let opts=[p.en];const pool=shuffle(ALL().filter(x=>x.en!==p.en));
+  for(const o of pool){if(opts.length>=4)break;if(!opts.includes(o.en))opts.push(o.en)}
+  opts=shuffle(opts);
+
+  el.innerHTML=`<div class="card"><div class="card-h"><div class="card-t">Quiz <span class="pill" style="background:var(--s3);color:var(--tx3)">${S.idx+1}/${S.items.length}</span></div>
+    <button class="spk" onclick="speak('${p.en.replace(/'/g,"\\'")}')">${spkSVG}</button></div>
+    <div class="card-b">
+      <div class="prog">${prog.map(x=>`<div class="prog-d ${x}"></div>`).join('')}</div>
+      <div class="q-prompt">${p.es}</div>
+      <div class="q-grid" id="qO">${opts.map(o=>`<button class="q-opt" onclick="aQuiz(this,${o===p.en},'${p.en.replace(/'/g,"\\'")}')">${o}</button>`).join('')}</div>
+      <div class="fb" id="qFb"></div>
+      <div class="btn-row"><button class="btn hidden" id="nxBtn" onclick="S.idx++;S.answered=false;rMain()">Siguiente →</button></div>
+    </div></div>`;
+}
+function aQuiz(btn,ok,correct){
+  if(S.answered)return;S.answered=true;S.stats.attempts++;S.answers.push(ok);
+  document.querySelectorAll('#qO .q-opt').forEach(o=>{o.classList.add('dis');if(o.textContent===correct)o.classList.add('right')});
+  btn.classList.add(ok?'right':'wrong');
+  const fb=document.getElementById('qFb');fb.classList.add('show');
+  if(ok){S.stats.correct++;S.stats.streak++;S.stats.best=Math.max(S.stats.best,S.stats.streak);fb.className='fb show ok';fb.textContent='✅ ¡Correcto!';speak(correct,.85)}
+  else{S.stats.streak=0;fb.className='fb show no';fb.innerHTML=`❌ Correcto: <strong>${correct}</strong>`}
+  document.getElementById('nxBtn').classList.remove('hidden');rStats();
+}
+
+// ═══ WRITE ═══
+function initWrite(){const p=filtered();S.items=shuffle(p).slice(0,10);S.idx=0;S.answers=[];S.answered=false}
+function rWrite(el){
+  if(!S.items.length)initWrite();
+  if(S.idx>=S.items.length){rEnd(el);return}
+  const p=S.items[S.idx];
+  const prog=S.items.map((_,i)=>{if(i<S.answers.length)return S.answers[i]?'ok':'err';if(i===S.idx)return'cur';return''});
+  el.innerHTML=`<div class="card"><div class="card-h"><div class="card-t">Escribir <span class="pill" style="background:var(--s3);color:var(--tx3)">${S.idx+1}/${S.items.length}</span></div>
+    <button class="spk" onclick="speak('${p.en.replace(/'/g,"\\'")}')">${spkSVG}</button></div>
+    <div class="card-b">
+      <div class="prog">${prog.map(x=>`<div class="prog-d ${x}"></div>`).join('')}</div>
+      <div class="q-prompt" style="font-size:1rem">${p.es}</div>
+      <input class="w-input" id="wIn" placeholder="Escribe la frase en inglés..." autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter'&&!S.answered)chkWrite()">
+      <div class="fb" id="wFb"></div>
+      <div class="btn-row" style="margin-top:10px">
+        <button class="btn btn-ok" id="chkBtn" onclick="chkWrite()">✓ Verificar</button>
+        <button class="btn hidden" id="nxBtn2" onclick="S.idx++;S.answered=false;rMain()">Siguiente →</button>
+        <button class="btn btn-sm" onclick="speak('${p.en.replace(/'/g,"\\'")}',.65)">🐢 Pista audio</button>
+      </div>
+    </div></div>`;
+  setTimeout(()=>document.getElementById('wIn')?.focus(),100);
+}
+function chkWrite(){
+  if(S.answered)return;S.answered=true;S.stats.attempts++;
+  const p=S.items[S.idx];const input=document.getElementById('wIn');
+  const norm=s=>s.toLowerCase().replace(/[^\w\s]/g,'').replace(/\s+/g,' ').trim();
+  const ok=norm(input.value)===norm(p.en);
+  S.answers.push(ok);
+  const fb=document.getElementById('wFb');fb.classList.add('show');
+  if(ok){S.stats.correct++;S.stats.streak++;S.stats.best=Math.max(S.stats.best,S.stats.streak);input.classList.add('ok');fb.className='fb show ok';fb.textContent='✅ ¡Perfecto!';speak(p.en,.85)}
+  else{S.stats.streak=0;input.classList.add('bad');fb.className='fb show no';fb.innerHTML=`❌ Correcto: <strong>${p.en}</strong>`}
+  document.getElementById('chkBtn').classList.add('hidden');document.getElementById('nxBtn2').classList.remove('hidden');rStats();
+}
+
+// ═══ LISTEN ═══
+function initListen(){const p=filtered();S.items=shuffle(p).slice(0,10);S.idx=0;S.answers=[];S.answered=false}
+function rListen(el){
+  if(!S.items.length)initListen();
+  if(S.idx>=S.items.length){rEnd(el);return}
+  const p=S.items[S.idx];
+  const prog=S.items.map((_,i)=>{if(i<S.answers.length)return S.answers[i]?'ok':'err';if(i===S.idx)return'cur';return''});
+  el.innerHTML=`<div class="card"><div class="card-h"><div class="card-t">Escuchar y Escribir <span class="pill" style="background:var(--s3);color:var(--tx3)">${S.idx+1}/${S.items.length}</span></div></div>
+    <div class="card-b">
+      <div class="prog">${prog.map(x=>`<div class="prog-d ${x}"></div>`).join('')}</div>
+      <div class="tc" style="margin:16px 0">
+        <button class="spk spk-big" onclick="speak('${p.en.replace(/'/g,"\\'")}',.85)" style="margin:0 auto">${spkSVG}</button>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--tx3);margin-top:6px">Escucha y escribe lo que oyes</div>
+      </div>
+      <div class="btn-row" style="margin-bottom:12px">
+        <button class="btn btn-sm" onclick="speak('${p.en.replace(/'/g,"\\'")}',.55)">🐢 Muy lento</button>
+        <button class="btn btn-sm" onclick="speak('${p.en.replace(/'/g,"\\'")}',.85)">🔊 Normal</button>
+        <button class="btn btn-sm" onclick="speak('${p.en.replace(/'/g,"\\'")}',1.1)">🐇 Rápido</button>
+      </div>
+      <input class="w-input" id="lIn" placeholder="Escribe lo que escuchas..." autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter'&&!S.answered)chkListen()">
+      <div class="fb" id="lFb"></div>
+      <div class="btn-row" style="margin-top:10px">
+        <button class="btn btn-ok" id="lChk" onclick="chkListen()">✓ Verificar</button>
+        <button class="btn hidden" id="lNx" onclick="S.idx++;S.answered=false;rMain()">Siguiente →</button>
+      </div>
+    </div></div>`;
+  setTimeout(()=>{speak(p.en,.85);document.getElementById('lIn')?.focus()},200);
+}
+function chkListen(){
+  if(S.answered)return;S.answered=true;S.stats.attempts++;
+  const p=S.items[S.idx];const input=document.getElementById('lIn');
+  const norm=s=>s.toLowerCase().replace(/[^\w\s]/g,'').replace(/\s+/g,' ').trim();
+  const ok=norm(input.value)===norm(p.en);
+  S.answers.push(ok);
+  const fb=document.getElementById('lFb');fb.classList.add('show');
+  if(ok){S.stats.correct++;S.stats.streak++;input.classList.add('ok');fb.className='fb show ok';fb.innerHTML=`✅ ¡Correcto! — <em>${p.es}</em>`}
+  else{S.stats.streak=0;input.classList.add('bad');fb.className='fb show no';fb.innerHTML=`❌ Correcto: <strong>${p.en}</strong><br><em>${p.es}</em>`}
+  document.getElementById('lChk').classList.add('hidden');document.getElementById('lNx').classList.remove('hidden');rStats();
+}
+
+// ═══ END SCREEN ═══
+function rEnd(el){
+  const ok=S.answers.filter(Boolean).length;const pct=Math.round(ok/S.answers.length*100);
+  const color=pct>=80?'var(--ok)':pct>=50?'var(--c4)':'var(--err)';
+  el.innerHTML=`<div class="card"><div class="card-b tc">
+    <div class="score-big" style="color:${color}">${pct}%</div>
+    <div class="score-sub">${ok}/${S.answers.length} correctas</div>
+    <div class="btn-row"><button class="btn btn-ok" onclick="S.items=[];rMain()">🔄 Nueva Ronda</button><button class="btn" onclick="setMode('browse')">📋 Lista</button></div>
+  </div></div>`;
+}
+
+// ═══ DATA (Import/Export) ═══
+function rData(el){
+  const sample=JSON.stringify([
+    {en:"What goes around comes around.",es:"Lo que siembras, cosechas.",cat:"idioms",lvl:"B1"},
+    {en:"I'm running errands.",es:"Estoy haciendo mandados.",cat:"daily",lvl:"A2"}
+  ],null,2);
+  el.innerHTML=`<div class="card"><div class="card-h"><div class="card-t">📦 Importar / Exportar Frases</div></div>
+    <div class="card-b">
+      <p style="font-size:.84rem;color:var(--tx2);margin-bottom:12px;line-height:1.5">Carga un JSON con tus propias frases. Formato: array de objetos con <code style="background:var(--s3);padding:1px 5px;border-radius:4px;font-size:10px">en, es, cat, lvl</code></p>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--tx3);margin-bottom:4px">CATEGORÍAS VÁLIDAS</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px">${Object.entries(CATS_META).map(([k,v])=>`<span style="font-size:10px;padding:3px 8px;border-radius:5px;background:${v.bg};color:${v.color};border:1px solid ${v.bd}">${v.icon} ${k}</span>`).join('')}</div>
+      <textarea class="json-area" id="jsonIn" placeholder='${sample.replace(/'/g,"&#39;")}'></textarea>
+      <div class="btn-row" style="margin-top:8px;justify-content:flex-start">
+        <button class="btn btn-ok" onclick="importJSON()">📥 Importar</button>
+        <button class="btn" onclick="exportJSON()">📤 Exportar Todo</button>
+        <button class="btn btn-sm" onclick="loadSample()">📋 Ejemplo</button>
+        <button class="btn btn-sm" onclick="if(confirm('¿Borrar frases custom?')){custom=[];saveCust();render()}">🗑 Reset</button>
+        <input type="file" accept=".json" id="fileIn" onchange="importFile(event)" style="font-size:11px;color:var(--tx2);max-width:160px">
+      </div>
+      <div id="jsonFb" style="margin-top:10px"></div>
+      <div style="margin-top:18px;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:6px">
+        ${Object.entries(CATS_META).map(([k,v])=>{const b=BASE.filter(x=>x.cat===k).length;const c=custom.filter(x=>x.cat===k).length;
+          return`<div style="padding:10px;background:var(--s2);border-radius:10px;border:1px solid var(--bd)">
+            <div style="font-size:.8rem;font-weight:600;color:${v.color}">${v.icon} ${v.name}</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--tx2)">${b} base + <span style="color:var(--ok)">${c} custom</span></div>
+          </div>`;
+        }).join('')}
+      </div>
+      ${custom.length?`<div style="margin-top:16px"><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--tx3);margin-bottom:6px">FRASES CUSTOM (${custom.length})</div>
+        ${custom.slice(0,20).map((p,i)=>`<div class="ph-item"><div class="ph-en" style="font-size:.8rem">${p.en}</div><div class="ph-es" style="font-size:.78rem">${p.es}</div>
+          <button style="background:none;border:none;color:var(--err);cursor:pointer;font-size:14px" onclick="custom.splice(${i},1);saveCust();render()">×</button></div>`).join('')}
+        ${custom.length>20?`<div style="color:var(--tx3);font-size:.8rem;text-align:center">+${custom.length-20} más</div>`:''}
+      </div>`:''}
+    </div></div>`;
+}
+function importJSON(){
+  try{const raw=document.getElementById('jsonIn').value.trim();if(!raw)return showJFb('Pega JSON','var(--err)');
+    const data=JSON.parse(raw);let n=0;
+    (Array.isArray(data)?data:[data]).forEach(p=>{if(p.en&&p.es){custom.push({en:p.en,es:p.es,cat:p.cat||'idioms',lvl:p.lvl||'B1'});n++}});
+    saveCust();document.getElementById('jsonIn').value='';showJFb(`✅ ${n} frases importadas`,'var(--ok)');render();
+  }catch(e){showJFb(`❌ ${e.message}`,'var(--err)')}
+}
+function importFile(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{document.getElementById('jsonIn').value=ev.target.result;importJSON()};r.readAsText(f)}
+function exportJSON(){const d=[...BASE,...custom];const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='phrasemaster-data.json';a.click();URL.revokeObjectURL(u)}
+function loadSample(){document.getElementById('jsonIn').value=JSON.stringify([
+  {en:"What goes around comes around.",es:"Lo que siembras, cosechas.",cat:"idioms",lvl:"B1"},
+  {en:"I'm running errands.",es:"Estoy haciendo mandados.",cat:"daily",lvl:"A2"},
+  {en:"Can I get a doggy bag?",es:"¿Me da una bolsa para llevar?",cat:"food",lvl:"A2"},
+  {en:"I'm on cloud nine!",es:"¡Estoy en las nubes de felicidad!",cat:"idioms",lvl:"B1"},
+  {en:"Hold your horses!",es:"¡Espera un momento!",cat:"idioms",lvl:"B1"},
+],null,2)}
+function showJFb(m,c){const el=document.getElementById('jsonFb');el.innerHTML=`<div style="padding:8px 12px;border-radius:8px;background:var(--s2);border:1px solid var(--bd);color:${c};font-size:.82rem">${m}</div>`;setTimeout(()=>el.innerHTML='',4000)}
+
+// ═══ ACTIONS ═══
+function setMode(m){S.mode=m;S.items=[];S.page=0;S.search='';render()}
+function setCat(c){S.cat=c;S.items=[];S.page=0;render()}
+
+render();
+</script>
+</body>
+</html>

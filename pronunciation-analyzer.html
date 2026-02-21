@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pronunciation Analyzer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e17;
+    --surface: #111827;
+    --surface-2: #1a2236;
+    --surface-3: #232d42;
+    --accent: #22d3ee;
+    --accent-glow: rgba(34, 211, 238, 0.15);
+    --accent-dim: rgba(34, 211, 238, 0.4);
+    --success: #34d399;
+    --warning: #fbbf24;
+    --error: #f87171;
+    --text: #e2e8f0;
+    --text-dim: #94a3b8;
+    --text-muted: #64748b;
+    --border: rgba(255,255,255,0.06);
+    --radius: 16px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Ambient background */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(ellipse at 30% 20%, rgba(34, 211, 238, 0.04) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 80%, rgba(99, 102, 241, 0.03) 0%, transparent 50%);
+    z-index: -1;
+    animation: ambientShift 20s ease-in-out infinite;
+  }
+
+  @keyframes ambientShift {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    50% { transform: translate(-2%, 1%) rotate(1deg); }
+  }
+
+  .app {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 32px 20px 60px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 40px;
+    animation: fadeInDown 0.6s ease;
+  }
+
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: var(--accent-glow);
+    border: 1px solid rgba(34, 211, 238, 0.2);
+    border-radius: 100px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 16px;
+  }
+
+  .header h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #e2e8f0 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+  }
+
+  .header p {
+    color: var(--text-dim);
+    font-size: 0.95rem;
+  }
+
+  /* Level Selector */
+  .level-bar {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    animation: fadeIn 0.6s ease 0.2s both;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .level-btn {
+    padding: 8px 18px;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    background: var(--surface);
+    color: var(--text-dim);
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    letter-spacing: 0.5px;
+  }
+
+  .level-btn:hover {
+    border-color: var(--accent-dim);
+    color: var(--accent);
+    background: var(--accent-glow);
+  }
+
+  .level-btn.active {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* Card */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-bottom: 20px;
+    animation: fadeInUp 0.5s ease 0.3s both;
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+
+  /* Sentence Display */
+  .sentence-area {
+    position: relative;
+  }
+
+  .target-sentence {
+    font-size: 1.55rem;
+    font-weight: 600;
+    line-height: 1.6;
+    color: var(--text);
+    margin-bottom: 20px;
+    min-height: 60px;
+    letter-spacing: -0.2px;
+  }
+
+  .sentence-controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface-2);
+    color: var(--text-dim);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn:hover {
+    border-color: rgba(255,255,255,0.12);
+    color: var(--text);
+    background: var(--surface-3);
+  }
+
+  .btn svg { width: 16px; height: 16px; }
+
+  .btn-next {
+    background: var(--accent-glow);
+    border-color: rgba(34, 211, 238, 0.2);
+    color: var(--accent);
+  }
+
+  .btn-next:hover {
+    background: rgba(34, 211, 238, 0.2);
+    border-color: rgba(34, 211, 238, 0.4);
+  }
+
+  /* Microphone Section */
+  .mic-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    animation: fadeInUp 0.5s ease 0.4s both;
+  }
+
+  .mic-btn {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    border: 2px solid var(--accent-dim);
+    background: var(--surface);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .mic-btn::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
+  }
+
+  .mic-btn:hover {
+    background: var(--accent-glow);
+    border-color: var(--accent);
+    transform: scale(1.05);
+  }
+
+  .mic-btn:hover::before {
+    border-color: rgba(34, 211, 238, 0.15);
+  }
+
+  .mic-btn.recording {
+    background: rgba(248, 113, 113, 0.1);
+    border-color: var(--error);
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  .mic-btn.recording::before {
+    border-color: rgba(248, 113, 113, 0.2);
+    animation: pulseOuter 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(248, 113, 113, 0.3); }
+    50% { box-shadow: 0 0 0 16px rgba(248, 113, 113, 0); }
+  }
+
+  @keyframes pulseOuter {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.08); opacity: 0.5; }
+  }
+
+  .mic-btn svg {
+    width: 32px;
+    height: 32px;
+    color: var(--accent);
+    transition: color 0.2s;
+  }
+
+  .mic-btn.recording svg { color: var(--error); }
+
+  .mic-hint {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .mic-hint strong { color: var(--text-dim); }
+
+  /* Wave Animation */
+  .wave-container {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    height: 32px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .wave-container.active { opacity: 1; }
+
+  .wave-bar {
+    width: 3px;
+    height: 8px;
+    background: var(--error);
+    border-radius: 4px;
+    animation: wave 0.6s ease-in-out infinite alternate;
+  }
+
+  .wave-bar:nth-child(1) { animation-delay: 0s; }
+  .wave-bar:nth-child(2) { animation-delay: 0.1s; }
+  .wave-bar:nth-child(3) { animation-delay: 0.2s; }
+  .wave-bar:nth-child(4) { animation-delay: 0.15s; }
+  .wave-bar:nth-child(5) { animation-delay: 0.05s; }
+
+  @keyframes wave {
+    from { height: 6px; }
+    to { height: 28px; }
+  }
+
+  /* Results */
+  .results {
+    animation: fadeInUp 0.4s ease;
+  }
+
+  .score-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+
+  .score-ring {
+    position: relative;
+    width: 90px;
+    height: 90px;
+    flex-shrink: 0;
+  }
+
+  .score-ring svg {
+    width: 90px;
+    height: 90px;
+    transform: rotate(-90deg);
+  }
+
+  .score-ring .bg-ring {
+    fill: none;
+    stroke: var(--surface-3);
+    stroke-width: 6;
+  }
+
+  .score-ring .progress-ring {
+    fill: none;
+    stroke-width: 6;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1s ease, stroke 0.3s;
+  }
+
+  .score-value {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 1.3rem;
+    font-weight: 700;
+  }
+
+  .score-detail h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .score-detail p {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  /* Word Breakdown */
+  .word-breakdown {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .word-chip {
+    padding: 6px 14px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+    cursor: default;
+  }
+
+  .word-chip.correct {
+    background: rgba(52, 211, 153, 0.1);
+    border-color: rgba(52, 211, 153, 0.25);
+    color: var(--success);
+  }
+
+  .word-chip.close {
+    background: rgba(251, 191, 36, 0.1);
+    border-color: rgba(251, 191, 36, 0.25);
+    color: var(--warning);
+  }
+
+  .word-chip.wrong {
+    background: rgba(248, 113, 113, 0.1);
+    border-color: rgba(248, 113, 113, 0.25);
+    color: var(--error);
+    text-decoration: line-through;
+    text-decoration-thickness: 1.5px;
+  }
+
+  .word-chip.missed {
+    background: rgba(100, 116, 139, 0.1);
+    border-color: rgba(100, 116, 139, 0.2);
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  /* What you said section */
+  .your-speech {
+    background: var(--surface-2);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+  }
+
+  .your-speech-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  .your-speech-text {
+    font-size: 1.1rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+    font-style: italic;
+  }
+
+  /* Tip */
+  .tip-box {
+    display: flex;
+    gap: 12px;
+    padding: 16px;
+    background: rgba(34, 211, 238, 0.04);
+    border: 1px solid rgba(34, 211, 238, 0.1);
+    border-radius: 12px;
+  }
+
+  .tip-box .icon {
+    color: var(--accent);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .tip-box p {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  /* Stats Bar */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .stat-item {
+    text-align: center;
+    padding: 16px 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+
+  .stat-number {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+  }
+
+  /* Speed selector */
+  .speed-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .speed-btn {
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--text-muted);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .speed-btn.active {
+    background: var(--accent-glow);
+    border-color: rgba(34, 211, 238, 0.3);
+    color: var(--accent);
+  }
+
+  /* History */
+  .history-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--surface-2);
+    border-radius: 10px;
+    margin-bottom: 8px;
+  }
+
+  .history-sentence {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    flex: 1;
+    margin-right: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .history-score {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  /* No support */
+  .no-support {
+    text-align: center;
+    padding: 40px;
+  }
+
+  .no-support h2 { color: var(--error); margin-bottom: 12px; }
+  .no-support p { color: var(--text-dim); line-height: 1.6; }
+
+  /* Custom input */
+  .custom-input-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .custom-input {
+    flex: 1;
+    padding: 10px 16px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface-2);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .custom-input:focus {
+    border-color: var(--accent-dim);
+  }
+
+  .custom-input::placeholder {
+    color: var(--text-muted);
+  }
+
+  @media (max-width: 600px) {
+    .header h1 { font-size: 1.6rem; }
+    .target-sentence { font-size: 1.2rem; }
+    .score-row { flex-direction: column; text-align: center; }
+    .stats-bar { grid-template-columns: repeat(3, 1fr); }
+    .stat-number { font-size: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+  <!-- Header -->
+  <div class="header">
+    <div class="header-badge">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+      Pronunciation Lab
+    </div>
+    <h1>English Pronunciation Analyzer</h1>
+    <p>Listen, speak, and improve your accent word by word</p>
+  </div>
+
+  <!-- Level Selector -->
+  <div class="level-bar" id="levelBar"></div>
+
+  <!-- Target Sentence Card -->
+  <div class="card sentence-area">
+    <div class="card-label">Target Phrase</div>
+    <div class="target-sentence" id="targetSentence">Loading...</div>
+    <div class="sentence-controls">
+      <button class="btn" id="listenBtn" onclick="speakTarget()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+        Listen
+      </button>
+      <div class="speed-control">
+        <button class="speed-btn active" onclick="setSpeed(0.7, this)">Slow</button>
+        <button class="speed-btn" onclick="setSpeed(1, this)">Normal</button>
+        <button class="speed-btn" onclick="setSpeed(1.2, this)">Fast</button>
+      </div>
+      <button class="btn btn-next" onclick="nextSentence()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
+        Next
+      </button>
+    </div>
+    <!-- Custom input -->
+    <div class="custom-input-row">
+      <input type="text" class="custom-input" id="customInput" placeholder="Or type your own phrase to practice..." onkeydown="if(event.key==='Enter') useCustom()">
+      <button class="btn" onclick="useCustom()">Use</button>
+    </div>
+  </div>
+
+  <!-- Microphone -->
+  <div class="mic-section">
+    <div class="wave-container" id="waveAnim">
+      <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+    </div>
+    <button class="mic-btn" id="micBtn" onclick="toggleRecording()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+    </button>
+    <div class="mic-hint" id="micHint"><strong>Tap</strong> to start recording</div>
+  </div>
+
+  <!-- Results -->
+  <div id="resultsArea" style="display:none; margin-top: 28px;"></div>
+
+  <!-- Session Stats -->
+  <div class="card" style="animation-delay: 0.5s;">
+    <div class="card-label">Session Stats</div>
+    <div class="stats-bar">
+      <div class="stat-item">
+        <div class="stat-number" id="statAttempts">0</div>
+        <div class="stat-label">Attempts</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" id="statAvgScore">—</div>
+        <div class="stat-label">Avg Score</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" id="statBest">—</div>
+        <div class="stat-label">Best</div>
+      </div>
+    </div>
+    <div id="historyList"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// Sentences by CEFR Level
+// ============================================================
+const sentences = {
+  A1: [
+    "Hello, my name is Ricardo.",
+    "I like to eat pizza.",
+    "The cat is on the table.",
+    "Where is the bathroom?",
+    "I am happy today.",
+    "She has a red car.",
+    "We go to school every day.",
+    "This is my family.",
+    "I want some water, please.",
+    "The weather is nice today.",
+    "How much does this cost?",
+    "I live in a small house.",
+    "Do you speak English?",
+    "I have two brothers.",
+    "It is seven o'clock."
+  ],
+  A2: [
+    "I usually wake up at seven in the morning.",
+    "Could you help me find the train station?",
+    "Last weekend we went to the beach.",
+    "I enjoy reading books before going to bed.",
+    "The restaurant is next to the supermarket.",
+    "She is taller than her sister.",
+    "What do you like to do in your free time?",
+    "I have been studying English for three months.",
+    "The movie was really interesting and fun.",
+    "We need to buy some groceries for dinner.",
+    "Can I have the menu, please?",
+    "I would like to book a table for two.",
+    "My favorite season is autumn because of the colors.",
+    "He works as a teacher at the local school.",
+    "There are many beautiful parks in this city."
+  ],
+  B1: [
+    "Although it was raining, we decided to go for a walk.",
+    "I have been working on this project since last month.",
+    "If I had more time, I would learn to play the guitar.",
+    "The documentary about climate change was thought-provoking.",
+    "She recommended that I should read that book.",
+    "The conference will be held in the main auditorium.",
+    "I am considering changing my career path next year.",
+    "Technology has significantly changed the way we communicate.",
+    "Would you mind explaining that concept one more time?",
+    "Despite the difficulties, they managed to finish on time.",
+    "I regret not having traveled more when I was younger.",
+    "The government announced new measures to reduce pollution.",
+    "He suggested we should meet at the coffee shop downtown.",
+    "Learning a new language requires patience and dedication.",
+    "The research indicates that exercise improves mental health."
+  ],
+  B2: [
+    "Had I known about the consequences, I would have acted differently.",
+    "The phenomenon of globalization has transformed international trade.",
+    "It is essential that every citizen participates in democratic processes.",
+    "The correlation between poverty and educational outcomes is well documented.",
+    "She acknowledged that her initial hypothesis had been fundamentally flawed.",
+    "Sustainable development requires balancing economic growth with environmental protection.",
+    "The committee unanimously agreed to postpone the decision until further notice.",
+    "Artificial intelligence is revolutionizing healthcare diagnostics and treatment.",
+    "The journalist investigated allegations of corruption within the organization.",
+    "Despite considerable opposition, the proposal was eventually approved.",
+    "Technological advancements have dramatically altered our perception of privacy.",
+    "The unprecedented economic downturn affected millions of families worldwide.",
+    "Critical thinking skills are increasingly valued in the modern workplace.",
+    "The surgeon performed a groundbreaking procedure that saved the patient.",
+    "Cultural diversity enriches societies and fosters creativity and innovation."
+  ],
+  C1: [
+    "The ramifications of this policy change will reverberate throughout the industry for decades.",
+    "Notwithstanding the overwhelming evidence, the defendant maintained his innocence throughout the trial.",
+    "The juxtaposition of traditional values and modern innovation creates a fascinating cultural dynamic.",
+    "Unprecedented technological disruption has fundamentally altered the socioeconomic landscape.",
+    "The philosopher's treatise on epistemology challenged conventional paradigms of knowledge acquisition.",
+    "Bureaucratic inefficiencies have systematically undermined the efficacy of humanitarian aid programs.",
+    "The intricate interplay between genetics and environment shapes human behavioral development.",
+    "Contemporary literature increasingly reflects the complexities of postcolonial identity formation.",
+    "The proliferation of misinformation poses an existential threat to democratic institutions worldwide.",
+    "Reconciling individual liberty with collective responsibility remains a perennial philosophical challenge."
+  ],
+  C2: [
+    "The epistemological implications of quantum mechanics fundamentally challenge our ontological presuppositions about the nature of reality.",
+    "Sociolinguistic analyses reveal that code-switching serves as a sophisticated mechanism for navigating multicultural identities.",
+    "The inexorable march of technological determinism has engendered a paradigm shift in our conceptualization of human agency.",
+    "Phenomenological hermeneutics offers a compelling framework for interpreting the intersubjective dimensions of aesthetic experience.",
+    "The geopolitical ramifications of anthropogenic climate change necessitate an unprecedented degree of multilateral cooperation.",
+    "Deconstructionist approaches to literary criticism have irrevocably transformed our understanding of authorial intentionality.",
+    "The dialectical tension between individual autonomy and communitarian obligations constitutes a fundamental aporia in political philosophy.",
+    "Neuroplasticity research has categorically debunked the erstwhile dogma regarding the immutability of the adult brain."
+  ]
+};
+
+// ============================================================
+// State
+// ============================================================
+let currentLevel = 'A1';
+let currentSentence = '';
+let speechRate = 0.7;
+let isRecording = false;
+let recognition = null;
+let sessionScores = [];
+
+// ============================================================
+// Speech Recognition Setup
+// ============================================================
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+if (!SpeechRecognition) {
+  document.getElementById('app').innerHTML = `
+    <div class="no-support">
+      <h2>Browser Not Supported</h2>
+      <p>Your browser doesn't support the Web Speech API.<br>Please use <strong>Google Chrome</strong> or <strong>Microsoft Edge</strong> for the best experience.</p>
+    </div>`;
+}
+
+if (SpeechRecognition) {
+  recognition = new SpeechRecognition();
+  recognition.lang = 'en-US';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 3;
+
+  recognition.onresult = (event) => {
+    const spoken = event.results[0][0].transcript;
+    const confidence = event.results[0][0].confidence;
+    stopRecording();
+    analyzeResults(spoken, confidence);
+  };
+
+  recognition.onerror = (event) => {
+    stopRecording();
+    if (event.error === 'no-speech') {
+      document.getElementById('micHint').innerHTML = 'No speech detected. <strong>Try again</strong>';
+    } else {
+      document.getElementById('micHint').innerHTML = `Error: ${event.error}. <strong>Try again</strong>`;
+    }
+  };
+
+  recognition.onend = () => {
+    if (isRecording) stopRecording();
+  };
+}
+
+// ============================================================
+// Initialize
+// ============================================================
+function init() {
+  renderLevels();
+  nextSentence();
+}
+
+function renderLevels() {
+  const bar = document.getElementById('levelBar');
+  bar.innerHTML = Object.keys(sentences).map(level =>
+    `<button class="level-btn ${level === currentLevel ? 'active' : ''}" onclick="setLevel('${level}')">${level}</button>`
+  ).join('');
+}
+
+function setLevel(level) {
+  currentLevel = level;
+  renderLevels();
+  nextSentence();
+}
+
+function nextSentence() {
+  const pool = sentences[currentLevel];
+  let next;
+  do {
+    next = pool[Math.floor(Math.random() * pool.length)];
+  } while (next === currentSentence && pool.length > 1);
+  currentSentence = next;
+  document.getElementById('targetSentence').textContent = currentSentence;
+  document.getElementById('resultsArea').style.display = 'none';
+}
+
+function useCustom() {
+  const input = document.getElementById('customInput');
+  const val = input.value.trim();
+  if (val) {
+    currentSentence = val;
+    document.getElementById('targetSentence').textContent = currentSentence;
+    document.getElementById('resultsArea').style.display = 'none';
+    input.value = '';
+  }
+}
+
+// ============================================================
+// Speech Synthesis
+// ============================================================
+function speakTarget() {
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(currentSentence);
+    utter.lang = 'en-US';
+    utter.rate = speechRate;
+
+    // Try to pick a good English voice
+    const voices = speechSynthesis.getVoices();
+    const englishVoice = voices.find(v => v.lang.startsWith('en') && v.name.includes('Google')) ||
+                         voices.find(v => v.lang.startsWith('en-US')) ||
+                         voices.find(v => v.lang.startsWith('en'));
+    if (englishVoice) utter.voice = englishVoice;
+
+    speechSynthesis.speak(utter);
+  }
+}
+
+function setSpeed(rate, btn) {
+  speechRate = rate;
+  document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// Preload voices
+if ('speechSynthesis' in window) {
+  speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+}
+
+// ============================================================
+// Recording
+// ============================================================
+function toggleRecording() {
+  if (isRecording) {
+    recognition.stop();
+    stopRecording();
+  } else {
+    startRecording();
+  }
+}
+
+function startRecording() {
+  isRecording = true;
+  document.getElementById('micBtn').classList.add('recording');
+  document.getElementById('waveAnim').classList.add('active');
+  document.getElementById('micHint').innerHTML = '<strong>Listening...</strong> Tap to stop';
+  document.getElementById('resultsArea').style.display = 'none';
+  recognition.start();
+}
+
+function stopRecording() {
+  isRecording = false;
+  document.getElementById('micBtn').classList.remove('recording');
+  document.getElementById('waveAnim').classList.remove('active');
+  document.getElementById('micHint').innerHTML = '<strong>Tap</strong> to start recording';
+}
+
+// ============================================================
+// Analysis Engine
+// ============================================================
+function normalizeText(text) {
+  return text.toLowerCase()
+    .replace(/[^a-z0-9'\s]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function levenshtein(a, b) {
+  const m = a.length, n = b.length;
+  const dp = Array.from({length: m + 1}, () => Array(n + 1).fill(0));
+  for (let i = 0; i <= m; i++) dp[i][0] = i;
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      dp[i][j] = a[i-1] === b[j-1]
+        ? dp[i-1][j-1]
+        : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+    }
+  }
+  return dp[m][n];
+}
+
+function wordSimilarity(a, b) {
+  if (a === b) return 1;
+  const dist = levenshtein(a, b);
+  const maxLen = Math.max(a.length, b.length);
+  return Math.max(0, 1 - dist / maxLen);
+}
+
+function analyzeResults(spoken, confidence) {
+  const targetWords = normalizeText(currentSentence).split(' ');
+  const spokenWords = normalizeText(spoken).split(' ');
+
+  // Word-by-word comparison using alignment
+  const wordResults = [];
+  let tIdx = 0;
+  let sIdx = 0;
+
+  while (tIdx < targetWords.length || sIdx < spokenWords.length) {
+    if (tIdx >= targetWords.length) {
+      sIdx++;
+      break;
+    }
+    if (sIdx >= spokenWords.length) {
+      wordResults.push({ word: targetWords[tIdx], status: 'missed', similarity: 0 });
+      tIdx++;
+      continue;
+    }
+
+    const sim = wordSimilarity(targetWords[tIdx], spokenWords[sIdx]);
+
+    if (sim === 1) {
+      wordResults.push({ word: targetWords[tIdx], status: 'correct', similarity: 1 });
+      tIdx++;
+      sIdx++;
+    } else if (sim >= 0.6) {
+      wordResults.push({ word: targetWords[tIdx], status: 'close', similarity: sim, spoken: spokenWords[sIdx] });
+      tIdx++;
+      sIdx++;
+    } else {
+      // Check if next spoken word matches current target
+      if (sIdx + 1 < spokenWords.length && wordSimilarity(targetWords[tIdx], spokenWords[sIdx + 1]) > 0.7) {
+        sIdx++; // skip extra spoken word
+      } else if (tIdx + 1 < targetWords.length && wordSimilarity(targetWords[tIdx + 1], spokenWords[sIdx]) > 0.7) {
+        wordResults.push({ word: targetWords[tIdx], status: 'missed', similarity: 0 });
+        tIdx++;
+      } else {
+        wordResults.push({ word: targetWords[tIdx], status: 'wrong', similarity: sim, spoken: spokenWords[sIdx] });
+        tIdx++;
+        sIdx++;
+      }
+    }
+  }
+
+  // Score
+  const totalWords = wordResults.length || 1;
+  const correctCount = wordResults.filter(w => w.status === 'correct').length;
+  const closeCount = wordResults.filter(w => w.status === 'close').length;
+  const rawScore = ((correctCount + closeCount * 0.5) / totalWords) * 100;
+  const score = Math.round(Math.min(100, rawScore * (0.5 + confidence * 0.5)));
+
+  // Update stats
+  sessionScores.push({ sentence: currentSentence, score, spoken });
+  updateStats();
+
+  // Render results
+  renderResults(score, wordResults, spoken, confidence);
+}
+
+function renderResults(score, wordResults, spoken, confidence) {
+  const area = document.getElementById('resultsArea');
+
+  const scoreColor = score >= 80 ? 'var(--success)' : score >= 50 ? 'var(--warning)' : 'var(--error)';
+  const circumference = 2 * Math.PI * 38;
+  const offset = circumference - (score / 100) * circumference;
+
+  const feedback = score >= 90 ? "Excellent! Your pronunciation is very clear."
+    : score >= 75 ? "Good job! A few words need some practice."
+    : score >= 50 ? "Getting there! Focus on the highlighted words."
+    : "Keep practicing! Listen to the target and try to match each word.";
+
+  const tips = [];
+  const missedWords = wordResults.filter(w => w.status === 'wrong' || w.status === 'missed');
+  if (missedWords.length > 0) {
+    const problematic = missedWords.slice(0, 3).map(w => `"${w.word}"`).join(', ');
+    tips.push(`Focus on: ${problematic}. Listen to them slowly and repeat.`);
+  }
+  const closeWords = wordResults.filter(w => w.status === 'close');
+  if (closeWords.length > 0) {
+    tips.push(`Words like "${closeWords[0].word}" were close — pay attention to the ending sounds.`);
+  }
+  if (score < 60) {
+    tips.push('Try listening at slow speed first, then repeat phrase by phrase.');
+  }
+
+  area.innerHTML = `
+    <div class="results">
+      <div class="card">
+        <div class="card-label">Analysis Results</div>
+
+        <div class="score-row">
+          <div class="score-ring">
+            <svg viewBox="0 0 90 90">
+              <circle class="bg-ring" cx="45" cy="45" r="38"/>
+              <circle class="progress-ring" cx="45" cy="45" r="38"
+                stroke="${scoreColor}"
+                stroke-dasharray="${circumference}"
+                stroke-dashoffset="${offset}"/>
+            </svg>
+            <div class="score-value" style="color: ${scoreColor}">${score}%</div>
+          </div>
+          <div class="score-detail">
+            <h3>${feedback}</h3>
+            <p>Recognition confidence: ${Math.round(confidence * 100)}%</p>
+          </div>
+        </div>
+
+        <div class="card-label" style="margin-top: 8px;">Word Breakdown</div>
+        <div class="word-breakdown">
+          ${wordResults.map(w => {
+            const title = w.status === 'close' ? `title="You said: ${w.spoken}"` :
+                          w.status === 'wrong' ? `title="You said: ${w.spoken || '—'}"` : '';
+            return `<span class="word-chip ${w.status}" ${title}>${w.word}</span>`;
+          }).join('')}
+        </div>
+
+        <div class="your-speech">
+          <div class="your-speech-label">What you said</div>
+          <div class="your-speech-text">"${spoken}"</div>
+        </div>
+
+        ${tips.length > 0 ? `
+        <div class="tip-box">
+          <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <p>${tips.join(' ')}</p>
+        </div>` : ''}
+      </div>
+    </div>`;
+
+  area.style.display = 'block';
+}
+
+function updateStats() {
+  const n = sessionScores.length;
+  const avg = Math.round(sessionScores.reduce((s, x) => s + x.score, 0) / n);
+  const best = Math.max(...sessionScores.map(x => x.score));
+
+  document.getElementById('statAttempts').textContent = n;
+  document.getElementById('statAvgScore').textContent = avg + '%';
+  document.getElementById('statBest').textContent = best + '%';
+
+  // History (last 5)
+  const list = document.getElementById('historyList');
+  const recent = sessionScores.slice(-5).reverse();
+  list.innerHTML = recent.map(item => {
+    const color = item.score >= 80 ? 'var(--success)' : item.score >= 50 ? 'var(--warning)' : 'var(--error)';
+    return `<div class="history-item">
+      <span class="history-sentence">${item.sentence}</span>
+      <span class="history-score" style="color: ${color}">${item.score}%</span>
+    </div>`;
+  }).join('');
+}
+
+// Init
+init();
+</script>
+</body>
+</html>

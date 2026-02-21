@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SoundLab — English Phonetics 44 Sounds</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Victor+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#03060c;--s1:#0a0e1b;--s2:#0f1527;--s3:#162038;--s4:#1d2a48;
+  --cons:#38bdf8;--consB:rgba(56,189,248,.06);--consD:rgba(56,189,248,.22);
+  --vowS:#f472b6;--vowSB:rgba(244,114,182,.06);--vowSD:rgba(244,114,182,.22);
+  --vowL:#a78bfa;--vowLB:rgba(167,139,250,.06);--vowLD:rgba(167,139,250,.22);
+  --diph:#fbbf24;--diphB:rgba(251,191,36,.06);--diphD:rgba(251,191,36,.22);
+  --ok:#22c55e;--okB:rgba(34,197,94,.08);--okD:rgba(34,197,94,.22);
+  --tx:#e2e8f2;--tx2:#8b97b0;--tx3:#55637b;--bd:rgba(255,255,255,.05);--r:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 30% 0%,rgba(56,189,248,.015),transparent 50%),radial-gradient(ellipse at 70% 100%,rgba(244,114,182,.015),transparent 50%);pointer-events:none}
+.app{position:relative;z-index:1;max-width:920px;margin:0 auto;padding:18px 14px 70px}
+
+@keyframes fadeD{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeU{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pop{from{transform:scale(.86);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes ripple{0%{box-shadow:0 0 0 0 rgba(56,189,248,.3)}100%{box-shadow:0 0 0 20px transparent}}
+
+.hdr{text-align:center;margin-bottom:22px;animation:fadeD .5s ease}
+.hdr-tag{display:inline-flex;align-items:center;gap:8px;padding:4px 15px;border-radius:100px;font-family:'Victor Mono',monospace;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:2.5px;color:var(--tx3);border:1px solid var(--bd);background:var(--s1);margin-bottom:10px}
+.hdr h1{font-size:2.2rem;font-weight:900;letter-spacing:-.3px;margin-bottom:3px}
+.hdr p{color:var(--tx2);font-size:.85rem}
+
+/* Stats */
+.sts{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:14px;animation:fadeU .35s ease .05s both}
+@media(max-width:500px){.sts{grid-template-columns:repeat(2,1fr)}}
+.st{padding:10px 4px;background:var(--s1);border:1px solid var(--bd);border-radius:11px;text-align:center}
+.st-n{font-family:'Victor Mono',monospace;font-size:1.05rem;font-weight:700}
+.st-l{font-size:7.5px;color:var(--tx3);text-transform:uppercase;letter-spacing:.8px;margin-top:1px}
+
+/* Tabs */
+.tabs{display:flex;gap:4px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;animation:fadeU .3s ease .08s both}
+.tab{padding:7px 14px;border-radius:100px;border:1.5px solid var(--bd);background:var(--s1);color:var(--tx3);font-size:11.5px;font-weight:600;cursor:pointer;transition:all .22s;font-family:inherit}
+.tab:hover{border-color:rgba(255,255,255,.1);color:var(--tx2)}
+.tab.on{background:var(--s3);color:var(--tx);border-color:rgba(255,255,255,.12)}
+
+/* Filters */
+.frow{display:flex;gap:4px;justify-content:center;flex-wrap:wrap;margin-bottom:14px;animation:fadeU .3s ease .1s both}
+.fpill{padding:5px 13px;border-radius:100px;border:1.5px solid var(--bd);background:var(--s1);font-size:10.5px;font-weight:600;cursor:pointer;transition:all .22s;font-family:inherit;display:flex;align-items:center;gap:5px}
+.fpill:hover{border-color:rgba(255,255,255,.08)}
+.fpill .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* Card */
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:14px;animation:fadeU .35s ease}
+.card-h{padding:11px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap}
+.card-t{font-family:'Victor Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:1.6px;color:var(--tx3);display:flex;align-items:center;gap:7px}
+.card-b{padding:16px}
+.pill{padding:2px 9px;border-radius:6px;font-size:8.5px;font-weight:700;letter-spacing:.4px}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:8px 16px;border:1px solid var(--bd);border-radius:10px;background:var(--s2);color:var(--tx2);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
+.btn:hover{background:var(--s3);color:var(--tx);border-color:rgba(255,255,255,.1)}
+.btn-sm{padding:6px 12px;font-size:11px}
+.btn-row{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+
+/* Speaker buttons */
+.spk{border:none;background:transparent;cursor:pointer;color:var(--tx3);transition:all .15s;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.spk:hover{color:var(--tx);transform:scale(1.1)}
+.spk svg{width:16px;height:16px}
+
+.spk-ipa{width:64px;height:64px;border-radius:50%;border:2px solid var(--bd);background:var(--s2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'Victor Mono',monospace;font-size:1.8rem;font-weight:700;transition:all .2s;position:relative}
+.spk-ipa:hover{transform:scale(1.06);border-color:rgba(255,255,255,.12)}
+.spk-ipa:active{animation:ripple .4s ease}
+.spk-ipa.cons{color:var(--cons);border-color:var(--consD)}
+.spk-ipa.vowS{color:var(--vowS);border-color:var(--vowSD)}
+.spk-ipa.vowL{color:var(--vowL);border-color:var(--vowLD)}
+.spk-ipa.diph{color:var(--diph);border-color:var(--diphD)}
+
+/* ═══ SOUND GRID ═══ */
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px}
+@media(max-width:500px){.sgrid{grid-template-columns:repeat(3,1fr)}}
+.scard{display:flex;flex-direction:column;align-items:center;gap:4px;padding:14px 6px;background:var(--s2);border-radius:12px;border:1.5px solid var(--bd);cursor:pointer;transition:all .2s;text-align:center}
+.scard:hover{border-color:rgba(255,255,255,.1);transform:translateY(-2px);background:var(--s3)}
+.scard.active{border-width:2px}
+.scard .ipa{font-family:'Victor Mono',monospace;font-size:1.4rem;font-weight:700}
+.scard .sname{font-size:9px;color:var(--tx3);font-weight:600}
+.scard .sexample{font-size:10.5px;color:var(--tx2);font-weight:500}
+
+/* ═══ DETAIL VIEW ═══ */
+.detail-top{display:flex;align-items:center;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+.detail-info{flex:1;min-width:200px}
+.detail-type{font-family:'Victor Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px}
+.detail-name{font-size:1.2rem;font-weight:800;margin-bottom:4px}
+.detail-desc{font-size:.88rem;color:var(--tx2);line-height:1.6}
+
+/* Mouth diagram */
+.mouth-box{padding:12px 16px;background:var(--s2);border-radius:12px;border:1px solid var(--bd);margin-bottom:14px}
+.mouth-box .mb-label{font-family:'Victor Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:1.2px;color:var(--tx3);margin-bottom:4px}
+.mouth-box .mb-text{font-size:.88rem;color:var(--tx2);line-height:1.6}
+
+/* Feature tags */
+.ftags{display:flex;gap:4px;flex-wrap:wrap;margin:8px 0}
+.ftag{padding:3px 10px;border-radius:6px;font-size:10px;font-weight:600;background:var(--s3);color:var(--tx2);border:1px solid var(--bd)}
+
+/* Words list */
+.wgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:5px;margin-top:12px}
+.witem{display:flex;align-items:center;gap:6px;padding:8px 10px;background:var(--s2);border-radius:8px;border:1px solid var(--bd);cursor:pointer;transition:all .15s}
+.witem:hover{border-color:rgba(255,255,255,.08);background:var(--s3)}
+.witem .ww{font-size:.88rem;font-weight:600;flex:1}
+.witem .wipa{font-family:'Victor Mono',monospace;font-size:.78rem;color:var(--tx3)}
+.witem .whigh{color:var(--cons);font-weight:700}
+
+/* Minimal pairs */
+.mpair{display:flex;gap:8px;align-items:center;padding:10px 12px;background:var(--s2);border-radius:10px;border:1px solid var(--bd);margin-bottom:5px}
+.mpair .vs{font-size:10px;color:var(--tx3);font-weight:700}
+
+/* Search */
+.srch{width:100%;padding:10px 14px;border:1.5px solid var(--bd);border-radius:10px;background:var(--s2);color:var(--tx);font-family:inherit;font-size:13px;outline:none;transition:border-color .2s;margin-bottom:12px}
+.srch:focus{border-color:var(--consD)}
+
+/* Progress */
+.prog{display:flex;gap:3px;margin-bottom:12px}
+.prog-d{height:4px;flex:1;border-radius:4px;background:var(--s3);transition:background .3s}
+.prog-d.ok{background:var(--ok)}.prog-d.err{background:#ef4444}.prog-d.cur{background:var(--tx3)}
+
+/* Quiz */
+.q-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:12px 0}
+@media(max-width:480px){.q-grid{grid-template-columns:1fr}}
+.q-opt{padding:12px 14px;border:1.5px solid var(--bd);border-radius:11px;background:var(--s2);color:var(--tx2);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;text-align:center;font-family:inherit}
+.q-opt:hover:not(.dis){border-color:rgba(255,255,255,.1);color:var(--tx);background:var(--s3)}
+.q-opt.right{border-color:var(--okD);background:var(--okB);color:var(--ok)}
+.q-opt.wrong{border-color:rgba(239,68,68,.22);background:rgba(239,68,68,.06);color:#ef4444}
+.q-opt.dis{pointer-events:none}
+.fb{padding:10px 14px;border-radius:10px;font-size:12.5px;line-height:1.5;margin:10px 0;display:none;animation:pop .3s ease}
+.fb.show{display:block}
+.score-big{font-family:'Victor Mono',monospace;font-size:3rem;font-weight:700;text-align:center}
+
+.hidden{display:none!important}
+.tc{text-align:center}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hdr">
+    <div class="hdr-tag">🔊 44 English Sounds</div>
+    <h1>Sound<span style="color:var(--cons)">Lab</span></h1>
+    <p>Aprende los 44 sonidos del inglés: 24 consonantes y 20 vocales</p>
+  </div>
+  <div class="sts" id="stats"></div>
+  <div class="tabs" id="modes"></div>
+  <div class="frow" id="filters"></div>
+  <div id="main"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// 44 SOUNDS DATABASE — 15+ words each
+// ═══════════════════════════════════════════════════════════
+const SOUNDS = [
+// ══════════════ 24 CONSONANTS ══════════════
+// — PLOSIVES (6) —
+{ipa:"/p/",name:"p",type:"cons",sub:"Plosive",voiced:false,
+  mouth:"Cierra los labios completamente, acumula presión de aire y suelta de golpe. No vibran las cuerdas vocales.",
+  features:["plosive","bilabial","voiceless"],
+  words:[
+    {w:"pen",ipa:"/pɛn/",hi:"p"},{w:"paper",ipa:"/ˈpeɪ.pər/",hi:"p"},{w:"park",ipa:"/pɑːrk/",hi:"p"},
+    {w:"people",ipa:"/ˈpiː.pəl/",hi:"p"},{w:"happy",ipa:"/ˈhæp.i/",hi:"pp"},{w:"stop",ipa:"/stɒp/",hi:"p"},
+    {w:"open",ipa:"/ˈoʊ.pən/",hi:"p"},{w:"apple",ipa:"/ˈæp.əl/",hi:"pp"},{w:"put",ipa:"/pʊt/",hi:"p"},
+    {w:"price",ipa:"/praɪs/",hi:"pr"},{w:"paint",ipa:"/peɪnt/",hi:"p"},{w:"push",ipa:"/pʊʃ/",hi:"p"},
+    {w:"plan",ipa:"/plæn/",hi:"pl"},{w:"repeat",ipa:"/rɪˈpiːt/",hi:"p"},{w:"popular",ipa:"/ˈpɒp.jʊ.lər/",hi:"p"},
+  ],pairs:[{a:"pin",b:"bin"},{a:"pear",b:"bear"},{a:"pat",b:"bat"}]},
+
+{ipa:"/b/",name:"b",type:"cons",sub:"Plosive",voiced:true,
+  mouth:"Igual que /p/ pero las cuerdas vocales vibran. Cierra los labios y suelta el aire con voz.",
+  features:["plosive","bilabial","voiced"],
+  words:[
+    {w:"book",ipa:"/bʊk/",hi:"b"},{w:"baby",ipa:"/ˈbeɪ.bi/",hi:"b"},{w:"ball",ipa:"/bɔːl/",hi:"b"},
+    {w:"big",ipa:"/bɪɡ/",hi:"b"},{w:"blue",ipa:"/bluː/",hi:"bl"},{w:"bring",ipa:"/brɪŋ/",hi:"br"},
+    {w:"table",ipa:"/ˈteɪ.bəl/",hi:"b"},{w:"about",ipa:"/əˈbaʊt/",hi:"b"},{w:"job",ipa:"/dʒɒb/",hi:"b"},
+    {w:"break",ipa:"/breɪk/",hi:"br"},{w:"begin",ipa:"/bɪˈɡɪn/",hi:"b"},{w:"bread",ipa:"/brɛd/",hi:"br"},
+    {w:"behind",ipa:"/bɪˈhaɪnd/",hi:"b"},{w:"button",ipa:"/ˈbʌt.ən/",hi:"b"},{w:"probably",ipa:"/ˈprɒb.ə.bli/",hi:"b"},
+  ],pairs:[{a:"bat",b:"pat"},{a:"buy",b:"pie"},{a:"cab",b:"cap"}]},
+
+{ipa:"/t/",name:"t",type:"cons",sub:"Plosive",voiced:false,
+  mouth:"La punta de la lengua toca los alvéolos (detrás de los dientes superiores). Suelta el aire de golpe sin vibrar las cuerdas.",
+  features:["plosive","alveolar","voiceless"],
+  words:[
+    {w:"time",ipa:"/taɪm/",hi:"t"},{w:"table",ipa:"/ˈteɪ.bəl/",hi:"t"},{w:"talk",ipa:"/tɔːk/",hi:"t"},
+    {w:"teacher",ipa:"/ˈtiː.tʃər/",hi:"t"},{w:"test",ipa:"/tɛst/",hi:"t"},{w:"tree",ipa:"/triː/",hi:"tr"},
+    {w:"write",ipa:"/raɪt/",hi:"t"},{w:"water",ipa:"/ˈwɔː.tər/",hi:"t"},{w:"cat",ipa:"/kæt/",hi:"t"},
+    {w:"take",ipa:"/teɪk/",hi:"t"},{w:"tell",ipa:"/tɛl/",hi:"t"},{w:"two",ipa:"/tuː/",hi:"t"},
+    {w:"between",ipa:"/bɪˈtwiːn/",hi:"tw"},{w:"today",ipa:"/təˈdeɪ/",hi:"t"},{w:"night",ipa:"/naɪt/",hi:"t"},
+  ],pairs:[{a:"town",b:"down"},{a:"time",b:"dime"},{a:"tie",b:"die"}]},
+
+{ipa:"/d/",name:"d",type:"cons",sub:"Plosive",voiced:true,
+  mouth:"Igual que /t/ pero con vibración. La lengua toca los alvéolos y suelta con voz.",
+  features:["plosive","alveolar","voiced"],
+  words:[
+    {w:"dog",ipa:"/dɒɡ/",hi:"d"},{w:"day",ipa:"/deɪ/",hi:"d"},{w:"door",ipa:"/dɔːr/",hi:"d"},
+    {w:"dinner",ipa:"/ˈdɪn.ər/",hi:"d"},{w:"drive",ipa:"/draɪv/",hi:"dr"},{w:"dream",ipa:"/driːm/",hi:"dr"},
+    {w:"idea",ipa:"/aɪˈdɪə/",hi:"d"},{w:"body",ipa:"/ˈbɒd.i/",hi:"d"},{w:"red",ipa:"/rɛd/",hi:"d"},
+    {w:"down",ipa:"/daʊn/",hi:"d"},{w:"during",ipa:"/ˈdjʊər.ɪŋ/",hi:"d"},{w:"ready",ipa:"/ˈrɛd.i/",hi:"d"},
+    {w:"garden",ipa:"/ˈɡɑːr.dən/",hi:"d"},{w:"under",ipa:"/ˈʌn.dər/",hi:"d"},{w:"could",ipa:"/kʊd/",hi:"d"},
+  ],pairs:[{a:"dip",b:"tip"},{a:"deer",b:"tear"},{a:"done",b:"ton"}]},
+
+{ipa:"/k/",name:"k",type:"cons",sub:"Plosive",voiced:false,
+  mouth:"La parte trasera de la lengua toca el paladar blando (velo). Libera el aire bruscamente sin vibración.",
+  features:["plosive","velar","voiceless"],
+  words:[
+    {w:"cat",ipa:"/kæt/",hi:"c"},{w:"come",ipa:"/kʌm/",hi:"c"},{w:"keep",ipa:"/kiːp/",hi:"k"},
+    {w:"kind",ipa:"/kaɪnd/",hi:"k"},{w:"kitchen",ipa:"/ˈkɪtʃ.ɪn/",hi:"k"},{w:"clock",ipa:"/klɒk/",hi:"cl"},
+    {w:"book",ipa:"/bʊk/",hi:"k"},{w:"music",ipa:"/ˈmjuː.zɪk/",hi:"c"},{w:"make",ipa:"/meɪk/",hi:"k"},
+    {w:"work",ipa:"/wɜːrk/",hi:"k"},{w:"quick",ipa:"/kwɪk/",hi:"qu"},{w:"school",ipa:"/skuːl/",hi:"sch"},
+    {w:"because",ipa:"/bɪˈkɒz/",hi:"c"},{w:"country",ipa:"/ˈkʌn.tri/",hi:"c"},{w:"across",ipa:"/əˈkrɒs/",hi:"cr"},
+  ],pairs:[{a:"coat",b:"goat"},{a:"came",b:"game"},{a:"cold",b:"gold"}]},
+
+{ipa:"/ɡ/",name:"g",type:"cons",sub:"Plosive",voiced:true,
+  mouth:"Igual que /k/ pero con vibración. La parte trasera de la lengua toca el paladar blando y suelta con voz.",
+  features:["plosive","velar","voiced"],
+  words:[
+    {w:"go",ipa:"/ɡoʊ/",hi:"g"},{w:"good",ipa:"/ɡʊd/",hi:"g"},{w:"game",ipa:"/ɡeɪm/",hi:"g"},
+    {w:"girl",ipa:"/ɡɜːrl/",hi:"g"},{w:"give",ipa:"/ɡɪv/",hi:"g"},{w:"green",ipa:"/ɡriːn/",hi:"gr"},
+    {w:"big",ipa:"/bɪɡ/",hi:"g"},{w:"dog",ipa:"/dɒɡ/",hi:"g"},{w:"begin",ipa:"/bɪˈɡɪn/",hi:"g"},
+    {w:"great",ipa:"/ɡreɪt/",hi:"gr"},{w:"again",ipa:"/əˈɡɛn/",hi:"g"},{w:"glass",ipa:"/ɡlæs/",hi:"gl"},
+    {w:"ground",ipa:"/ɡraʊnd/",hi:"gr"},{w:"forget",ipa:"/fərˈɡɛt/",hi:"g"},{w:"guide",ipa:"/ɡaɪd/",hi:"g"},
+  ],pairs:[{a:"goat",b:"coat"},{a:"gap",b:"cap"},{a:"gold",b:"cold"}]},
+
+// — FRICATIVES (9) —
+{ipa:"/f/",name:"f",type:"cons",sub:"Fricative",voiced:false,
+  mouth:"Los dientes superiores tocan ligeramente el labio inferior. El aire pasa entre ellos con fricción. Sin vibración.",
+  features:["fricative","labiodental","voiceless"],
+  words:[
+    {w:"food",ipa:"/fuːd/",hi:"f"},{w:"family",ipa:"/ˈfæm.ə.li/",hi:"f"},{w:"friend",ipa:"/frɛnd/",hi:"fr"},
+    {w:"five",ipa:"/faɪv/",hi:"f"},{w:"find",ipa:"/faɪnd/",hi:"f"},{w:"fire",ipa:"/faɪər/",hi:"f"},
+    {w:"life",ipa:"/laɪf/",hi:"f"},{w:"safe",ipa:"/seɪf/",hi:"f"},{w:"office",ipa:"/ˈɒf.ɪs/",hi:"ff"},
+    {w:"before",ipa:"/bɪˈfɔːr/",hi:"f"},{w:"finish",ipa:"/ˈfɪn.ɪʃ/",hi:"f"},{w:"free",ipa:"/friː/",hi:"fr"},
+    {w:"phone",ipa:"/foʊn/",hi:"ph"},{w:"photo",ipa:"/ˈfoʊ.toʊ/",hi:"ph"},{w:"laugh",ipa:"/lɑːf/",hi:"gh"},
+  ],pairs:[{a:"fan",b:"van"},{a:"fine",b:"vine"},{a:"few",b:"view"}]},
+
+{ipa:"/v/",name:"v",type:"cons",sub:"Fricative",voiced:true,
+  mouth:"Igual que /f/ pero con vibración. Los dientes superiores tocan el labio inferior y el aire pasa con voz.",
+  features:["fricative","labiodental","voiced"],
+  words:[
+    {w:"very",ipa:"/ˈvɛr.i/",hi:"v"},{w:"voice",ipa:"/vɔɪs/",hi:"v"},{w:"visit",ipa:"/ˈvɪz.ɪt/",hi:"v"},
+    {w:"view",ipa:"/vjuː/",hi:"v"},{w:"value",ipa:"/ˈvæl.juː/",hi:"v"},{w:"video",ipa:"/ˈvɪd.i.oʊ/",hi:"v"},
+    {w:"love",ipa:"/lʌv/",hi:"v"},{w:"give",ipa:"/ɡɪv/",hi:"v"},{w:"move",ipa:"/muːv/",hi:"v"},
+    {w:"have",ipa:"/hæv/",hi:"v"},{w:"every",ipa:"/ˈɛv.ri/",hi:"v"},{w:"never",ipa:"/ˈnɛv.ər/",hi:"v"},
+    {w:"over",ipa:"/ˈoʊ.vər/",hi:"v"},{w:"travel",ipa:"/ˈtræv.əl/",hi:"v"},{w:"seven",ipa:"/ˈsɛv.ən/",hi:"v"},
+  ],pairs:[{a:"van",b:"fan"},{a:"vet",b:"fat"},{a:"vine",b:"fine"}]},
+
+{ipa:"/θ/",name:"th (voiceless)",type:"cons",sub:"Fricative",voiced:false,
+  mouth:"La punta de la lengua se coloca entre los dientes (o toca los dientes superiores). El aire pasa suavemente. Sin vibración. ¡No existe en español!",
+  features:["fricative","dental","voiceless"],
+  words:[
+    {w:"think",ipa:"/θɪŋk/",hi:"th"},{w:"three",ipa:"/θriː/",hi:"th"},{w:"through",ipa:"/θruː/",hi:"th"},
+    {w:"thank",ipa:"/θæŋk/",hi:"th"},{w:"thing",ipa:"/θɪŋ/",hi:"th"},{w:"thought",ipa:"/θɔːt/",hi:"th"},
+    {w:"thousand",ipa:"/ˈθaʊ.zənd/",hi:"th"},{w:"teeth",ipa:"/tiːθ/",hi:"th"},{w:"bath",ipa:"/bɑːθ/",hi:"th"},
+    {w:"truth",ipa:"/truːθ/",hi:"th"},{w:"health",ipa:"/hɛlθ/",hi:"th"},{w:"nothing",ipa:"/ˈnʌθ.ɪŋ/",hi:"th"},
+    {w:"month",ipa:"/mʌnθ/",hi:"th"},{w:"birthday",ipa:"/ˈbɜːrθ.deɪ/",hi:"th"},{w:"earth",ipa:"/ɜːrθ/",hi:"th"},
+  ],pairs:[{a:"thin",b:"tin"},{a:"think",b:"sink"},{a:"three",b:"tree"}]},
+
+{ipa:"/ð/",name:"th (voiced)",type:"cons",sub:"Fricative",voiced:true,
+  mouth:"Igual que /θ/ pero con vibración. La lengua entre los dientes, pero las cuerdas vocales vibran. Siente la vibración en la garganta.",
+  features:["fricative","dental","voiced"],
+  words:[
+    {w:"the",ipa:"/ðə/",hi:"th"},{w:"this",ipa:"/ðɪs/",hi:"th"},{w:"that",ipa:"/ðæt/",hi:"th"},
+    {w:"they",ipa:"/ðeɪ/",hi:"th"},{w:"there",ipa:"/ðɛr/",hi:"th"},{w:"then",ipa:"/ðɛn/",hi:"th"},
+    {w:"these",ipa:"/ðiːz/",hi:"th"},{w:"those",ipa:"/ðoʊz/",hi:"th"},{w:"other",ipa:"/ˈʌð.ər/",hi:"th"},
+    {w:"mother",ipa:"/ˈmʌð.ər/",hi:"th"},{w:"father",ipa:"/ˈfɑː.ðər/",hi:"th"},{w:"brother",ipa:"/ˈbrʌð.ər/",hi:"th"},
+    {w:"together",ipa:"/təˈɡɛð.ər/",hi:"th"},{w:"weather",ipa:"/ˈwɛð.ər/",hi:"th"},{w:"smooth",ipa:"/smuːð/",hi:"th"},
+  ],pairs:[{a:"they",b:"day"},{a:"then",b:"den"},{a:"though",b:"dough"}]},
+
+{ipa:"/s/",name:"s",type:"cons",sub:"Fricative",voiced:false,
+  mouth:"La punta de la lengua se acerca a los alvéolos sin tocarlos. El aire pasa haciendo un silbido agudo. Sin vibración.",
+  features:["fricative","alveolar","voiceless"],
+  words:[
+    {w:"see",ipa:"/siː/",hi:"s"},{w:"sun",ipa:"/sʌn/",hi:"s"},{w:"sit",ipa:"/sɪt/",hi:"s"},
+    {w:"six",ipa:"/sɪks/",hi:"s"},{w:"some",ipa:"/sʌm/",hi:"s"},{w:"city",ipa:"/ˈsɪt.i/",hi:"c"},
+    {w:"place",ipa:"/pleɪs/",hi:"s"},{w:"house",ipa:"/haʊs/",hi:"s"},{w:"bus",ipa:"/bʌs/",hi:"s"},
+    {w:"class",ipa:"/klæs/",hi:"ss"},{w:"yes",ipa:"/jɛs/",hi:"s"},{w:"person",ipa:"/ˈpɜːr.sən/",hi:"s"},
+    {w:"science",ipa:"/ˈsaɪ.əns/",hi:"sc"},{w:"sister",ipa:"/ˈsɪs.tər/",hi:"s"},{w:"possible",ipa:"/ˈpɒs.ɪ.bəl/",hi:"ss"},
+  ],pairs:[{a:"sip",b:"zip"},{a:"sue",b:"zoo"},{a:"ice",b:"eyes"}]},
+
+{ipa:"/z/",name:"z",type:"cons",sub:"Fricative",voiced:true,
+  mouth:"Igual que /s/ pero con vibración. La lengua cerca de los alvéolos, aire pasa como un zumbido.",
+  features:["fricative","alveolar","voiced"],
+  words:[
+    {w:"zero",ipa:"/ˈzɪə.roʊ/",hi:"z"},{w:"zoo",ipa:"/zuː/",hi:"z"},{w:"zone",ipa:"/zoʊn/",hi:"z"},
+    {w:"easy",ipa:"/ˈiː.zi/",hi:"s"},{w:"music",ipa:"/ˈmjuː.zɪk/",hi:"s"},{w:"busy",ipa:"/ˈbɪz.i/",hi:"s"},
+    {w:"please",ipa:"/pliːz/",hi:"s"},{w:"because",ipa:"/bɪˈkɒz/",hi:"s"},{w:"his",ipa:"/hɪz/",hi:"s"},
+    {w:"dogs",ipa:"/dɒɡz/",hi:"s"},{w:"eyes",ipa:"/aɪz/",hi:"s"},{w:"nose",ipa:"/noʊz/",hi:"s"},
+    {w:"reason",ipa:"/ˈriː.zən/",hi:"s"},{w:"organize",ipa:"/ˈɔːr.ɡə.naɪz/",hi:"z"},{w:"amazing",ipa:"/əˈmeɪ.zɪŋ/",hi:"z"},
+  ],pairs:[{a:"zoo",b:"sue"},{a:"zip",b:"sip"},{a:"buzz",b:"bus"}]},
+
+{ipa:"/ʃ/",name:"sh",type:"cons",sub:"Fricative",voiced:false,
+  mouth:"La lengua se acerca al paladar detrás de los alvéolos. Los labios se redondean ligeramente. Sonido de 'shh'. Sin vibración.",
+  features:["fricative","postalveolar","voiceless"],
+  words:[
+    {w:"she",ipa:"/ʃiː/",hi:"sh"},{w:"ship",ipa:"/ʃɪp/",hi:"sh"},{w:"shop",ipa:"/ʃɒp/",hi:"sh"},
+    {w:"show",ipa:"/ʃoʊ/",hi:"sh"},{w:"should",ipa:"/ʃʊd/",hi:"sh"},{w:"short",ipa:"/ʃɔːrt/",hi:"sh"},
+    {w:"finish",ipa:"/ˈfɪn.ɪʃ/",hi:"sh"},{w:"wash",ipa:"/wɒʃ/",hi:"sh"},{w:"push",ipa:"/pʊʃ/",hi:"sh"},
+    {w:"fashion",ipa:"/ˈfæʃ.ən/",hi:"sh"},{w:"nation",ipa:"/ˈneɪ.ʃən/",hi:"ti"},{w:"special",ipa:"/ˈspɛʃ.əl/",hi:"ci"},
+    {w:"machine",ipa:"/məˈʃiːn/",hi:"ch"},{w:"sugar",ipa:"/ˈʃʊɡ.ər/",hi:"s"},{w:"sure",ipa:"/ʃʊr/",hi:"s"},
+  ],pairs:[{a:"ship",b:"chip"},{a:"share",b:"chair"},{a:"sheep",b:"cheap"}]},
+
+{ipa:"/ʒ/",name:"zh",type:"cons",sub:"Fricative",voiced:true,
+  mouth:"Igual que /ʃ/ pero con vibración. Es raro en inglés. Aparece en pocas palabras.",
+  features:["fricative","postalveolar","voiced"],
+  words:[
+    {w:"measure",ipa:"/ˈmɛʒ.ər/",hi:"s"},{w:"pleasure",ipa:"/ˈplɛʒ.ər/",hi:"s"},{w:"treasure",ipa:"/ˈtrɛʒ.ər/",hi:"s"},
+    {w:"vision",ipa:"/ˈvɪʒ.ən/",hi:"si"},{w:"decision",ipa:"/dɪˈsɪʒ.ən/",hi:"si"},{w:"television",ipa:"/ˈtɛl.ɪ.vɪʒ.ən/",hi:"si"},
+    {w:"usual",ipa:"/ˈjuː.ʒu.əl/",hi:"s"},{w:"casual",ipa:"/ˈkæʒ.u.əl/",hi:"s"},{w:"garage",ipa:"/ɡəˈrɑːʒ/",hi:"ge"},
+    {w:"massage",ipa:"/məˈsɑːʒ/",hi:"ge"},{w:"beige",ipa:"/beɪʒ/",hi:"ge"},{w:"rouge",ipa:"/ruːʒ/",hi:"ge"},
+    {w:"genre",ipa:"/ˈʒɑːn.rə/",hi:"g"},{w:"collage",ipa:"/kəˈlɑːʒ/",hi:"ge"},{w:"mirage",ipa:"/mɪˈrɑːʒ/",hi:"ge"},
+  ],pairs:[{a:"leisure",b:"lesser"}]},
+
+{ipa:"/h/",name:"h",type:"cons",sub:"Fricative",voiced:false,
+  mouth:"Solo una exhalación suave. La boca adopta la posición de la vocal que sigue. Las cuerdas vocales no vibran.",
+  features:["fricative","glottal","voiceless"],
+  words:[
+    {w:"he",ipa:"/hiː/",hi:"h"},{w:"her",ipa:"/hɜːr/",hi:"h"},{w:"his",ipa:"/hɪz/",hi:"h"},
+    {w:"have",ipa:"/hæv/",hi:"h"},{w:"here",ipa:"/hɪr/",hi:"h"},{w:"home",ipa:"/hoʊm/",hi:"h"},
+    {w:"how",ipa:"/haʊ/",hi:"h"},{w:"help",ipa:"/hɛlp/",hi:"h"},{w:"hand",ipa:"/hænd/",hi:"h"},
+    {w:"head",ipa:"/hɛd/",hi:"h"},{w:"behind",ipa:"/bɪˈhaɪnd/",hi:"h"},{w:"perhaps",ipa:"/pərˈhæps/",hi:"h"},
+    {w:"happy",ipa:"/ˈhæp.i/",hi:"h"},{w:"hope",ipa:"/hoʊp/",hi:"h"},{w:"hundred",ipa:"/ˈhʌn.drəd/",hi:"h"},
+  ],pairs:[{a:"hat",b:"at"},{a:"hear",b:"ear"},{a:"hill",b:"ill"}]},
+
+// — AFFRICATES (2) —
+{ipa:"/tʃ/",name:"ch",type:"cons",sub:"Affricate",voiced:false,
+  mouth:"Combina /t/ + /ʃ/. La lengua toca los alvéolos y suelta como 'ch'. Sin vibración.",
+  features:["affricate","postalveolar","voiceless"],
+  words:[
+    {w:"chair",ipa:"/tʃɛr/",hi:"ch"},{w:"child",ipa:"/tʃaɪld/",hi:"ch"},{w:"change",ipa:"/tʃeɪndʒ/",hi:"ch"},
+    {w:"church",ipa:"/tʃɜːrtʃ/",hi:"ch"},{w:"check",ipa:"/tʃɛk/",hi:"ch"},{w:"choose",ipa:"/tʃuːz/",hi:"ch"},
+    {w:"teach",ipa:"/tiːtʃ/",hi:"ch"},{w:"watch",ipa:"/wɒtʃ/",hi:"tch"},{w:"kitchen",ipa:"/ˈkɪtʃ.ɪn/",hi:"tch"},
+    {w:"lunch",ipa:"/lʌntʃ/",hi:"ch"},{w:"each",ipa:"/iːtʃ/",hi:"ch"},{w:"match",ipa:"/mætʃ/",hi:"tch"},
+    {w:"nature",ipa:"/ˈneɪ.tʃər/",hi:"t"},{w:"picture",ipa:"/ˈpɪk.tʃər/",hi:"t"},{w:"question",ipa:"/ˈkwɛs.tʃən/",hi:"ti"},
+  ],pairs:[{a:"cheap",b:"jeep"},{a:"chin",b:"gin"},{a:"choke",b:"joke"}]},
+
+{ipa:"/dʒ/",name:"j",type:"cons",sub:"Affricate",voiced:true,
+  mouth:"Combina /d/ + /ʒ/. Igual que /tʃ/ pero con vibración. Es el sonido de 'j' o 'g' suave.",
+  features:["affricate","postalveolar","voiced"],
+  words:[
+    {w:"job",ipa:"/dʒɒb/",hi:"j"},{w:"just",ipa:"/dʒʌst/",hi:"j"},{w:"join",ipa:"/dʒɔɪn/",hi:"j"},
+    {w:"jump",ipa:"/dʒʌmp/",hi:"j"},{w:"judge",ipa:"/dʒʌdʒ/",hi:"j"},{w:"juice",ipa:"/dʒuːs/",hi:"j"},
+    {w:"age",ipa:"/eɪdʒ/",hi:"ge"},{w:"page",ipa:"/peɪdʒ/",hi:"ge"},{w:"bridge",ipa:"/brɪdʒ/",hi:"dge"},
+    {w:"large",ipa:"/lɑːrdʒ/",hi:"ge"},{w:"change",ipa:"/tʃeɪndʒ/",hi:"ge"},{w:"general",ipa:"/ˈdʒɛn.ər.əl/",hi:"g"},
+    {w:"energy",ipa:"/ˈɛn.ər.dʒi/",hi:"g"},{w:"manager",ipa:"/ˈmæn.ɪ.dʒər/",hi:"g"},{w:"imagine",ipa:"/ɪˈmæd.ʒɪn/",hi:"g"},
+  ],pairs:[{a:"jeep",b:"cheap"},{a:"joke",b:"choke"},{a:"gin",b:"chin"}]},
+
+// — NASALS (3) —
+{ipa:"/m/",name:"m",type:"cons",sub:"Nasal",voiced:true,
+  mouth:"Los labios se cierran completamente. El aire sale por la nariz. Las cuerdas vocales vibran. Haz 'mmm'.",
+  features:["nasal","bilabial","voiced"],
+  words:[
+    {w:"man",ipa:"/mæn/",hi:"m"},{w:"make",ipa:"/meɪk/",hi:"m"},{w:"money",ipa:"/ˈmʌn.i/",hi:"m"},
+    {w:"morning",ipa:"/ˈmɔːr.nɪŋ/",hi:"m"},{w:"mother",ipa:"/ˈmʌð.ər/",hi:"m"},{w:"music",ipa:"/ˈmjuː.zɪk/",hi:"m"},
+    {w:"name",ipa:"/neɪm/",hi:"m"},{w:"time",ipa:"/taɪm/",hi:"m"},{w:"home",ipa:"/hoʊm/",hi:"m"},
+    {w:"same",ipa:"/seɪm/",hi:"m"},{w:"come",ipa:"/kʌm/",hi:"m"},{w:"room",ipa:"/ruːm/",hi:"m"},
+    {w:"family",ipa:"/ˈfæm.ə.li/",hi:"m"},{w:"small",ipa:"/smɔːl/",hi:"sm"},{w:"important",ipa:"/ɪmˈpɔːr.tənt/",hi:"m"},
+  ],pairs:[{a:"met",b:"net"},{a:"mail",b:"nail"},{a:"sum",b:"sun"}]},
+
+{ipa:"/n/",name:"n",type:"cons",sub:"Nasal",voiced:true,
+  mouth:"La punta de la lengua toca los alvéolos. El aire sale por la nariz. Las cuerdas vibran.",
+  features:["nasal","alveolar","voiced"],
+  words:[
+    {w:"no",ipa:"/noʊ/",hi:"n"},{w:"new",ipa:"/njuː/",hi:"n"},{w:"name",ipa:"/neɪm/",hi:"n"},
+    {w:"night",ipa:"/naɪt/",hi:"n"},{w:"now",ipa:"/naʊ/",hi:"n"},{w:"never",ipa:"/ˈnɛv.ər/",hi:"n"},
+    {w:"one",ipa:"/wʌn/",hi:"n"},{w:"man",ipa:"/mæn/",hi:"n"},{w:"run",ipa:"/rʌn/",hi:"n"},
+    {w:"open",ipa:"/ˈoʊ.pən/",hi:"n"},{w:"sun",ipa:"/sʌn/",hi:"n"},{w:"begin",ipa:"/bɪˈɡɪn/",hi:"n"},
+    {w:"know",ipa:"/noʊ/",hi:"kn"},{w:"anything",ipa:"/ˈɛn.i.θɪŋ/",hi:"n"},{w:"opinion",ipa:"/əˈpɪn.jən/",hi:"n"},
+  ],pairs:[{a:"net",b:"met"},{a:"nine",b:"mine"},{a:"nap",b:"map"}]},
+
+{ipa:"/ŋ/",name:"ng",type:"cons",sub:"Nasal",voiced:true,
+  mouth:"La parte trasera de la lengua toca el paladar blando. El aire sale por la nariz. Nunca empieza una palabra en inglés.",
+  features:["nasal","velar","voiced"],
+  words:[
+    {w:"sing",ipa:"/sɪŋ/",hi:"ng"},{w:"ring",ipa:"/rɪŋ/",hi:"ng"},{w:"thing",ipa:"/θɪŋ/",hi:"ng"},
+    {w:"long",ipa:"/lɒŋ/",hi:"ng"},{w:"song",ipa:"/sɒŋ/",hi:"ng"},{w:"king",ipa:"/kɪŋ/",hi:"ng"},
+    {w:"morning",ipa:"/ˈmɔːr.nɪŋ/",hi:"ng"},{w:"running",ipa:"/ˈrʌn.ɪŋ/",hi:"nn"},{w:"working",ipa:"/ˈwɜːr.kɪŋ/",hi:"ng"},
+    {w:"think",ipa:"/θɪŋk/",hi:"nk"},{w:"drink",ipa:"/drɪŋk/",hi:"nk"},{w:"thank",ipa:"/θæŋk/",hi:"nk"},
+    {w:"young",ipa:"/jʌŋ/",hi:"ng"},{w:"bring",ipa:"/brɪŋ/",hi:"ng"},{w:"strong",ipa:"/strɒŋ/",hi:"ng"},
+  ],pairs:[{a:"sin",b:"sing"},{a:"thin",b:"thing"},{a:"ran",b:"rang"}]},
+
+// — APPROXIMANTS (4) —
+{ipa:"/l/",name:"l",type:"cons",sub:"Lateral",voiced:true,
+  mouth:"La punta de la lengua toca los alvéolos. El aire pasa por los lados de la lengua. Cuerdas vocales vibran.",
+  features:["lateral","alveolar","voiced"],
+  words:[
+    {w:"love",ipa:"/lʌv/",hi:"l"},{w:"long",ipa:"/lɒŋ/",hi:"l"},{w:"life",ipa:"/laɪf/",hi:"l"},
+    {w:"look",ipa:"/lʊk/",hi:"l"},{w:"light",ipa:"/laɪt/",hi:"l"},{w:"learn",ipa:"/lɜːrn/",hi:"l"},
+    {w:"people",ipa:"/ˈpiː.pəl/",hi:"l"},{w:"school",ipa:"/skuːl/",hi:"l"},{w:"all",ipa:"/ɔːl/",hi:"ll"},
+    {w:"world",ipa:"/wɜːrld/",hi:"l"},{w:"blue",ipa:"/bluː/",hi:"bl"},{w:"place",ipa:"/pleɪs/",hi:"pl"},
+    {w:"little",ipa:"/ˈlɪt.əl/",hi:"l"},{w:"family",ipa:"/ˈfæm.ə.li/",hi:"l"},{w:"beautiful",ipa:"/ˈbjuː.tɪ.fəl/",hi:"l"},
+  ],pairs:[{a:"light",b:"right"},{a:"led",b:"red"},{a:"lock",b:"rock"}]},
+
+{ipa:"/r/",name:"r",type:"cons",sub:"Approximant",voiced:true,
+  mouth:"La lengua se curva hacia arriba SIN tocar el paladar. Los labios se redondean ligeramente. Cuerdas vibran. ¡Muy diferente a la 'r' española!",
+  features:["approximant","postalveolar","voiced"],
+  words:[
+    {w:"red",ipa:"/rɛd/",hi:"r"},{w:"right",ipa:"/raɪt/",hi:"r"},{w:"run",ipa:"/rʌn/",hi:"r"},
+    {w:"read",ipa:"/riːd/",hi:"r"},{w:"room",ipa:"/ruːm/",hi:"r"},{w:"rain",ipa:"/reɪn/",hi:"r"},
+    {w:"very",ipa:"/ˈvɛr.i/",hi:"r"},{w:"around",ipa:"/əˈraʊnd/",hi:"r"},{w:"three",ipa:"/θriː/",hi:"r"},
+    {w:"car",ipa:"/kɑːr/",hi:"r"},{w:"door",ipa:"/dɔːr/",hi:"r"},{w:"before",ipa:"/bɪˈfɔːr/",hi:"r"},
+    {w:"great",ipa:"/ɡreɪt/",hi:"r"},{w:"every",ipa:"/ˈɛv.ri/",hi:"r"},{w:"river",ipa:"/ˈrɪv.ər/",hi:"r"},
+  ],pairs:[{a:"right",b:"light"},{a:"red",b:"led"},{a:"rock",b:"lock"}]},
+
+{ipa:"/j/",name:"y",type:"cons",sub:"Approximant",voiced:true,
+  mouth:"La lengua se eleva hacia el paladar duro (como para decir 'i'). El aire pasa sin fricción. Es como una 'i' muy breve.",
+  features:["approximant","palatal","voiced"],
+  words:[
+    {w:"yes",ipa:"/jɛs/",hi:"y"},{w:"you",ipa:"/juː/",hi:"y"},{w:"your",ipa:"/jɔːr/",hi:"y"},
+    {w:"year",ipa:"/jɪr/",hi:"y"},{w:"young",ipa:"/jʌŋ/",hi:"y"},{w:"yet",ipa:"/jɛt/",hi:"y"},
+    {w:"yesterday",ipa:"/ˈjɛs.tər.deɪ/",hi:"y"},{w:"yellow",ipa:"/ˈjɛl.oʊ/",hi:"y"},{w:"beyond",ipa:"/bɪˈjɒnd/",hi:"y"},
+    {w:"onion",ipa:"/ˈʌn.jən/",hi:"i"},{w:"million",ipa:"/ˈmɪl.jən/",hi:"lli"},{w:"music",ipa:"/ˈmjuː.zɪk/",hi:"u"},
+    {w:"few",ipa:"/fjuː/",hi:"ew"},{w:"use",ipa:"/juːz/",hi:"u"},{w:"cute",ipa:"/kjuːt/",hi:"u"},
+  ],pairs:[{a:"yet",b:"jet"},{a:"year",b:"ear"},{a:"yam",b:"jam"}]},
+
+{ipa:"/w/",name:"w",type:"cons",sub:"Approximant",voiced:true,
+  mouth:"Los labios se redondean mucho (como para decir 'u'). La parte trasera de la lengua se eleva. Es como una 'u' muy breve.",
+  features:["approximant","bilabial","voiced"],
+  words:[
+    {w:"water",ipa:"/ˈwɔː.tər/",hi:"w"},{w:"we",ipa:"/wiː/",hi:"w"},{w:"will",ipa:"/wɪl/",hi:"w"},
+    {w:"with",ipa:"/wɪð/",hi:"w"},{w:"want",ipa:"/wɒnt/",hi:"w"},{w:"walk",ipa:"/wɔːk/",hi:"w"},
+    {w:"way",ipa:"/weɪ/",hi:"w"},{w:"work",ipa:"/wɜːrk/",hi:"w"},{w:"woman",ipa:"/ˈwʊm.ən/",hi:"w"},
+    {w:"world",ipa:"/wɜːrld/",hi:"w"},{w:"week",ipa:"/wiːk/",hi:"w"},{w:"white",ipa:"/waɪt/",hi:"wh"},
+    {w:"away",ipa:"/əˈweɪ/",hi:"w"},{w:"always",ipa:"/ˈɔːl.weɪz/",hi:"w"},{w:"between",ipa:"/bɪˈtwiːn/",hi:"w"},
+  ],pairs:[{a:"wet",b:"vet"},{a:"wine",b:"vine"},{a:"west",b:"vest"}]},
+
+// ══════════════ 12 VOWELS (monophthongs) ══════════════
+// — SHORT VOWELS (7) —
+{ipa:"/ɪ/",name:"short i",type:"vowS",sub:"Short Vowel",
+  mouth:"La boca se abre poco. La lengua se eleva al frente, pero menos que para /iː/. Sonido breve y relajado.",
+  features:["short","front","close-mid","unrounded"],
+  words:[
+    {w:"it",ipa:"/ɪt/"},{w:"is",ipa:"/ɪz/"},{w:"big",ipa:"/bɪɡ/"},{w:"sit",ipa:"/sɪt/"},{w:"six",ipa:"/sɪks/"},
+    {w:"fish",ipa:"/fɪʃ/"},{w:"give",ipa:"/ɡɪv/"},{w:"drink",ipa:"/drɪŋk/"},{w:"city",ipa:"/ˈsɪt.i/"},{w:"think",ipa:"/θɪŋk/"},
+    {w:"little",ipa:"/ˈlɪt.əl/"},{w:"minute",ipa:"/ˈmɪn.ɪt/"},{w:"river",ipa:"/ˈrɪv.ər/"},{w:"children",ipa:"/ˈtʃɪl.drən/"},{w:"kitchen",ipa:"/ˈkɪtʃ.ɪn/"},
+  ],pairs:[{a:"sit",b:"seat"},{a:"ship",b:"sheep"},{a:"fit",b:"feet"}]},
+
+{ipa:"/e/",name:"short e",type:"vowS",sub:"Short Vowel",
+  mouth:"La boca se abre un poco más que /ɪ/. La lengua está al frente, a media altura.",
+  features:["short","front","mid","unrounded"],
+  words:[
+    {w:"bed",ipa:"/bɛd/"},{w:"red",ipa:"/rɛd/"},{w:"ten",ipa:"/tɛn/"},{w:"get",ipa:"/ɡɛt/"},{w:"set",ipa:"/sɛt/"},
+    {w:"pen",ipa:"/pɛn/"},{w:"yes",ipa:"/jɛs/"},{w:"egg",ipa:"/ɛɡ/"},{w:"head",ipa:"/hɛd/"},{w:"bread",ipa:"/brɛd/"},
+    {w:"friend",ipa:"/frɛnd/"},{w:"said",ipa:"/sɛd/"},{w:"weather",ipa:"/ˈwɛð.ər/"},{w:"any",ipa:"/ˈɛn.i/"},{w:"question",ipa:"/ˈkwɛs.tʃən/"},
+  ],pairs:[{a:"pen",b:"pan"},{a:"bed",b:"bad"},{a:"men",b:"man"}]},
+
+{ipa:"/æ/",name:"short a",type:"vowS",sub:"Short Vowel",
+  mouth:"La boca se abre bastante. La lengua está baja y al frente. Suena entre 'a' y 'e' española.",
+  features:["short","front","open","unrounded"],
+  words:[
+    {w:"cat",ipa:"/kæt/"},{w:"hat",ipa:"/hæt/"},{w:"man",ipa:"/mæn/"},{w:"bad",ipa:"/bæd/"},{w:"hand",ipa:"/hænd/"},
+    {w:"map",ipa:"/mæp/"},{w:"happy",ipa:"/ˈhæp.i/"},{w:"black",ipa:"/blæk/"},{w:"apple",ipa:"/ˈæp.əl/"},{w:"family",ipa:"/ˈfæm.ə.li/"},
+    {w:"travel",ipa:"/ˈtræv.əl/"},{w:"Saturday",ipa:"/ˈsæt.ər.deɪ/"},{w:"language",ipa:"/ˈlæŋ.ɡwɪdʒ/"},{w:"animal",ipa:"/ˈæn.ɪ.məl/"},{w:"balance",ipa:"/ˈbæl.əns/"},
+  ],pairs:[{a:"hat",b:"hot"},{a:"cat",b:"cut"},{a:"bad",b:"bed"}]},
+
+{ipa:"/ʌ/",name:"short u",type:"vowS",sub:"Short Vowel",
+  mouth:"La boca se abre a medias. La lengua está en el centro, ligeramente hacia atrás. Sonido breve y neutro.",
+  features:["short","central","open-mid","unrounded"],
+  words:[
+    {w:"cup",ipa:"/kʌp/"},{w:"bus",ipa:"/bʌs/"},{w:"sun",ipa:"/sʌn/"},{w:"run",ipa:"/rʌn/"},{w:"but",ipa:"/bʌt/"},
+    {w:"cut",ipa:"/kʌt/"},{w:"come",ipa:"/kʌm/"},{w:"love",ipa:"/lʌv/"},{w:"money",ipa:"/ˈmʌn.i/"},{w:"mother",ipa:"/ˈmʌð.ər/"},
+    {w:"under",ipa:"/ˈʌn.dər/"},{w:"country",ipa:"/ˈkʌn.tri/"},{w:"lunch",ipa:"/lʌntʃ/"},{w:"wonderful",ipa:"/ˈwʌn.dər.fəl/"},{w:"husband",ipa:"/ˈhʌz.bənd/"},
+  ],pairs:[{a:"cut",b:"cat"},{a:"cup",b:"cap"},{a:"luck",b:"lack"}]},
+
+{ipa:"/ɒ/",name:"short o",type:"vowS",sub:"Short Vowel",
+  mouth:"La boca se abre y los labios se redondean ligeramente. La lengua está baja y atrás. Sonido breve.",
+  features:["short","back","open","rounded"],
+  words:[
+    {w:"hot",ipa:"/hɒt/"},{w:"dog",ipa:"/dɒɡ/"},{w:"got",ipa:"/ɡɒt/"},{w:"stop",ipa:"/stɒp/"},{w:"box",ipa:"/bɒks/"},
+    {w:"lot",ipa:"/lɒt/"},{w:"job",ipa:"/dʒɒb/"},{w:"top",ipa:"/tɒp/"},{w:"clock",ipa:"/klɒk/"},{w:"rock",ipa:"/rɒk/"},
+    {w:"doctor",ipa:"/ˈdɒk.tər/"},{w:"bottle",ipa:"/ˈbɒt.əl/"},{w:"modern",ipa:"/ˈmɒd.ərn/"},{w:"honest",ipa:"/ˈɒn.ɪst/"},{w:"problem",ipa:"/ˈprɒb.ləm/"},
+  ],pairs:[{a:"hot",b:"hat"},{a:"pot",b:"put"},{a:"cot",b:"cut"}]},
+
+{ipa:"/ʊ/",name:"short oo",type:"vowS",sub:"Short Vowel",
+  mouth:"Los labios se redondean un poco. La lengua se eleva hacia atrás pero no completamente. Sonido breve y relajado.",
+  features:["short","back","close-mid","rounded"],
+  words:[
+    {w:"put",ipa:"/pʊt/"},{w:"book",ipa:"/bʊk/"},{w:"good",ipa:"/ɡʊd/"},{w:"look",ipa:"/lʊk/"},{w:"foot",ipa:"/fʊt/"},
+    {w:"cook",ipa:"/kʊk/"},{w:"full",ipa:"/fʊl/"},{w:"push",ipa:"/pʊʃ/"},{w:"sugar",ipa:"/ˈʃʊɡ.ər/"},{w:"woman",ipa:"/ˈwʊm.ən/"},
+    {w:"would",ipa:"/wʊd/"},{w:"could",ipa:"/kʊd/"},{w:"should",ipa:"/ʃʊd/"},{w:"wood",ipa:"/wʊd/"},{w:"bull",ipa:"/bʊl/"},
+  ],pairs:[{a:"pull",b:"pool"},{a:"full",b:"fool"},{a:"look",b:"Luke"}]},
+
+{ipa:"/ə/",name:"schwa",type:"vowS",sub:"Short Vowel",
+  mouth:"El sonido más común del inglés. La boca y la lengua están totalmente relajadas. Sonido muy breve y neutro. Aparece en sílabas no acentuadas.",
+  features:["short","central","mid","unrounded"],
+  words:[
+    {w:"about",ipa:"/əˈbaʊt/"},{w:"above",ipa:"/əˈbʌv/"},{w:"again",ipa:"/əˈɡɛn/"},{w:"today",ipa:"/təˈdeɪ/"},{w:"open",ipa:"/ˈoʊ.pən/"},
+    {w:"taken",ipa:"/ˈteɪ.kən/"},{w:"banana",ipa:"/bəˈnɑː.nə/"},{w:"around",ipa:"/əˈraʊnd/"},{w:"away",ipa:"/əˈweɪ/"},{w:"doctor",ipa:"/ˈdɒk.tər/"},
+    {w:"together",ipa:"/təˈɡɛð.ər/"},{w:"beautiful",ipa:"/ˈbjuː.tɪ.fəl/"},{w:"problem",ipa:"/ˈprɒb.ləm/"},{w:"possible",ipa:"/ˈpɒs.ɪ.bəl/"},{w:"comfortable",ipa:"/ˈkʌmf.tə.bəl/"},
+  ],pairs:[]},
+
+// — LONG VOWELS (5) —
+{ipa:"/iː/",name:"long ee",type:"vowL",sub:"Long Vowel",
+  mouth:"La boca casi cerrada. La lengua se eleva mucho al frente. Labios estirados. Sonido largo y tenso.",
+  features:["long","front","close","unrounded"],
+  words:[
+    {w:"see",ipa:"/siː/"},{w:"tree",ipa:"/triː/"},{w:"eat",ipa:"/iːt/"},{w:"read",ipa:"/riːd/"},{w:"team",ipa:"/tiːm/"},
+    {w:"people",ipa:"/ˈpiː.pəl/"},{w:"please",ipa:"/pliːz/"},{w:"three",ipa:"/θriː/"},{w:"green",ipa:"/ɡriːn/"},{w:"need",ipa:"/niːd/"},
+    {w:"keep",ipa:"/kiːp/"},{w:"teach",ipa:"/tiːtʃ/"},{w:"believe",ipa:"/bɪˈliːv/"},{w:"machine",ipa:"/məˈʃiːn/"},{w:"receive",ipa:"/rɪˈsiːv/"},
+  ],pairs:[{a:"sheep",b:"ship"},{a:"feet",b:"fit"},{a:"seat",b:"sit"}]},
+
+{ipa:"/ɑː/",name:"long ah",type:"vowL",sub:"Long Vowel",
+  mouth:"La boca se abre mucho. La lengua está baja y atrás. Sonido largo y abierto. Como la 'a' española pero más larga.",
+  features:["long","back","open","unrounded"],
+  words:[
+    {w:"car",ipa:"/kɑːr/"},{w:"far",ipa:"/fɑːr/"},{w:"star",ipa:"/stɑːr/"},{w:"heart",ipa:"/hɑːrt/"},{w:"start",ipa:"/stɑːrt/"},
+    {w:"park",ipa:"/pɑːrk/"},{w:"dark",ipa:"/dɑːrk/"},{w:"arm",ipa:"/ɑːrm/"},{w:"father",ipa:"/ˈfɑː.ðər/"},{w:"garden",ipa:"/ˈɡɑːr.dən/"},
+    {w:"class",ipa:"/klɑːs/"},{w:"half",ipa:"/hɑːf/"},{w:"last",ipa:"/lɑːst/"},{w:"bath",ipa:"/bɑːθ/"},{w:"guitar",ipa:"/ɡɪˈtɑːr/"},
+  ],pairs:[{a:"cart",b:"cut"},{a:"heart",b:"hat"},{a:"barn",b:"burn"}]},
+
+{ipa:"/ɔː/",name:"long aw",type:"vowL",sub:"Long Vowel",
+  mouth:"La boca se abre y los labios se redondean mucho. La lengua está media-baja y atrás. Sonido largo.",
+  features:["long","back","open-mid","rounded"],
+  words:[
+    {w:"all",ipa:"/ɔːl/"},{w:"ball",ipa:"/bɔːl/"},{w:"call",ipa:"/kɔːl/"},{w:"walk",ipa:"/wɔːk/"},{w:"talk",ipa:"/tɔːk/"},
+    {w:"water",ipa:"/ˈwɔː.tər/"},{w:"door",ipa:"/dɔːr/"},{w:"more",ipa:"/mɔːr/"},{w:"four",ipa:"/fɔːr/"},{w:"morning",ipa:"/ˈmɔːr.nɪŋ/"},
+    {w:"thought",ipa:"/θɔːt/"},{w:"daughter",ipa:"/ˈdɔː.tər/"},{w:"because",ipa:"/bɪˈkɔːz/"},{w:"small",ipa:"/smɔːl/"},{w:"always",ipa:"/ˈɔːl.weɪz/"},
+  ],pairs:[{a:"caught",b:"cot"},{a:"bought",b:"bot"},{a:"law",b:"low"}]},
+
+{ipa:"/uː/",name:"long oo",type:"vowL",sub:"Long Vowel",
+  mouth:"Los labios se redondean mucho y se proyectan hacia adelante. La lengua se eleva al fondo. Sonido largo y tenso.",
+  features:["long","back","close","rounded"],
+  words:[
+    {w:"food",ipa:"/fuːd/"},{w:"moon",ipa:"/muːn/"},{w:"blue",ipa:"/bluː/"},{w:"too",ipa:"/tuː/"},{w:"school",ipa:"/skuːl/"},
+    {w:"room",ipa:"/ruːm/"},{w:"shoe",ipa:"/ʃuː/"},{w:"move",ipa:"/muːv/"},{w:"juice",ipa:"/dʒuːs/"},{w:"true",ipa:"/truː/"},
+    {w:"group",ipa:"/ɡruːp/"},{w:"choose",ipa:"/tʃuːz/"},{w:"improve",ipa:"/ɪmˈpruːv/"},{w:"through",ipa:"/θruː/"},{w:"beautiful",ipa:"/ˈbjuː.tɪ.fəl/"},
+  ],pairs:[{a:"pool",b:"pull"},{a:"fool",b:"full"},{a:"Luke",b:"look"}]},
+
+{ipa:"/ɜː/",name:"long er",type:"vowL",sub:"Long Vowel",
+  mouth:"La boca se abre a medias. La lengua está en posición central. Labios neutros. Sonido largo, como una 'e' mezclada con 'o'. No existe en español.",
+  features:["long","central","open-mid","unrounded"],
+  words:[
+    {w:"bird",ipa:"/bɜːrd/"},{w:"work",ipa:"/wɜːrk/"},{w:"learn",ipa:"/lɜːrn/"},{w:"first",ipa:"/fɜːrst/"},{w:"word",ipa:"/wɜːrd/"},
+    {w:"world",ipa:"/wɜːrld/"},{w:"girl",ipa:"/ɡɜːrl/"},{w:"turn",ipa:"/tɜːrn/"},{w:"early",ipa:"/ˈɜːr.li/"},{w:"earth",ipa:"/ɜːrθ/"},
+    {w:"nurse",ipa:"/nɜːrs/"},{w:"church",ipa:"/tʃɜːrtʃ/"},{w:"person",ipa:"/ˈpɜːr.sən/"},{w:"birthday",ipa:"/ˈbɜːrθ.deɪ/"},{w:"perfect",ipa:"/ˈpɜːr.fɪkt/"},
+  ],pairs:[{a:"burn",b:"barn"},{a:"bird",b:"bed"},{a:"fur",b:"far"}]},
+
+// ══════════════ 8 DIPHTHONGS ══════════════
+{ipa:"/eɪ/",name:"ay",type:"diph",sub:"Diphthong",
+  mouth:"Empieza en /e/ y se desliza hacia /ɪ/. La boca se cierra gradualmente. Como decir 'ei' rápidamente.",
+  features:["diphthong","closing","front"],
+  words:[
+    {w:"day",ipa:"/deɪ/"},{w:"say",ipa:"/seɪ/"},{w:"make",ipa:"/meɪk/"},{w:"take",ipa:"/teɪk/"},{w:"name",ipa:"/neɪm/"},
+    {w:"play",ipa:"/pleɪ/"},{w:"way",ipa:"/weɪ/"},{w:"today",ipa:"/təˈdeɪ/"},{w:"great",ipa:"/ɡreɪt/"},{w:"table",ipa:"/ˈteɪ.bəl/"},
+    {w:"change",ipa:"/tʃeɪndʒ/"},{w:"rain",ipa:"/reɪn/"},{w:"break",ipa:"/breɪk/"},{w:"eight",ipa:"/eɪt/"},{w:"weight",ipa:"/weɪt/"},
+  ],pairs:[{a:"main",b:"men"},{a:"late",b:"let"},{a:"wait",b:"wet"}]},
+
+{ipa:"/aɪ/",name:"eye",type:"diph",sub:"Diphthong",
+  mouth:"Empieza en /ɑ/ (boca abierta) y se desliza hacia /ɪ/ (boca cerrada). Como decir 'ai' en español.",
+  features:["diphthong","closing","front"],
+  words:[
+    {w:"I",ipa:"/aɪ/"},{w:"my",ipa:"/maɪ/"},{w:"time",ipa:"/taɪm/"},{w:"like",ipa:"/laɪk/"},{w:"find",ipa:"/faɪnd/"},
+    {w:"night",ipa:"/naɪt/"},{w:"write",ipa:"/raɪt/"},{w:"right",ipa:"/raɪt/"},{w:"life",ipa:"/laɪf/"},{w:"five",ipa:"/faɪv/"},
+    {w:"high",ipa:"/haɪ/"},{w:"buy",ipa:"/baɪ/"},{w:"eye",ipa:"/aɪ/"},{w:"fly",ipa:"/flaɪ/"},{w:"idea",ipa:"/aɪˈdɪə/"},
+  ],pairs:[{a:"ride",b:"red"},{a:"wine",b:"win"},{a:"bite",b:"bet"}]},
+
+{ipa:"/ɔɪ/",name:"oy",type:"diph",sub:"Diphthong",
+  mouth:"Empieza en /ɔ/ (labios redondeados) y se desliza hacia /ɪ/. Como 'oi' en español.",
+  features:["diphthong","closing","back-to-front"],
+  words:[
+    {w:"boy",ipa:"/bɔɪ/"},{w:"toy",ipa:"/tɔɪ/"},{w:"join",ipa:"/dʒɔɪn/"},{w:"point",ipa:"/pɔɪnt/"},{w:"voice",ipa:"/vɔɪs/"},
+    {w:"noise",ipa:"/nɔɪz/"},{w:"choice",ipa:"/tʃɔɪs/"},{w:"enjoy",ipa:"/ɪnˈdʒɔɪ/"},{w:"oil",ipa:"/ɔɪl/"},{w:"coin",ipa:"/kɔɪn/"},
+    {w:"soil",ipa:"/sɔɪl/"},{w:"royal",ipa:"/ˈrɔɪ.əl/"},{w:"destroy",ipa:"/dɪˈstrɔɪ/"},{w:"employ",ipa:"/ɪmˈplɔɪ/"},{w:"avoid",ipa:"/əˈvɔɪd/"},
+  ],pairs:[]},
+
+{ipa:"/aʊ/",name:"ow",type:"diph",sub:"Diphthong",
+  mouth:"Empieza en /ɑ/ (boca abierta) y se desliza hacia /ʊ/ (labios redondeados). Como 'au' en español.",
+  features:["diphthong","closing","back"],
+  words:[
+    {w:"how",ipa:"/haʊ/"},{w:"now",ipa:"/naʊ/"},{w:"out",ipa:"/aʊt/"},{w:"house",ipa:"/haʊs/"},{w:"down",ipa:"/daʊn/"},
+    {w:"about",ipa:"/əˈbaʊt/"},{w:"around",ipa:"/əˈraʊnd/"},{w:"found",ipa:"/faʊnd/"},{w:"south",ipa:"/saʊθ/"},{w:"mouth",ipa:"/maʊθ/"},
+    {w:"town",ipa:"/taʊn/"},{w:"brown",ipa:"/braʊn/"},{w:"loud",ipa:"/laʊd/"},{w:"mountain",ipa:"/ˈmaʊn.tɪn/"},{w:"thousand",ipa:"/ˈθaʊ.zənd/"},
+  ],pairs:[{a:"found",b:"fond"},{a:"how",b:"hoe"}]},
+
+{ipa:"/oʊ/",name:"oh",type:"diph",sub:"Diphthong",
+  mouth:"Empieza en /ə/ y se desliza hacia /ʊ/. Los labios se redondean gradualmente. Como 'ou' en español.",
+  features:["diphthong","closing","back"],
+  words:[
+    {w:"go",ipa:"/ɡoʊ/"},{w:"no",ipa:"/noʊ/"},{w:"home",ipa:"/hoʊm/"},{w:"old",ipa:"/oʊld/"},{w:"open",ipa:"/ˈoʊ.pən/"},
+    {w:"phone",ipa:"/foʊn/"},{w:"show",ipa:"/ʃoʊ/"},{w:"know",ipa:"/noʊ/"},{w:"close",ipa:"/kloʊz/"},{w:"only",ipa:"/ˈoʊn.li/"},
+    {w:"road",ipa:"/roʊd/"},{w:"cold",ipa:"/koʊld/"},{w:"over",ipa:"/ˈoʊ.vər/"},{w:"most",ipa:"/moʊst/"},{w:"control",ipa:"/kənˈtroʊl/"},
+  ],pairs:[{a:"note",b:"not"},{a:"coat",b:"cot"},{a:"low",b:"law"}]},
+
+{ipa:"/ɪə/",name:"ear",type:"diph",sub:"Diphthong",
+  mouth:"Empieza en /ɪ/ y se desliza hacia /ə/ (schwa). La boca se abre ligeramente.",
+  features:["diphthong","centering","front"],
+  words:[
+    {w:"here",ipa:"/hɪər/"},{w:"near",ipa:"/nɪər/"},{w:"ear",ipa:"/ɪər/"},{w:"year",ipa:"/jɪər/"},{w:"clear",ipa:"/klɪər/"},
+    {w:"fear",ipa:"/fɪər/"},{w:"beer",ipa:"/bɪər/"},{w:"idea",ipa:"/aɪˈdɪə/"},{w:"appear",ipa:"/əˈpɪər/"},{w:"experience",ipa:"/ɪkˈspɪə.ri.əns/"},
+    {w:"dear",ipa:"/dɪər/"},{w:"career",ipa:"/kəˈrɪər/"},{w:"serious",ipa:"/ˈsɪə.ri.əs/"},{w:"cheerful",ipa:"/ˈtʃɪər.fəl/"},{w:"weird",ipa:"/wɪərd/"},
+  ],pairs:[{a:"beer",b:"bear"},{a:"ear",b:"air"}]},
+
+{ipa:"/eə/",name:"air",type:"diph",sub:"Diphthong",
+  mouth:"Empieza en /e/ y se desliza hacia /ə/. La boca se abre un poco más.",
+  features:["diphthong","centering","front"],
+  words:[
+    {w:"air",ipa:"/eər/"},{w:"there",ipa:"/ðeər/"},{w:"where",ipa:"/weər/"},{w:"hair",ipa:"/heər/"},{w:"care",ipa:"/keər/"},
+    {w:"fair",ipa:"/feər/"},{w:"chair",ipa:"/tʃeər/"},{w:"wear",ipa:"/weər/"},{w:"pair",ipa:"/peər/"},{w:"share",ipa:"/ʃeər/"},
+    {w:"square",ipa:"/skweər/"},{w:"prepare",ipa:"/prɪˈpeər/"},{w:"compare",ipa:"/kəmˈpeər/"},{w:"parent",ipa:"/ˈpeə.rənt/"},{w:"aware",ipa:"/əˈweər/"},
+  ],pairs:[{a:"bear",b:"beer"},{a:"air",b:"ear"}]},
+
+{ipa:"/ʊə/",name:"oor",type:"diph",sub:"Diphthong",
+  mouth:"Empieza en /ʊ/ y se desliza hacia /ə/. Los labios pasan de redondeados a relajados.",
+  features:["diphthong","centering","back"],
+  words:[
+    {w:"tour",ipa:"/tʊər/"},{w:"pure",ipa:"/pjʊər/"},{w:"sure",ipa:"/ʃʊər/"},{w:"cure",ipa:"/kjʊər/"},{w:"poor",ipa:"/pʊər/"},
+    {w:"during",ipa:"/ˈdjʊə.rɪŋ/"},{w:"insurance",ipa:"/ɪnˈʃʊə.rəns/"},{w:"tourist",ipa:"/ˈtʊə.rɪst/"},{w:"plural",ipa:"/ˈplʊə.rəl/"},{w:"mature",ipa:"/məˈtʃʊər/"},
+    {w:"endure",ipa:"/ɪnˈdjʊər/"},{w:"secure",ipa:"/sɪˈkjʊər/"},{w:"furious",ipa:"/ˈfjʊə.ri.əs/"},{w:"curious",ipa:"/ˈkjʊə.ri.əs/"},{w:"jury",ipa:"/ˈdʒʊə.ri/"},
+  ],pairs:[]},
+];
+
+// ═══════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════
+const TYPE_META={
+  cons:{label:"Consonante",color:"var(--cons)",bg:"var(--consB)",bd:"var(--consD)"},
+  vowS:{label:"Vocal Corta",color:"var(--vowS)",bg:"var(--vowSB)",bd:"var(--vowSD)"},
+  vowL:{label:"Vocal Larga",color:"var(--vowL)",bg:"var(--vowLB)",bd:"var(--vowLD)"},
+  diph:{label:"Diptongo",color:"var(--diph)",bg:"var(--diphB)",bd:"var(--diphD)"},
+};
+
+const spkSVG=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>`;
+
+function speak(text,rate=.85){
+  if(!('speechSynthesis' in window))return;speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=rate;
+  const v=speechSynthesis.getVoices();
+  const pick=v.find(x=>x.lang.startsWith('en')&&x.name.includes('Google'))||v.find(x=>x.lang.startsWith('en-US'))||v.find(x=>x.lang.startsWith('en'));
+  if(pick)u.voice=pick;speechSynthesis.speak(u);
+}
+if('speechSynthesis' in window)speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices();
+
+const shuffle=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]]}return b};
+
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+const MODES=[{id:'explore',label:'🔍 Explorar'},{id:'quiz',label:'🧠 Quiz'},{id:'pairs',label:'🔀 Pares Mínimos'}];
+const FILTERS=['all','cons','vowS','vowL','diph'];
+const FILTER_LABELS={all:'Todos (44)',cons:'Consonantes (24)',vowS:'Vocales Cortas (7)',vowL:'Vocales Largas (5)',diph:'Diptongos (8)'};
+const FILTER_COLORS={all:null,cons:TYPE_META.cons,vowS:TYPE_META.vowS,vowL:TYPE_META.vowL,diph:TYPE_META.diph};
+
+let S={mode:'explore',filter:'all',detail:null,search:'',
+  qItems:[],qIdx:0,qAnswers:[],qAnswered:false,
+  stats:{attempts:0,correct:0}};
+
+function filtered(){return S.filter==='all'?SOUNDS:SOUNDS.filter(s=>s.type===S.filter)}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════
+function render(){rStats();rModes();rFilters();rMain()}
+
+function rStats(){
+  const totalWords=SOUNDS.reduce((s,x)=>s+x.words.length,0);
+  const pct=S.stats.attempts?Math.round(S.stats.correct/S.stats.attempts*100):0;
+  document.getElementById('stats').innerHTML=`
+    <div class="st"><div class="st-n">44</div><div class="st-l">Sonidos</div></div>
+    <div class="st"><div class="st-n" style="color:var(--cons)">${totalWords}</div><div class="st-l">Palabras</div></div>
+    <div class="st"><div class="st-n">${S.stats.attempts}</div><div class="st-l">Intentos</div></div>
+    <div class="st"><div class="st-n" style="color:var(--ok)">${pct}%</div><div class="st-l">Precisión</div></div>`;
+}
+
+function rModes(){
+  document.getElementById('modes').innerHTML=MODES.map(m=>`<button class="tab ${S.mode===m.id?'on':''}" onclick="setMode('${m.id}')">${m.label}</button>`).join('');
+}
+
+function rFilters(){
+  document.getElementById('filters').innerHTML=FILTERS.map(f=>{
+    const on=S.filter===f;const fc=FILTER_COLORS[f];
+    const style=on?(fc?`border-color:${fc.bd};background:${fc.bg};color:${fc.color}`:'border-color:rgba(255,255,255,.15);background:var(--s3);color:var(--tx)'):'';
+    return`<button class="fpill" style="${style}" onclick="setFilter('${f}')">
+      ${fc?`<span class="dot" style="background:${fc.color}"></span>`:''} ${FILTER_LABELS[f]}
+    </button>`;
+  }).join('');
+}
+
+function rMain(){
+  const el=document.getElementById('main');
+  if(S.mode==='explore'){S.detail?rDetail(el):rExplore(el)}
+  else if(S.mode==='quiz')rQuiz(el);
+  else rPairs(el);
+}
+
+// ═══ EXPLORE ═══
+function rExplore(el){
+  const list=filtered();
+  el.innerHTML=`<div class="card">
+    <div class="card-h"><div class="card-t">Sonidos <span class="pill" style="background:var(--s3);color:var(--tx3)">${list.length}</span></div></div>
+    <div class="card-b">
+      <input class="srch" placeholder="🔍 Buscar sonido, IPA o palabra..." value="${S.search}" oninput="S.search=this.value;rMain()">
+      <div class="sgrid">${list.filter(s=>{
+        if(!S.search)return true;const q=S.search.toLowerCase();
+        return s.ipa.includes(q)||s.name.toLowerCase().includes(q)||s.words.some(w=>w.w.toLowerCase().includes(q));
+      }).map(s=>{const m=TYPE_META[s.type];
+        return`<div class="scard" style="border-color:${m.bd}" onclick="openDetail('${s.ipa}');speak('${s.words[0].w}')">
+          <div class="ipa" style="color:${m.color}">${s.ipa}</div>
+          <div class="sname">${s.name}</div>
+          <div class="sexample">${s.words[0].w}</div>
+        </div>`;
+      }).join('')}</div>
+    </div></div>`;
+}
+
+function openDetail(ipa){S.detail=SOUNDS.find(s=>s.ipa===ipa);render()}
+
+function rDetail(el){
+  const s=S.detail;const m=TYPE_META[s.type];
+  el.innerHTML=`<div class="btn-row" style="margin-bottom:12px;justify-content:flex-start">
+    <button class="btn btn-sm" onclick="S.detail=null;rMain()">← Volver</button>
+  </div>
+  <div class="card">
+    <div class="card-h"><div class="card-t"><span class="pill" style="background:${m.bg};color:${m.color};border:1px solid ${m.bd}">${m.label}</span> ${s.sub}</div></div>
+    <div class="card-b">
+      <div class="detail-top">
+        <button class="spk-ipa ${s.type}" onclick="speak('${s.words[0].w}',.6)">${s.ipa}</button>
+        <div class="detail-info">
+          <div class="detail-type" style="color:${m.color}">${s.sub}</div>
+          <div class="detail-name">${s.ipa} — ${s.name}</div>
+          <div class="ftags">${(s.features||[]).map(f=>`<span class="ftag">${f}</span>`).join('')}</div>
+        </div>
+      </div>
+      <div class="mouth-box">
+        <div class="mb-label">👄 Cómo producirlo</div>
+        <div class="mb-text">${s.mouth}</div>
+      </div>
+      <div class="btn-row" style="margin-bottom:14px">
+        <button class="btn" onclick="speak('${s.words[0].w}',.5)">🐢 Muy lento</button>
+        <button class="btn" onclick="speak('${s.words[0].w}',.75)">🔊 Normal</button>
+        <button class="btn" onclick="speak('${s.words[0].w}',1)">🐇 Rápido</button>
+        <button class="btn btn-sm" onclick="playAllWords('${s.ipa}')">▶ Todas</button>
+      </div>
+
+      <div style="font-family:'Victor Mono',monospace;font-size:9px;color:var(--tx3);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px">Palabras de ejemplo (${s.words.length})</div>
+      <div class="wgrid">${s.words.map(w=>`<div class="witem" onclick="speak('${w.w}',.75)">
+        <button class="spk">${spkSVG}</button>
+        <span class="ww">${w.w}</span>
+        <span class="wipa">${w.ipa}</span>
+      </div>`).join('')}</div>
+
+      ${s.pairs&&s.pairs.length?`<div style="margin-top:18px">
+        <div style="font-family:'Victor Mono',monospace;font-size:9px;color:var(--tx3);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px">Pares mínimos</div>
+        ${s.pairs.map(p=>`<div class="mpair">
+          <button class="btn btn-sm" onclick="speak('${p.a}',.7)">${p.a}</button>
+          <span class="vs">vs</span>
+          <button class="btn btn-sm" onclick="speak('${p.b}',.7)">${p.b}</button>
+        </div>`).join('')}
+      </div>`:''}
+    </div></div>`;
+}
+
+function playAllWords(ipa){
+  const s=SOUNDS.find(x=>x.ipa===ipa);if(!s)return;
+  let i=0;
+  function next(){
+    if(i>=s.words.length)return;
+    speak(s.words[i].w,.7);
+    i++;setTimeout(next,1200);
+  }
+  next();
+}
+
+// ═══ QUIZ ═══
+function initQuiz(){
+  const pool=shuffle(filtered());
+  S.qItems=pool.slice(0,12);S.qIdx=0;S.qAnswers=[];S.qAnswered=false;
+}
+
+function rQuiz(el){
+  if(!S.qItems.length)initQuiz();
+  if(S.qIdx>=S.qItems.length){
+    const ok=S.qAnswers.filter(Boolean).length;const pct=Math.round(ok/S.qAnswers.length*100);
+    const color=pct>=80?'var(--ok)':pct>=50?'var(--diph)':'#ef4444';
+    el.innerHTML=`<div class="card"><div class="card-b tc">
+      <div class="score-big" style="color:${color}">${pct}%</div>
+      <div style="color:var(--tx2);margin:4px 0 16px">${ok}/${S.qAnswers.length} correctas</div>
+      <div class="btn-row"><button class="btn" style="background:var(--okB);border-color:var(--okD);color:var(--ok)" onclick="S.qItems=[];rMain()">🔄 Nueva Ronda</button></div>
+    </div></div>`;return;
+  }
+  const s=S.qItems[S.qIdx];const m=TYPE_META[s.type];
+  const word=s.words[Math.floor(Math.random()*s.words.length)];
+  const prog=S.qItems.map((_,i)=>{if(i<S.qAnswers.length)return S.qAnswers[i]?'ok':'err';if(i===S.qIdx)return'cur';return''});
+
+  let opts=[s.ipa];const pool=shuffle(SOUNDS.filter(x=>x.ipa!==s.ipa));
+  for(const o of pool){if(opts.length>=4)break;if(!opts.includes(o.ipa))opts.push(o.ipa)}
+  opts=shuffle(opts);
+
+  el.innerHTML=`<div class="card"><div class="card-h"><div class="card-t">Quiz <span class="pill" style="background:var(--s3);color:var(--tx3)">${S.qIdx+1}/${S.qItems.length}</span></div></div>
+    <div class="card-b">
+      <div class="prog">${prog.map(x=>`<div class="prog-d ${x}"></div>`).join('')}</div>
+      <div class="tc" style="margin:16px 0">
+        <div style="font-size:9px;color:var(--tx3);margin-bottom:6px;font-family:'Victor Mono',monospace;text-transform:uppercase;letter-spacing:1px">¿Qué sonido tiene esta palabra?</div>
+        <button class="spk-ipa" style="border-color:var(--bd);color:var(--tx);font-family:'Outfit',sans-serif;font-size:1.3rem;width:auto;padding:0 24px;height:56px;border-radius:14px" onclick="speak('${word.w}',.7)">${word.w} 🔊</button>
+      </div>
+      <div class="q-grid" id="qO">${opts.map(o=>{const om=TYPE_META[SOUNDS.find(x=>x.ipa===o)?.type||'cons'];
+        return`<button class="q-opt" style="font-family:'Victor Mono',monospace;font-size:1.1rem" onclick="aQuiz(this,'${o}','${s.ipa}')">${o}</button>`;
+      }).join('')}</div>
+      <div class="fb" id="qFb"></div>
+      <div class="btn-row"><button class="btn hidden" id="nxBtn" onclick="S.qIdx++;S.qAnswered=false;rMain()">Siguiente →</button></div>
+    </div></div>`;
+  setTimeout(()=>speak(word.w,.75),200);
+}
+
+function aQuiz(btn,picked,correct){
+  if(S.qAnswered)return;S.qAnswered=true;S.stats.attempts++;
+  const ok=picked===correct;S.qAnswers.push(ok);
+  document.querySelectorAll('#qO .q-opt').forEach(o=>{o.classList.add('dis');if(o.textContent===correct)o.classList.add('right')});
+  btn.classList.add(ok?'right':'wrong');
+  if(ok)S.stats.correct++;
+  const fb=document.getElementById('qFb');fb.classList.add('show');
+  fb.className=ok?'fb show':'fb show';
+  fb.style.background=ok?'var(--okB)':'var(--errb)';
+  fb.style.border=ok?'1px solid var(--okD)':'1px solid var(--errd)';
+  fb.style.color=ok?'#86efac':'#fca5a5';
+  fb.textContent=ok?'✅ ¡Correcto!':'❌ Correcto: '+correct;
+  document.getElementById('nxBtn').classList.remove('hidden');rStats();
+}
+
+// ═══ MINIMAL PAIRS ═══
+function rPairs(el){
+  const withPairs=filtered().filter(s=>s.pairs&&s.pairs.length>0);
+  const allPairs=withPairs.flatMap(s=>s.pairs.map(p=>({...p,sound:s.ipa,type:s.type})));
+
+  el.innerHTML=`<div class="card">
+    <div class="card-h"><div class="card-t">Pares Mínimos <span class="pill" style="background:var(--s3);color:var(--tx3)">${allPairs.length} pares</span></div></div>
+    <div class="card-b">
+      <div style="font-size:.88rem;color:var(--tx2);margin-bottom:12px;line-height:1.5">
+        Los pares mínimos son dos palabras que difieren en un solo sonido. Escucha y compara para entrenar tu oído.
+      </div>
+      ${withPairs.map(s=>{const m=TYPE_META[s.type];
+        return`<div style="margin-bottom:12px">
+          <div style="font-family:'Victor Mono',monospace;font-size:10px;color:${m.color};margin-bottom:4px">${s.ipa} — ${s.name}</div>
+          ${s.pairs.map(p=>`<div class="mpair">
+            <button class="btn btn-sm" onclick="speak('${p.a}',.65)" style="min-width:80px">${p.a}</button>
+            <span class="vs">vs</span>
+            <button class="btn btn-sm" onclick="speak('${p.b}',.65)" style="min-width:80px">${p.b}</button>
+            <button class="spk" onclick="speak('${p.a}',.6);setTimeout(()=>speak('${p.b}',.6),1000)" style="margin-left:auto" title="Escuchar ambos">${spkSVG}</button>
+          </div>`).join('')}
+        </div>`;
+      }).join('')}
+    </div></div>`;
+}
+
+// ═══ ACTIONS ═══
+function setMode(m){S.mode=m;S.detail=null;S.qItems=[];render()}
+function setFilter(f){S.filter=f;S.detail=null;S.qItems=[];render()}
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Speak It! — English Speaking Practice</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#070a11;--s1:#0c1019;--s2:#121826;--s3:#1a2236;--s4:#232e44;
+  --easy:#34d399;--easy-bg:rgba(52,211,153,.07);--easy-bd:rgba(52,211,153,.22);
+  --med:#f59e0b;--med-bg:rgba(245,158,11,.07);--med-bd:rgba(245,158,11,.22);
+  --hard:#f472b6;--hard-bg:rgba(244,114,182,.07);--hard-bd:rgba(244,114,182,.22);
+  --accent:#818cf8;--accent-bg:rgba(129,140,248,.07);--accent-bd:rgba(129,140,248,.22);
+  --ok:#22c55e;--ok-bg:rgba(34,197,94,.08);--ok-bd:rgba(34,197,94,.2);
+  --err:#ef4444;--err-bg:rgba(239,68,68,.08);--err-bd:rgba(239,68,68,.2);
+  --warn:#eab308;--warn-bg:rgba(234,179,8,.08);
+  --tx:#e3e8f1;--tx2:#8c97af;--tx3:#56637a;--bd:rgba(255,255,255,.05);--r:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 15% 0%,rgba(52,211,153,.02),transparent 50%),radial-gradient(ellipse at 85% 0%,rgba(244,114,182,.02),transparent 50%),radial-gradient(ellipse at 50% 100%,rgba(129,140,248,.02),transparent 50%);pointer-events:none}
+.app{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:20px 16px 80px}
+
+@keyframes fadeD{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeU{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pop{from{transform:scale(.88);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.3)}50%{box-shadow:0 0 0 16px rgba(239,68,68,0)}}
+@keyframes wave{0%{height:6px}50%{height:28px}100%{height:6px}}
+@keyframes celebrate{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+
+/* Header */
+.hdr{text-align:center;margin-bottom:26px;animation:fadeD .5s ease}
+.hdr-tag{display:inline-flex;align-items:center;gap:8px;padding:5px 16px;border-radius:100px;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--tx3);border:1px solid var(--bd);background:var(--s1);margin-bottom:12px}
+.hdr h1{font-size:2.3rem;font-weight:900;letter-spacing:-.5px;margin-bottom:4px}
+.hdr h1 .g1{color:var(--easy)}.hdr h1 .g2{color:var(--med)}.hdr h1 .g3{color:var(--hard)}
+.hdr p{color:var(--tx2);font-size:.88rem;font-weight:400}
+
+/* Stats Bar */
+.stats-bar{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:20px;animation:fadeU .4s ease .08s both}
+@media(max-width:600px){.stats-bar{grid-template-columns:repeat(3,1fr)}}
+.st{padding:12px 8px;background:var(--s1);border:1px solid var(--bd);border-radius:12px;text-align:center}
+.st-n{font-family:'Space Mono',monospace;font-size:1.2rem;font-weight:700;line-height:1}
+.st-l{font-size:9px;color:var(--tx3);text-transform:uppercase;letter-spacing:1px;margin-top:3px}
+
+/* Tabs & Filters */
+.tabs{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;margin-bottom:14px;animation:fadeU .4s ease .12s both}
+.tab{padding:8px 18px;border-radius:100px;border:1.5px solid var(--bd);background:var(--s1);color:var(--tx3);font-size:12.5px;font-weight:600;cursor:pointer;transition:all .25s;font-family:inherit;display:flex;align-items:center;gap:6px}
+.tab:hover{border-color:rgba(255,255,255,.1);color:var(--tx2)}
+.tab.on{background:var(--s3);color:var(--tx);border-color:rgba(255,255,255,.12)}
+
+.filters{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;margin-bottom:22px;animation:fadeU .4s ease .16s both}
+.fb{padding:6px 14px;border-radius:100px;border:1.5px solid var(--bd);background:var(--s1);font-size:12px;font-weight:600;cursor:pointer;transition:all .25s;font-family:inherit;display:flex;align-items:center;gap:6px}
+.fb:hover{border-color:rgba(255,255,255,.1)}
+.fb .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* Card */
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:16px;animation:fadeU .4s ease}
+.card-h{padding:14px 20px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.card-t{font-family:'Space Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.8px;color:var(--tx3);display:flex;align-items:center;gap:8px}
+.card-b{padding:20px}
+.pill{padding:2px 9px;border-radius:6px;font-size:9px;font-weight:700;letter-spacing:.5px}
+
+/* Progress bar */
+.prog{display:flex;gap:3px;margin-bottom:16px}
+.prog-d{height:5px;flex:1;border-radius:5px;background:var(--s3);transition:background .3s}
+.prog-d.ok{background:var(--ok)}.prog-d.err{background:var(--err)}.prog-d.cur{background:var(--tx3)}
+
+/* Spanish phrase display */
+.phrase-zone{text-align:center;margin:10px 0 20px}
+.phrase-label{font-family:'Space Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:2px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:8px}
+.phrase-es{font-size:1.6rem;font-weight:800;line-height:1.5;letter-spacing:-.3px;padding:20px;background:var(--s2);border-radius:14px;border:1.5px solid var(--bd);position:relative}
+.phrase-hint{font-size:.78rem;color:var(--tx3);margin-top:10px;cursor:pointer;transition:color .2s}
+.phrase-hint:hover{color:var(--tx2)}
+.phrase-en-reveal{margin-top:10px;padding:10px 16px;background:var(--s3);border-radius:10px;font-size:1rem;font-weight:600;color:var(--accent);display:none;animation:pop .3s ease}
+.phrase-en-reveal.show{display:block}
+.phrase-num{position:absolute;top:10px;right:14px;font-family:'Space Mono',monospace;font-size:10px;color:var(--tx3)}
+
+/* Mic Button */
+.mic-area{display:flex;flex-direction:column;align-items:center;gap:12px;margin:18px 0}
+.mic-btn{width:82px;height:82px;border-radius:50%;border:2.5px solid var(--accent-bd);background:var(--s1);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s;position:relative}
+.mic-btn::after{content:'';position:absolute;inset:-6px;border-radius:50%;border:1px solid transparent;transition:all .3s}
+.mic-btn:hover{background:var(--accent-bg);border-color:var(--accent);transform:scale(1.05)}
+.mic-btn:hover::after{border-color:rgba(129,140,248,.1)}
+.mic-btn.rec{background:var(--err-bg);border-color:var(--err);animation:pulse 1.5s infinite}
+.mic-btn svg{width:28px;height:28px;color:var(--accent);transition:color .2s}
+.mic-btn.rec svg{color:var(--err)}
+.mic-hint{font-size:12px;color:var(--tx3)}.mic-hint b{color:var(--tx2)}
+
+/* Waves */
+.waves{display:flex;align-items:center;gap:3px;height:30px;opacity:0;transition:opacity .3s}
+.waves.on{opacity:1}
+.waves span{width:3px;border-radius:3px;background:var(--err)}
+.waves span:nth-child(1){animation:wave .45s ease-in-out infinite alternate;animation-delay:0s}
+.waves span:nth-child(2){animation:wave .45s ease-in-out infinite alternate;animation-delay:.08s}
+.waves span:nth-child(3){animation:wave .45s ease-in-out infinite alternate;animation-delay:.16s}
+.waves span:nth-child(4){animation:wave .45s ease-in-out infinite alternate;animation-delay:.12s}
+.waves span:nth-child(5){animation:wave .45s ease-in-out infinite alternate;animation-delay:.04s}
+.waves span:nth-child(6){animation:wave .45s ease-in-out infinite alternate;animation-delay:.2s}
+.waves span:nth-child(7){animation:wave .45s ease-in-out infinite alternate;animation-delay:.1s}
+
+/* Result */
+.result{padding:16px 20px;border-radius:14px;margin:14px 0;display:none;animation:pop .35s ease}
+.result.show{display:block}
+.result.ok{background:var(--ok-bg);border:1.5px solid var(--ok-bd)}
+.result.no{background:var(--err-bg);border:1.5px solid var(--err-bd)}
+.result.partial{background:var(--warn-bg);border:1.5px solid rgba(234,179,8,.2)}
+.result-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.result-score{font-family:'Space Mono',monospace;font-size:1.8rem;font-weight:700}
+.result-msg{font-size:.85rem;font-weight:600}
+.result-you{font-size:.9rem;color:var(--tx2);margin-bottom:6px}
+.result-you b{color:var(--tx)}
+.result-correct{font-size:.95rem;font-weight:600;margin-bottom:4px}
+.result-diff{font-size:.9rem;line-height:1.8}
+.d-ok{color:var(--ok);font-weight:600}.d-err{color:var(--err);text-decoration:line-through;text-decoration-thickness:2px}.d-miss{color:var(--err);opacity:.5;text-decoration:underline wavy}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border:1px solid var(--bd);border-radius:12px;background:var(--s2);color:var(--tx2);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
+.btn:hover{background:var(--s3);color:var(--tx);border-color:rgba(255,255,255,.1)}
+.btn svg{width:15px;height:15px}
+.btn-sm{padding:7px 14px;font-size:12px;border-radius:10px}
+.btn-accent{background:var(--accent-bg);border-color:var(--accent-bd);color:var(--accent)}
+.btn-accent:hover{background:rgba(129,140,248,.14)}
+.btn-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+
+/* Add Phrases */
+.add-row{display:flex;gap:8px;margin-bottom:10px}
+.add-input{flex:1;padding:10px 14px;border:1px solid var(--bd);border-radius:10px;background:var(--s2);color:var(--tx);font-family:inherit;font-size:13px;outline:none;transition:border-color .2s}
+.add-input:focus{border-color:var(--accent-bd)}
+.add-input::placeholder{color:var(--tx3)}
+
+/* Phrase List */
+.phrase-list{max-height:400px;overflow-y:auto}
+.pl-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--bd);transition:background .15s}
+.pl-item:hover{background:var(--s2)}
+.pl-item:last-child{border-bottom:none}
+.pl-es{flex:1;font-size:.85rem;color:var(--tx2)}
+.pl-en{flex:1;font-size:.85rem;font-weight:600;color:var(--tx)}
+.pl-lvl{font-family:'Space Mono',monospace;font-size:9px;padding:2px 8px;border-radius:6px;flex-shrink:0}
+.pl-del{width:28px;height:28px;border-radius:8px;border:1px solid var(--bd);background:transparent;color:var(--tx3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .15s;flex-shrink:0}
+.pl-del:hover{background:var(--err-bg);color:var(--err);border-color:var(--err-bd)}
+.speak-btn{width:28px;height:28px;border-radius:8px;border:1px solid var(--bd);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--tx3);transition:all .15s;flex-shrink:0}
+.speak-btn:hover{color:var(--tx);background:var(--s3)}
+.speak-btn svg{width:13px;height:13px}
+
+/* Score screen */
+.score-big{font-family:'Space Mono',monospace;font-size:4rem;font-weight:700;text-align:center;animation:celebrate .6s ease}
+.score-sub{text-align:center;color:var(--tx2);font-size:1rem;margin-bottom:20px}
+.score-grid{display:flex;gap:24px;justify-content:center;margin-bottom:24px}
+.sg-item{text-align:center}
+.sg-n{font-family:'Space Mono',monospace;font-size:1.5rem;font-weight:700}
+.sg-l{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:1px}
+
+/* Search */
+.search{width:100%;padding:10px 16px;border:1px solid var(--bd);border-radius:10px;background:var(--s2);color:var(--tx);font-family:inherit;font-size:13px;outline:none;margin-bottom:12px}
+.search:focus{border-color:var(--accent-bd)}
+.search::placeholder{color:var(--tx3)}
+
+.hidden{display:none!important}
+.tc{text-align:center}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--s3);border-radius:5px}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hdr">
+    <div class="hdr-tag">🎙️ Speaking Engine</div>
+    <h1><span class="g1">Speak</span> <span class="g2">It</span><span class="g3">!</span></h1>
+    <p>Lee en español → Dilo en inglés → Evalúa tu pronunciación</p>
+  </div>
+
+  <div class="stats-bar" id="statsBar"></div>
+  <div class="tabs" id="modeTabs"></div>
+  <div class="filters" id="filters"></div>
+  <div id="main"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// PHRASE DATABASE — 150+ phrases
+// ═══════════════════════════════════════════════════════════
+const BASE_PHRASES = [
+// ══ EASY (50+) — A1/A2 daily phrases ══
+{es:"Hola, ¿cómo estás?",en:"Hello, how are you?",lvl:"easy"},
+{es:"Me llamo Ricardo",en:"My name is Ricardo",lvl:"easy"},
+{es:"Buenos días",en:"Good morning",lvl:"easy"},
+{es:"Buenas noches",en:"Good night",lvl:"easy"},
+{es:"¿Cuántos años tienes?",en:"How old are you?",lvl:"easy"},
+{es:"Tengo veinticinco años",en:"I am twenty-five years old",lvl:"easy"},
+{es:"¿Dónde vives?",en:"Where do you live?",lvl:"easy"},
+{es:"Vivo en México",en:"I live in Mexico",lvl:"easy"},
+{es:"¿Qué hora es?",en:"What time is it?",lvl:"easy"},
+{es:"Son las tres de la tarde",en:"It is three in the afternoon",lvl:"easy"},
+{es:"Me gusta el café",en:"I like coffee",lvl:"easy"},
+{es:"No me gusta la lluvia",en:"I don't like rain",lvl:"easy"},
+{es:"Tengo hambre",en:"I am hungry",lvl:"easy"},
+{es:"Tengo sed",en:"I am thirsty",lvl:"easy"},
+{es:"¿Puedes ayudarme?",en:"Can you help me?",lvl:"easy"},
+{es:"Necesito ir al baño",en:"I need to go to the bathroom",lvl:"easy"},
+{es:"¿Cuánto cuesta esto?",en:"How much does this cost?",lvl:"easy"},
+{es:"Es muy caro",en:"It is very expensive",lvl:"easy"},
+{es:"No entiendo",en:"I don't understand",lvl:"easy"},
+{es:"¿Puedes repetir, por favor?",en:"Can you repeat, please?",lvl:"easy"},
+{es:"Hablo un poco de inglés",en:"I speak a little English",lvl:"easy"},
+{es:"Estoy aprendiendo inglés",en:"I am learning English",lvl:"easy"},
+{es:"Trabajo desde casa",en:"I work from home",lvl:"easy"},
+{es:"Me gusta cocinar",en:"I like cooking",lvl:"easy"},
+{es:"El clima está bonito hoy",en:"The weather is nice today",lvl:"easy"},
+{es:"Está lloviendo",en:"It is raining",lvl:"easy"},
+{es:"¿Dónde está el supermercado?",en:"Where is the supermarket?",lvl:"easy"},
+{es:"Quiero un vaso de agua",en:"I want a glass of water",lvl:"easy"},
+{es:"La comida está deliciosa",en:"The food is delicious",lvl:"easy"},
+{es:"Tengo dos hermanos",en:"I have two brothers",lvl:"easy"},
+{es:"Mi color favorito es el azul",en:"My favorite color is blue",lvl:"easy"},
+{es:"Ella es mi amiga",en:"She is my friend",lvl:"easy"},
+{es:"Ellos están en la escuela",en:"They are at school",lvl:"easy"},
+{es:"Me voy a dormir",en:"I am going to sleep",lvl:"easy"},
+{es:"¿Puedo sentarme aquí?",en:"Can I sit here?",lvl:"easy"},
+{es:"Perdón, lo siento",en:"Sorry, I am sorry",lvl:"easy"},
+{es:"Muchas gracias",en:"Thank you very much",lvl:"easy"},
+{es:"De nada",en:"You are welcome",lvl:"easy"},
+{es:"Nos vemos mañana",en:"See you tomorrow",lvl:"easy"},
+{es:"Que tengas un buen día",en:"Have a nice day",lvl:"easy"},
+{es:"Estoy cansado",en:"I am tired",lvl:"easy"},
+{es:"Estoy feliz",en:"I am happy",lvl:"easy"},
+{es:"Tengo frío",en:"I am cold",lvl:"easy"},
+{es:"Me duele la cabeza",en:"I have a headache",lvl:"easy"},
+{es:"¿Qué quieres comer?",en:"What do you want to eat?",lvl:"easy"},
+{es:"Vamos al parque",en:"Let's go to the park",lvl:"easy"},
+{es:"Ayer fui al cine",en:"Yesterday I went to the movies",lvl:"easy"},
+{es:"Me encanta la música",en:"I love music",lvl:"easy"},
+{es:"Necesito comprar leche",en:"I need to buy milk",lvl:"easy"},
+{es:"Esta es mi casa",en:"This is my house",lvl:"easy"},
+{es:"Él es muy amable",en:"He is very kind",lvl:"easy"},
+{es:"¿Te gusta leer?",en:"Do you like reading?",lvl:"easy"},
+{es:"Hace mucho calor",en:"It is very hot",lvl:"easy"},
+// ══ MEDIUM (50+) — A2/B1 sentences ══
+{es:"¿Podrías decirme cómo llegar al hospital?",en:"Could you tell me how to get to the hospital?",lvl:"medium"},
+{es:"He estado esperando durante media hora",en:"I have been waiting for half an hour",lvl:"medium"},
+{es:"Si tuviera más dinero, viajaría por el mundo",en:"If I had more money, I would travel the world",lvl:"medium"},
+{es:"Ella me dijo que no podía venir a la fiesta",en:"She told me she could not come to the party",lvl:"medium"},
+{es:"Deberías ir al médico lo antes posible",en:"You should go to the doctor as soon as possible",lvl:"medium"},
+{es:"Cuando era niño, solía jugar en el parque",en:"When I was a child, I used to play in the park",lvl:"medium"},
+{es:"El vuelo fue cancelado debido al mal tiempo",en:"The flight was canceled due to bad weather",lvl:"medium"},
+{es:"No he terminado de leer ese libro todavía",en:"I have not finished reading that book yet",lvl:"medium"},
+{es:"¿Te importaría cerrar la ventana?",en:"Would you mind closing the window?",lvl:"medium"},
+{es:"Ella ha estado trabajando aquí desde enero",en:"She has been working here since January",lvl:"medium"},
+{es:"Es importante hacer ejercicio regularmente",en:"It is important to exercise regularly",lvl:"medium"},
+{es:"El restaurante donde cenamos estaba lleno",en:"The restaurant where we had dinner was full",lvl:"medium"},
+{es:"No sabía que hablabas francés",en:"I did not know you spoke French",lvl:"medium"},
+{es:"Me arrepiento de no haber estudiado más",en:"I regret not having studied more",lvl:"medium"},
+{es:"¿Cuánto tiempo llevas viviendo aquí?",en:"How long have you been living here?",lvl:"medium"},
+{es:"Él sugirió que fuéramos a la playa",en:"He suggested that we go to the beach",lvl:"medium"},
+{es:"La película que vimos ayer fue muy aburrida",en:"The movie we watched yesterday was very boring",lvl:"medium"},
+{es:"Ojalá pudiera hablar inglés con fluidez",en:"I wish I could speak English fluently",lvl:"medium"},
+{es:"Estoy pensando en cambiar de trabajo",en:"I am thinking about changing my job",lvl:"medium"},
+{es:"Lo habría hecho si me lo hubieras pedido",en:"I would have done it if you had asked me",lvl:"medium"},
+{es:"¿Puedes recogerme en el aeropuerto?",en:"Can you pick me up at the airport?",lvl:"medium"},
+{es:"Necesito que me devuelvas el dinero",en:"I need you to give me back the money",lvl:"medium"},
+{es:"Últimamente he estado muy ocupado",en:"Lately I have been very busy",lvl:"medium"},
+{es:"Se supone que llueva mañana",en:"It is supposed to rain tomorrow",lvl:"medium"},
+{es:"Acabamos de mudarnos a un apartamento nuevo",en:"We just moved to a new apartment",lvl:"medium"},
+{es:"No vale la pena preocuparse por eso",en:"It is not worth worrying about that",lvl:"medium"},
+{es:"Cuanto más practicas, mejor te vuelves",en:"The more you practice, the better you get",lvl:"medium"},
+{es:"Él me pidió que le ayudara con su tarea",en:"He asked me to help him with his homework",lvl:"medium"},
+{es:"Me cuesta mucho trabajo levantarme temprano",en:"I have a hard time waking up early",lvl:"medium"},
+{es:"La reunión se pospuso hasta la próxima semana",en:"The meeting was postponed until next week",lvl:"medium"},
+{es:"Estoy acostumbrado a trabajar bajo presión",en:"I am used to working under pressure",lvl:"medium"},
+{es:"¿Has tenido noticias de ella recientemente?",en:"Have you heard from her recently?",lvl:"medium"},
+{es:"Me encantaría ir, pero tengo otros planes",en:"I would love to go, but I have other plans",lvl:"medium"},
+{es:"Antes de salir, asegúrate de cerrar la puerta",en:"Before leaving, make sure to lock the door",lvl:"medium"},
+{es:"El proyecto en el que estoy trabajando es muy interesante",en:"The project I am working on is very interesting",lvl:"medium"},
+{es:"Deberías haber llegado más temprano",en:"You should have arrived earlier",lvl:"medium"},
+{es:"No tiene sentido discutir sobre eso",en:"There is no point in arguing about that",lvl:"medium"},
+{es:"Llevo tres años estudiando inglés",en:"I have been studying English for three years",lvl:"medium"},
+{es:"¿Qué harías si ganaras la lotería?",en:"What would you do if you won the lottery?",lvl:"medium"},
+{es:"Ella actúa como si no hubiera pasado nada",en:"She acts as if nothing had happened",lvl:"medium"},
+{es:"El jefe quiere que terminemos el informe hoy",en:"The boss wants us to finish the report today",lvl:"medium"},
+{es:"Me da igual, tú decides",en:"I don't care, you decide",lvl:"medium"},
+{es:"¿A qué te dedicas?",en:"What do you do for a living?",lvl:"medium"},
+{es:"Cada vez hay más gente aprendiendo idiomas",en:"More and more people are learning languages",lvl:"medium"},
+{es:"A pesar de la lluvia, salimos a caminar",en:"Despite the rain, we went out for a walk",lvl:"medium"},
+{es:"No estoy seguro de qué significa esa palabra",en:"I am not sure what that word means",lvl:"medium"},
+{es:"Tenemos que darnos prisa o llegaremos tarde",en:"We have to hurry up or we will be late",lvl:"medium"},
+{es:"Es la primera vez que vengo a este lugar",en:"It is the first time I have come to this place",lvl:"medium"},
+{es:"¿Podrías hablar más despacio, por favor?",en:"Could you speak more slowly, please?",lvl:"medium"},
+{es:"Me llevo bien con todos mis compañeros",en:"I get along well with all my coworkers",lvl:"medium"},
+// ══ HARD (50+) — B2/C1 complex sentences ══
+{es:"Si hubiera sabido que ibas a venir, habría preparado algo de comer",en:"If I had known you were going to come, I would have prepared something to eat",lvl:"hard"},
+{es:"A pesar de todos los obstáculos, logró alcanzar sus metas",en:"Despite all the obstacles, she managed to achieve her goals",lvl:"hard"},
+{es:"El gobierno debería invertir más en educación y salud pública",en:"The government should invest more in education and public health",lvl:"hard"},
+{es:"No puedo evitar preguntarme qué habría pasado si hubiera tomado otra decisión",en:"I cannot help wondering what would have happened if I had made a different decision",lvl:"hard"},
+{es:"La inteligencia artificial está transformando la forma en que vivimos y trabajamos",en:"Artificial intelligence is transforming the way we live and work",lvl:"hard"},
+{es:"Es fundamental que los estudiantes desarrollen pensamiento crítico desde temprana edad",en:"It is essential that students develop critical thinking from an early age",lvl:"hard"},
+{es:"Mientras más leo sobre el tema, más me doy cuenta de lo complejo que es",en:"The more I read about the topic, the more I realize how complex it is",lvl:"hard"},
+{es:"Se rumorea que la empresa va a despedir a un tercio de sus empleados",en:"It is rumored that the company is going to lay off a third of its employees",lvl:"hard"},
+{es:"No habría llegado hasta donde estoy sin el apoyo incondicional de mi familia",en:"I would not have gotten to where I am without the unconditional support of my family",lvl:"hard"},
+{es:"El hecho de que hable tres idiomas no significa que sea un buen traductor",en:"The fact that he speaks three languages does not mean he is a good translator",lvl:"hard"},
+{es:"Deberíamos haber anticipado los problemas en lugar de reaccionar cuando ya era demasiado tarde",en:"We should have anticipated the problems instead of reacting when it was already too late",lvl:"hard"},
+{es:"A medida que la tecnología avanza, surgen nuevos desafíos éticos que debemos enfrentar",en:"As technology advances, new ethical challenges arise that we must face",lvl:"hard"},
+{es:"No me cabe duda de que el cambio climático es el mayor desafío de nuestra generación",en:"I have no doubt that climate change is the greatest challenge of our generation",lvl:"hard"},
+{es:"Hubiera preferido que me lo dijeras directamente en vez de enterarme por otra persona",en:"I would have preferred that you told me directly instead of finding out through someone else",lvl:"hard"},
+{es:"La brecha entre ricos y pobres sigue ampliándose a un ritmo alarmante",en:"The gap between rich and poor continues to widen at an alarming rate",lvl:"hard"},
+{es:"Es imprescindible que tomemos medidas drásticas para reducir la contaminación ambiental",en:"It is imperative that we take drastic measures to reduce environmental pollution",lvl:"hard"},
+{es:"Por mucho que lo intente, no consigo entender por qué tomó esa decisión",en:"No matter how hard I try, I cannot understand why he made that decision",lvl:"hard"},
+{es:"La investigación reveló que la correlación entre el sueño y el rendimiento es más fuerte de lo que se pensaba",en:"The research revealed that the correlation between sleep and performance is stronger than previously thought",lvl:"hard"},
+{es:"Si no fuera por la intervención oportuna de los bomberos, el edificio se habría derrumbado por completo",en:"If it had not been for the timely intervention of the firefighters, the building would have collapsed completely",lvl:"hard"},
+{es:"Tanto los expertos como los ciudadanos coinciden en que se necesitan reformas urgentes",en:"Both experts and citizens agree that urgent reforms are needed",lvl:"hard"},
+{es:"Habiendo considerado todas las opciones, decidimos seguir adelante con el plan original",en:"Having considered all the options, we decided to go ahead with the original plan",lvl:"hard"},
+{es:"Lo que más me frustra es que nadie parece tomarse este asunto en serio",en:"What frustrates me the most is that nobody seems to take this matter seriously",lvl:"hard"},
+{es:"Las consecuencias de no actuar ahora serán mucho peores que las de tomar medidas impopulares",en:"The consequences of not acting now will be much worse than those of taking unpopular measures",lvl:"hard"},
+{es:"Si bien es cierto que hay progreso, aún queda mucho por hacer en materia de igualdad",en:"Although it is true that there is progress, there is still a lot to be done in terms of equality",lvl:"hard"},
+{es:"Me resulta difícil creer que algo así pueda suceder en pleno siglo veintiuno",en:"I find it hard to believe that something like this can happen in the twenty-first century",lvl:"hard"},
+{es:"El profesor insistió en que todos los alumnos entregaran el trabajo antes del viernes",en:"The professor insisted that all students submit their work before Friday",lvl:"hard"},
+{es:"Según los últimos informes, la economía se recuperará gradualmente durante los próximos meses",en:"According to the latest reports, the economy will gradually recover over the coming months",lvl:"hard"},
+{es:"No tiene ningún sentido invertir tanto dinero en un proyecto que claramente va a fracasar",en:"It makes no sense to invest so much money in a project that is clearly going to fail",lvl:"hard"},
+{es:"De no haber sido por su perseverancia, nunca habría completado la maratón",en:"Had it not been for his perseverance, he would never have completed the marathon",lvl:"hard"},
+{es:"Cuanto antes aceptemos la realidad de la situación, antes podremos encontrar una solución",en:"The sooner we accept the reality of the situation, the sooner we can find a solution",lvl:"hard"},
+{es:"La diversidad cultural enriquece a la sociedad y fomenta la creatividad y la innovación",en:"Cultural diversity enriches society and fosters creativity and innovation",lvl:"hard"},
+{es:"Es poco probable que el problema se resuelva por sí solo sin intervención externa",en:"It is unlikely that the problem will resolve itself without external intervention",lvl:"hard"},
+{es:"Nadie podría haber predicho el impacto que tendría la pandemia en la economía mundial",en:"Nobody could have predicted the impact that the pandemic would have on the global economy",lvl:"hard"},
+{es:"Me pregunto si algún día será posible viajar a Marte y establecer una colonia permanente",en:"I wonder if one day it will be possible to travel to Mars and establish a permanent colony",lvl:"hard"},
+{es:"El descubrimiento de nuevas especies nos recuerda cuánto nos queda por explorar en nuestro propio planeta",en:"The discovery of new species reminds us how much we still have to explore on our own planet",lvl:"hard"},
+{es:"Sería conveniente que revisaras el contrato antes de firmarlo para evitar malentendidos",en:"It would be advisable for you to review the contract before signing it to avoid misunderstandings",lvl:"hard"},
+{es:"La manera en que nos comunicamos ha cambiado drásticamente en la última década",en:"The way we communicate has changed drastically in the last decade",lvl:"hard"},
+{es:"No podemos seguir ignorando las señales de advertencia que la naturaleza nos está dando",en:"We cannot keep ignoring the warning signs that nature is giving us",lvl:"hard"},
+{es:"Lo que diferencia a los buenos líderes es su capacidad de inspirar y motivar a los demás",en:"What sets good leaders apart is their ability to inspire and motivate others",lvl:"hard"},
+{es:"De haber tenido la oportunidad, habría estudiado en el extranjero sin dudarlo",en:"Had I had the opportunity, I would have studied abroad without hesitation",lvl:"hard"},
+{es:"La falta de sueño afecta negativamente tanto la productividad como la toma de decisiones",en:"Lack of sleep negatively affects both productivity and decision making",lvl:"hard"},
+{es:"Es necesario encontrar un equilibrio entre el desarrollo económico y la protección del medio ambiente",en:"It is necessary to find a balance between economic development and environmental protection",lvl:"hard"},
+{es:"No deberíamos dar por sentado las libertades que tantas personas lucharon por conseguir",en:"We should not take for granted the freedoms that so many people fought to achieve",lvl:"hard"},
+{es:"En retrospectiva, me doy cuenta de que debería haber manejado la situación de manera diferente",en:"In retrospect, I realize that I should have handled the situation differently",lvl:"hard"},
+{es:"La capacidad de adaptarse a circunstancias cambiantes es una habilidad esencial en el mundo actual",en:"The ability to adapt to changing circumstances is an essential skill in today's world",lvl:"hard"},
+{es:"Independientemente de lo que decidan, yo los apoyaré en todo momento",en:"Regardless of what they decide, I will support them at all times",lvl:"hard"},
+{es:"El éxito no se mide únicamente por la riqueza material sino también por la realización personal",en:"Success is not measured solely by material wealth but also by personal fulfillment",lvl:"hard"},
+{es:"Habría sido mucho más eficiente si hubiéramos delegado las tareas desde el principio",en:"It would have been much more efficient if we had delegated the tasks from the beginning",lvl:"hard"},
+{es:"Es indispensable que las nuevas generaciones comprendan la importancia de la sostenibilidad",en:"It is indispensable that new generations understand the importance of sustainability",lvl:"hard"},
+{es:"Por más que lo analicemos, hay situaciones que simplemente escapan a nuestro control",en:"No matter how much we analyze it, there are situations that simply escape our control",lvl:"hard"},
+];
+
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+let phrases = JSON.parse(localStorage.getItem('speakit_phrases') || 'null') || [...BASE_PHRASES];
+const MODES = [{id:'practice',label:'🎙️ Practicar'},{id:'list',label:'📋 Frases'},{id:'add',label:'➕ Agregar'}];
+const LVLS = ['all','easy','medium','hard'];
+const LVL_META = {
+  easy:{label:'Fácil',color:'var(--easy)',bg:'var(--easy-bg)',bd:'var(--easy-bd)'},
+  medium:{label:'Medio',color:'var(--med)',bg:'var(--med-bg)',bd:'var(--med-bd)'},
+  hard:{label:'Difícil',color:'var(--hard)',bg:'var(--hard-bg)',bd:'var(--hard-bd)'}
+};
+
+let S = {
+  mode:'practice', lvl:'all',
+  items:[], idx:0, answers:[], recording:false, answered:false, showHint:false,
+  stats:{attempts:0,correct:0,streak:0,best:0,perfect:0}
+};
+
+function savePhrases(){localStorage.setItem('speakit_phrases',JSON.stringify(phrases))}
+function getFiltered(){return S.lvl==='all'?phrases:phrases.filter(p=>p.lvl===S.lvl)}
+
+// ═══════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════
+const shuffle=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]]}return b};
+
+function speak(text,rate=0.85){
+  if(!('speechSynthesis' in window))return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=rate;
+  const voices=speechSynthesis.getVoices();
+  const v=voices.find(v=>v.lang.startsWith('en')&&v.name.includes('Google'))||voices.find(v=>v.lang.startsWith('en-US'))||voices.find(v=>v.lang.startsWith('en'));
+  if(v)u.voice=v;speechSynthesis.speak(u);
+}
+
+const spkSVG=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>`;
+const arrowR=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>`;
+
+function normalize(t){return t.toLowerCase().replace(/[^a-z0-9'\s]/g,'').replace(/\s+/g,' ').trim()}
+
+function scoreWords(target,spoken){
+  const tw=normalize(target).split(' ');
+  const sw=normalize(spoken).split(' ');
+  // LCS for alignment
+  const m=tw.length,n=sw.length;
+  const dp=Array.from({length:m+1},()=>Array(n+1).fill(0));
+  for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)
+    dp[i][j]=tw[i-1]===sw[j-1]?dp[i-1][j-1]+1:Math.max(dp[i-1][j],dp[i][j-1]);
+  
+  // Backtrack for diff
+  const ops=[];let i=m,j=n;
+  while(i>0||j>0){
+    if(i>0&&j>0&&tw[i-1]===sw[j-1]){ops.unshift({t:'ok',w:tw[i-1]});i--;j--}
+    else if(j>0&&(i===0||dp[i][j-1]>=dp[i-1][j])){ops.unshift({t:'extra',w:sw[j-1]});j--}
+    else{ops.unshift({t:'miss',w:tw[i-1]});i--}
+  }
+  const correct=ops.filter(o=>o.t==='ok').length;
+  const total=tw.length;
+  const pct=total?Math.round(correct/total*100):0;
+  const diffHTML=ops.map(o=>{
+    if(o.t==='ok')return`<span class="d-ok">${o.w}</span>`;
+    if(o.t==='miss')return`<span class="d-miss">${o.w}</span>`;
+    if(o.t==='extra')return`<span class="d-err">${o.w}</span>`;
+  }).join(' ');
+  return {pct,correct,total,diffHTML};
+}
+
+// ═══════════════════════════════════════════════════════════
+// SPEECH RECOGNITION
+// ═══════════════════════════════════════════════════════════
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+let rec=null;
+if(SR){
+  rec=new(SR)();rec.lang='en-US';rec.interimResults=false;rec.maxAlternatives=3;
+  rec.onresult=e=>{stopRec();analyze(e.results[0][0].transcript)};
+  rec.onerror=e=>{stopRec();document.getElementById('micHint').innerHTML=e.error==='no-speech'?'No se detectó voz. <b>Intenta de nuevo</b>':`Error: ${e.error}`};
+  rec.onend=()=>{if(S.recording)stopRec()};
+}
+
+function toggleRec(){S.recording?rec?.stop():startRec()}
+function startRec(){
+  if(!rec||!S.items.length||S.answered)return;
+  S.recording=true;
+  document.getElementById('micBtn').classList.add('rec');
+  document.getElementById('waves').classList.add('on');
+  document.getElementById('micHint').innerHTML='<b>Escuchando...</b> habla ahora';
+  rec.start();
+}
+function stopRec(){
+  S.recording=false;
+  document.getElementById('micBtn')?.classList.remove('rec');
+  document.getElementById('waves')?.classList.remove('on');
+  document.getElementById('micHint')&&(document.getElementById('micHint').innerHTML='<b>Toca</b> para hablar en inglés');
+}
+
+function analyze(spoken){
+  if(S.answered||!S.items.length)return;
+  S.answered=true;S.stats.attempts++;
+  const phrase=S.items[S.idx];
+  const {pct,correct,total,diffHTML}=scoreWords(phrase.en,spoken);
+  const ok=pct>=70;
+  S.answers.push(pct);
+
+  if(ok){S.stats.correct++;S.stats.streak++;S.stats.best=Math.max(S.stats.best,S.stats.streak);if(pct>=95)S.stats.perfect++}
+  else S.stats.streak=0;
+
+  const res=document.getElementById('result');
+  res.classList.add('show');
+  const cls=pct>=85?'ok':pct>=50?'partial':'no';
+  res.className=`result show ${cls}`;
+
+  const color=pct>=85?'var(--ok)':pct>=50?'var(--warn)':'var(--err)';
+  const emoji=pct>=95?'🌟':pct>=85?'✅':pct>=70?'👍':pct>=50?'💪':'🔄';
+  const msg=pct>=95?'¡Perfecto!':pct>=85?'¡Excelente!':pct>=70?'¡Muy bien!':pct>=50?'Casi, repasa la frase':'Escucha y practica más';
+
+  res.innerHTML=`
+    <div class="result-top">
+      <div class="result-score" style="color:${color}">${pct}%</div>
+      <div class="result-msg">${emoji} ${msg}</div>
+    </div>
+    <div class="result-you">Dijiste: <b>"${spoken}"</b></div>
+    <div class="result-correct" style="color:var(--accent)">Correcto: "${phrase.en}"</div>
+    <div class="result-diff">${diffHTML}</div>`;
+
+  document.getElementById('nextBtn').classList.remove('hidden');
+  document.getElementById('listenBtn').classList.remove('hidden');
+  renderStats();
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════
+function render(){renderStats();renderTabs();renderFilters();renderMain()}
+
+function renderStats(){
+  const pct=S.stats.attempts?Math.round(S.stats.correct/S.stats.attempts*100):0;
+  const counts={easy:phrases.filter(p=>p.lvl==='easy').length,medium:phrases.filter(p=>p.lvl==='medium').length,hard:phrases.filter(p=>p.lvl==='hard').length};
+  document.getElementById('statsBar').innerHTML=`
+    <div class="st"><div class="st-n">${S.stats.attempts}</div><div class="st-l">Intentos</div></div>
+    <div class="st"><div class="st-n" style="color:var(--ok)">${pct}%</div><div class="st-l">Precisión</div></div>
+    <div class="st"><div class="st-n" style="color:var(--accent)">${S.stats.streak} 🔥</div><div class="st-l">Racha</div></div>
+    <div class="st"><div class="st-n" style="color:var(--easy)">${counts.easy}</div><div class="st-l">Fáciles</div></div>
+    <div class="st"><div class="st-n" style="color:var(--hard)">${counts.medium+counts.hard}</div><div class="st-l">Med+Dif</div></div>`;
+}
+
+function renderTabs(){
+  document.getElementById('modeTabs').innerHTML=MODES.map(m=>
+    `<button class="tab ${S.mode===m.id?'on':''}" onclick="setMode('${m.id}')">${m.label}</button>`
+  ).join('');
+}
+
+function renderFilters(){
+  const el=document.getElementById('filters');
+  if(S.mode==='add'){el.innerHTML='';return}
+  el.innerHTML=LVLS.map(l=>{
+    if(l==='all') return `<button class="fb ${S.lvl==='all'?'on':''}" style="${S.lvl==='all'?'border-color:rgba(255,255,255,.15);background:var(--s3);color:var(--tx)':''}" onclick="setLvl('all')">Todos (${phrases.length})</button>`;
+    const m=LVL_META[l];const c=phrases.filter(p=>p.lvl===l).length;
+    return `<button class="fb ${S.lvl===l?'on':''}" style="${S.lvl===l?`border-color:${m.bd};background:${m.bg};color:${m.color}`:''}" onclick="setLvl('${l}')"><span class="dot" style="background:${m.color}"></span>${m.label} (${c})</button>`;
+  }).join('');
+}
+
+function renderMain(){
+  const el=document.getElementById('main');
+  switch(S.mode){
+    case 'practice': renderPractice(el);break;
+    case 'list': renderList(el);break;
+    case 'add': renderAdd(el);break;
+  }
+}
+
+// ══ PRACTICE ══
+function initPractice(){
+  const pool=getFiltered();
+  S.items=shuffle(pool).slice(0,15);
+  S.idx=0;S.answers=[];S.answered=false;S.showHint=false;
+}
+
+function renderPractice(el){
+  if(!S.items.length)initPractice();
+  if(!S.items.length){el.innerHTML='<div class="card"><div class="card-b tc"><p style="color:var(--tx2)">No hay frases para este nivel. ¡Agrega más!</p></div></div>';return}
+  if(S.idx>=S.items.length){renderPracticeEnd(el);return}
+
+  const p=S.items[S.idx];
+  const m=LVL_META[p.lvl];
+  const progress=S.items.map((_,i)=>{if(i<S.answers.length)return S.answers[i]>=70?'ok':'err';if(i===S.idx)return'cur';return''});
+
+  el.innerHTML=`<div class="card">
+    <div class="card-h">
+      <div class="card-t">Dilo en Inglés <span class="pill" style="background:${m.bg};color:${m.color}">${m.label}</span></div>
+      <div class="card-t">${S.idx+1} / ${S.items.length}</div>
+    </div>
+    <div class="card-b">
+      <div class="prog">${progress.map(p=>`<div class="prog-d ${p}"></div>`).join('')}</div>
+      
+      <div class="phrase-zone">
+        <div class="phrase-label" style="color:${m.color}">
+          <span style="font-size:16px">🇪🇸</span> Frase en español
+        </div>
+        <div class="phrase-es" style="border-color:${m.bd}">
+          ${p.es}
+          <span class="phrase-num">#${S.idx+1}</span>
+        </div>
+        <div class="phrase-hint" onclick="toggleHint()">💡 ${S.showHint?'Ocultar':'Mostrar'} respuesta en inglés</div>
+        <div class="phrase-en-reveal ${S.showHint?'show':''}" id="hintBox">${p.en}</div>
+      </div>
+
+      <div class="mic-area">
+        <div class="waves" id="waves">
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <button class="mic-btn" id="micBtn" onclick="toggleRec()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+        </button>
+        <div class="mic-hint" id="micHint"><b>Toca</b> para hablar en inglés</div>
+      </div>
+
+      <div class="result" id="result"></div>
+
+      <div class="btn-row">
+        <button class="btn hidden" id="nextBtn" onclick="nextPhrase()">Siguiente ${arrowR}</button>
+        <button class="btn hidden" id="listenBtn" onclick="speak('${p.en.replace(/'/g,"\\'")}')">${spkSVG} Escuchar</button>
+        <button class="btn btn-sm" onclick="skipPhrase()">⏭️ Saltar</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function toggleHint(){S.showHint=!S.showHint;const box=document.getElementById('hintBox');if(box)box.classList.toggle('show',S.showHint)}
+function nextPhrase(){S.idx++;S.answered=false;S.showHint=false;renderMain()}
+function skipPhrase(){S.answers.push(0);nextPhrase()}
+
+function renderPracticeEnd(el){
+  const scores=S.answers;
+  const avg=scores.length?Math.round(scores.reduce((a,b)=>a+b,0)/scores.length):0;
+  const perfect=scores.filter(s=>s>=95).length;
+  const good=scores.filter(s=>s>=70&&s<95).length;
+  const needs=scores.filter(s=>s<70).length;
+  const color=avg>=80?'var(--ok)':avg>=50?'var(--warn)':'var(--err)';
+
+  el.innerHTML=`<div class="card"><div class="card-b tc">
+    <div class="score-big" style="color:${color}">${avg}%</div>
+    <div class="score-sub">Ronda Completada</div>
+    <div class="score-grid">
+      <div class="sg-item"><div class="sg-n" style="color:var(--ok)">${perfect}</div><div class="sg-l">Perfecto</div></div>
+      <div class="sg-item"><div class="sg-n" style="color:var(--warn)">${good}</div><div class="sg-l">Bien</div></div>
+      <div class="sg-item"><div class="sg-n" style="color:var(--err)">${needs}</div><div class="sg-l">Practicar</div></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-accent" onclick="S.items=[];initPractice();renderMain()">🔄 Nueva Ronda</button>
+      <button class="btn" onclick="setMode('list')">📋 Ver Frases</button>
+    </div>
+  </div></div>`;
+}
+
+// ══ LIST ══
+function renderList(el){
+  const items=getFiltered();
+  el.innerHTML=`<div class="card">
+    <div class="card-h">
+      <div class="card-t">Todas las Frases <span class="pill" style="background:var(--s3);color:var(--tx3)">${items.length}</span></div>
+    </div>
+    <div class="card-b" style="padding:12px 16px">
+      <input class="search" id="searchInput" placeholder="🔍 Buscar frase en español o inglés..." oninput="filterList(this.value)">
+      <div class="phrase-list" id="phraseList">
+        ${items.map((p,i)=>{const m=LVL_META[p.lvl];return`
+          <div class="pl-item" data-search="${p.es.toLowerCase()} ${p.en.toLowerCase()}">
+            <button class="speak-btn" onclick="speak('${p.en.replace(/'/g,"\\'")}')">${spkSVG}</button>
+            <div class="pl-es">${p.es}</div>
+            <div class="pl-en">${p.en}</div>
+            <span class="pl-lvl" style="background:${m.bg};color:${m.color};border:1px solid ${m.bd}">${m.label}</span>
+            ${p._custom?`<button class="pl-del" onclick="deletePhrase(${phrases.indexOf(p)})">×</button>`:''}
+          </div>`}).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+function filterList(val){
+  const term=val.toLowerCase();
+  document.querySelectorAll('#phraseList .pl-item').forEach(el=>{
+    el.style.display=el.dataset.search.includes(term)?'':'none';
+  });
+}
+
+function deletePhrase(idx){
+  if(idx<0)return;
+  phrases.splice(idx,1);savePhrases();renderMain();renderFilters();renderStats();
+}
+
+// ══ ADD PHRASES ══
+function renderAdd(el){
+  el.innerHTML=`<div class="card">
+    <div class="card-h"><div class="card-t">➕ Agregar Frases</div></div>
+    <div class="card-b">
+      <p style="font-size:.88rem;color:var(--tx2);margin-bottom:16px;line-height:1.6">
+        Agrega tus propias frases para practicar. Puedes agregar una por una o varias de golpe.
+      </p>
+      
+      <div style="margin-bottom:20px">
+        <div style="font-size:.8rem;color:var(--tx3);margin-bottom:6px;font-weight:600">AGREGAR UNA FRASE</div>
+        <div class="add-row">
+          <input class="add-input" id="addEs" placeholder="Español: Hola, ¿cómo estás?">
+          <input class="add-input" id="addEn" placeholder="English: Hello, how are you?">
+        </div>
+        <div class="add-row">
+          <select class="add-input" id="addLvl" style="flex:0 0 140px;cursor:pointer">
+            <option value="easy">🟢 Fácil</option>
+            <option value="medium">🟡 Medio</option>
+            <option value="hard">🔴 Difícil</option>
+          </select>
+          <button class="btn btn-accent" onclick="addSingle()">➕ Agregar</button>
+        </div>
+      </div>
+
+      <div style="margin-bottom:20px">
+        <div style="font-size:.8rem;color:var(--tx3);margin-bottom:6px;font-weight:600">AGREGAR VARIAS (formato: español | inglés | nivel)</div>
+        <textarea class="add-input" id="addBulk" rows="6" style="width:100%;resize:vertical;font-size:12px;line-height:1.8" placeholder="Tengo sueño | I am sleepy | easy&#10;Ella trabaja mucho | She works a lot | easy&#10;Me gustaría reservar una mesa | I would like to book a table | medium"></textarea>
+        <div class="btn-row" style="margin-top:8px;justify-content:flex-start">
+          <button class="btn btn-accent" onclick="addBulk()">📋 Agregar Todas</button>
+          <button class="btn" onclick="resetPhrases()">🔄 Restaurar originales</button>
+        </div>
+      </div>
+
+      <div id="addFeedback"></div>
+    </div>
+  </div>`;
+}
+
+function addSingle(){
+  const es=document.getElementById('addEs').value.trim();
+  const en=document.getElementById('addEn').value.trim();
+  const lvl=document.getElementById('addLvl').value;
+  if(!es||!en){showAddFb('Completa ambos campos','var(--err)');return}
+  phrases.push({es,en,lvl,_custom:true});
+  savePhrases();
+  document.getElementById('addEs').value='';
+  document.getElementById('addEn').value='';
+  showAddFb(`✅ Frase agregada: "${es}" → "${en}"`,'var(--ok)');
+  renderStats();renderFilters();
+}
+
+function addBulk(){
+  const raw=document.getElementById('addBulk').value.trim();
+  if(!raw){showAddFb('Pega frases en el formato indicado','var(--err)');return}
+  const lines=raw.split('\n').filter(l=>l.trim());
+  let added=0;
+  for(const line of lines){
+    const parts=line.split('|').map(s=>s.trim());
+    if(parts.length>=2){
+      const lvl=parts[2]&&['easy','medium','hard'].includes(parts[2])?parts[2]:'medium';
+      phrases.push({es:parts[0],en:parts[1],lvl,_custom:true});
+      added++;
+    }
+  }
+  savePhrases();
+  document.getElementById('addBulk').value='';
+  showAddFb(`✅ ${added} frases agregadas correctamente`,'var(--ok)');
+  renderStats();renderFilters();
+}
+
+function resetPhrases(){
+  if(!confirm('¿Restaurar las frases originales? Se perderán las frases personalizadas.'))return;
+  phrases=[...BASE_PHRASES];savePhrases();
+  showAddFb('Frases restauradas a las originales','var(--accent)');
+  renderStats();renderFilters();
+}
+
+function showAddFb(msg,color){
+  const el=document.getElementById('addFeedback');
+  el.innerHTML=`<div style="padding:10px 14px;border-radius:10px;background:var(--s2);border:1px solid var(--bd);color:${color};font-size:.85rem;animation:fadeU .3s ease">${msg}</div>`;
+  setTimeout(()=>el.innerHTML='',4000);
+}
+
+// ══ ACTIONS ══
+function setMode(m){S.mode=m;S.items=[];render()}
+function setLvl(l){S.lvl=l;S.items=[];if(S.mode==='practice')initPractice();render()}
+
+if('speechSynthesis' in window)speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices();
+render();
+</script>
+</body>
+</html>

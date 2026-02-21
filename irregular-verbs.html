@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Irregular Verbs Master</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #060812;
+  --surface: #0d1017;
+  --surface-2: #141820;
+  --surface-3: #1b2030;
+  --surface-hover: #222838;
+  --v1: #f97316; /* base/infinitive */
+  --v2: #06b6d4; /* past simple */
+  --v3: #a855f7; /* past participle */
+  --v1-bg: rgba(249,115,22,0.08);
+  --v2-bg: rgba(6,182,212,0.08);
+  --v3-bg: rgba(168,85,247,0.08);
+  --v1-border: rgba(249,115,22,0.25);
+  --v2-border: rgba(6,182,212,0.25);
+  --v3-border: rgba(168,85,247,0.25);
+  --success: #22c55e;
+  --success-bg: rgba(34,197,94,0.1);
+  --error: #ef4444;
+  --error-bg: rgba(239,68,68,0.1);
+  --warning: #eab308;
+  --text: #e4e7ee;
+  --text-dim: #8b95a8;
+  --text-muted: #525d73;
+  --border: rgba(255,255,255,0.055);
+  --radius: 14px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 0%,rgba(249,115,22,.025) 0%,transparent 50%),radial-gradient(ellipse at 80% 20%,rgba(6,182,212,.02) 0%,transparent 50%),radial-gradient(ellipse at 50% 100%,rgba(168,85,247,.02) 0%,transparent 50%);pointer-events:none;z-index:0}
+.app{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:24px 16px 80px}
+
+/* Animations */
+@keyframes fadeDown{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes popIn{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+@keyframes pulse-glow{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.3)}50%{box-shadow:0 0 0 10px rgba(34,197,94,0)}}
+
+/* Header */
+.header{text-align:center;margin-bottom:32px;animation:fadeDown .5s ease}
+.header-tag{display:inline-flex;align-items:center;gap:8px;padding:5px 14px;border-radius:100px;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--text-muted);border:1px solid var(--border);background:var(--surface);margin-bottom:14px}
+.header-tag .dots{display:flex;gap:4px}
+.header-tag .dots span{width:7px;height:7px;border-radius:50%}
+.header h1{font-size:2.2rem;font-weight:800;letter-spacing:-.5px;margin-bottom:6px}
+.header h1 .g1{color:var(--v1)}.header h1 .g2{color:var(--v2)}.header h1 .g3{color:var(--v3)}
+.header p{color:var(--text-dim);font-size:.92rem;font-weight:300}
+
+/* Tabs */
+.tabs{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:20px;animation:fadeUp .4s ease .1s both}
+.tab{padding:8px 18px;border-radius:100px;border:1.5px solid var(--border);background:var(--surface);color:var(--text-muted);font-family:'Sora',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .25s}
+.tab:hover{border-color:rgba(255,255,255,.1);color:var(--text-dim)}
+.tab.active{background:var(--surface-3);color:var(--text);border-color:rgba(255,255,255,.12)}
+
+/* Filters Row */
+.filters{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:24px;animation:fadeUp .4s ease .15s both}
+.filter-group{display:flex;gap:4px;align-items:center}
+.filter-label{font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);margin-right:4px}
+.fbtn{padding:4px 10px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'IBM Plex Mono',monospace;font-size:11px;cursor:pointer;transition:all .2s}
+.fbtn:hover{color:var(--text-dim)}.fbtn.active{background:var(--surface-2);color:var(--text);border-color:rgba(255,255,255,.1)}
+
+/* Card */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:16px;animation:fadeUp .4s ease}
+.card-label{font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--text-muted);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.pill{padding:2px 8px;border-radius:6px;font-size:9px;font-weight:600;letter-spacing:1px}
+
+/* V-Colors */
+.c-v1{color:var(--v1)}.c-v2{color:var(--v2)}.c-v3{color:var(--v3)}
+.bg-v1{background:var(--v1-bg);border-color:var(--v1-border)}
+.bg-v2{background:var(--v2-bg);border-color:var(--v2-border)}
+.bg-v3{background:var(--v3-bg);border-color:var(--v3-border)}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border:1px solid var(--border);border-radius:12px;background:var(--surface-2);color:var(--text-dim);font-family:'Sora',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s}
+.btn:hover{background:var(--surface-3);color:var(--text);border-color:rgba(255,255,255,.1)}
+.btn svg{width:16px;height:16px}
+.btn-sm{padding:7px 14px;font-size:12px;border-radius:10px}
+.btn-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+
+/* ═══ TABLE / REFERENCE ═══ */
+.verb-table-wrap{overflow-x:auto;margin:0 -8px}
+.verb-table{width:100%;border-collapse:collapse;font-size:14px}
+.verb-table thead th{font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;padding:10px 12px;text-align:left;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface);z-index:1}
+.verb-table tbody tr{border-bottom:1px solid var(--border);transition:background .15s}
+.verb-table tbody tr:hover{background:var(--surface-2)}
+.verb-table td{padding:10px 12px;vertical-align:middle}
+.verb-table .v-base{font-weight:600;color:var(--v1)}
+.verb-table .v-past{color:var(--v2)}
+.verb-table .v-pp{color:var(--v3)}
+.verb-table .v-meaning{color:var(--text-dim);font-size:13px}
+.verb-table .v-lvl{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);padding:2px 8px;background:var(--surface-3);border-radius:6px;display:inline-block}
+.verb-table .v-pattern{font-size:11px;color:var(--text-muted);font-family:'IBM Plex Mono',monospace}
+.speak-btn{width:28px;height:28px;border-radius:8px;border:1px solid var(--border);background:transparent;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;color:var(--text-muted);transition:all .15s;flex-shrink:0}
+.speak-btn:hover{color:var(--text);background:var(--surface-3)}
+.speak-btn svg{width:14px;height:14px}
+
+/* Search */
+.search-input{width:100%;padding:10px 16px;border:1px solid var(--border);border-radius:12px;background:var(--surface-2);color:var(--text);font-family:'Sora',sans-serif;font-size:14px;outline:none;margin-bottom:12px;transition:border-color .2s}
+.search-input:focus{border-color:rgba(255,255,255,.12)}
+.search-input::placeholder{color:var(--text-muted)}
+
+/* Pattern Badge */
+.pattern-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:500;border:1px solid var(--border);background:var(--surface-2);color:var(--text-dim);cursor:pointer;transition:all .2s}
+.pattern-badge:hover{background:var(--surface-3);color:var(--text)}
+.pattern-badge.active{border-color:var(--v2-border);background:var(--v2-bg);color:var(--v2)}
+.pattern-count{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted)}
+
+/* ═══ FLASHCARD ═══ */
+.fc-container{perspective:1000px;margin-bottom:20px}
+.fc-card{position:relative;width:100%;min-height:280px;cursor:pointer;transform-style:preserve-3d;transition:transform .55s ease}
+.fc-card.flipped{transform:rotateY(180deg)}
+.fc-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:var(--radius);padding:32px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.fc-front{background:linear-gradient(145deg,var(--surface-2),var(--surface-3));border:1.5px solid var(--border)}
+.fc-back{transform:rotateY(180deg);background:linear-gradient(145deg,var(--surface-3),#1a1f30);border:1.5px solid rgba(255,255,255,.07)}
+.fc-verb-big{font-size:2.4rem;font-weight:700;margin-bottom:6px;letter-spacing:-1px}
+.fc-form-label{font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;padding:3px 10px;border-radius:6px}
+.fc-trio{display:flex;gap:16px;margin:16px 0;flex-wrap:wrap;justify-content:center}
+.fc-trio-item{text-align:center}
+.fc-trio-label{font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);margin-bottom:4px}
+.fc-trio-word{font-size:1.3rem;font-weight:600}
+.fc-meaning-text{font-size:1rem;color:var(--text);margin-bottom:10px;line-height:1.5}
+.fc-example-text{font-size:.85rem;color:var(--text-dim);font-style:italic;line-height:1.5;max-width:440px}
+.fc-hint{color:var(--text-muted);font-size:12px;margin-top:12px}
+.fc-speak{position:absolute;top:14px;right:14px;z-index:2}
+.fc-nav{display:flex;gap:10px;justify-content:center;align-items:center}
+.fc-nav-btn{width:42px;height:42px;border-radius:11px;border:1px solid var(--border);background:var(--surface);color:var(--text-dim);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.fc-nav-btn:hover{background:var(--surface-2);color:var(--text)}
+.fc-nav-btn svg{width:18px;height:18px}
+.fc-counter{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-muted);min-width:60px;text-align:center}
+
+/* ═══ QUIZ ═══ */
+.quiz-progress{display:flex;gap:3px;margin-bottom:18px}
+.qp-dot{height:4px;flex:1;border-radius:4px;background:var(--surface-3);transition:background .3s}
+.qp-dot.correct{background:var(--success)}.qp-dot.wrong{background:var(--error)}.qp-dot.current{background:var(--text-muted)}
+.quiz-q{font-size:1.2rem;font-weight:600;margin-bottom:6px;line-height:1.5}
+.quiz-sub{font-size:.88rem;color:var(--text-dim);margin-bottom:20px;line-height:1.5}
+.quiz-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+@media(max-width:500px){.quiz-grid{grid-template-columns:1fr}}
+.quiz-opt{padding:12px 16px;border:1.5px solid var(--border);border-radius:12px;background:var(--surface-2);color:var(--text-dim);font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;text-align:left;font-family:'Sora',sans-serif}
+.quiz-opt:hover:not(.disabled){border-color:rgba(255,255,255,.12);color:var(--text);background:var(--surface-3)}
+.quiz-opt.correct-picked{border-color:var(--success);background:var(--success-bg);color:var(--success)}
+.quiz-opt.wrong-picked{border-color:var(--error);background:var(--error-bg);color:var(--error)}
+.quiz-opt.reveal{border-color:rgba(34,197,94,.35);color:var(--success)}
+.quiz-opt.disabled{pointer-events:none}
+.quiz-fb{padding:12px 16px;border-radius:12px;font-size:13px;line-height:1.6;margin-bottom:14px;display:none}
+.quiz-fb.show{display:block;animation:fadeUp .3s ease}
+.quiz-fb.ok{background:var(--success-bg);border:1px solid rgba(34,197,94,.2);color:#86efac}
+.quiz-fb.no{background:var(--error-bg);border:1px solid rgba(239,68,68,.2);color:#fca5a5}
+
+/* ═══ FILL-IN ═══ */
+.fill-sentence{font-size:1.15rem;line-height:1.8;margin-bottom:20px;font-weight:500}
+.fill-blank{display:inline-block;border-bottom:2.5px solid var(--v2);min-width:100px;padding:2px 4px;color:var(--v2);font-weight:600;transition:all .3s}
+.fill-blank.wrong-anim{animation:shake .4s ease;border-color:var(--error);color:var(--error)}
+.fill-blank.correct-anim{border-color:var(--success);color:var(--success)}
+.fill-input-row{display:flex;gap:8px;margin-bottom:16px;align-items:stretch}
+.fill-input{flex:1;padding:12px 16px;border:1.5px solid var(--border);border-radius:12px;background:var(--surface-2);color:var(--text);font-family:'Sora',sans-serif;font-size:15px;outline:none;transition:border-color .2s}
+.fill-input:focus{border-color:var(--v2-border)}
+.fill-input::placeholder{color:var(--text-muted)}
+.fill-form-tag{font-family:'IBM Plex Mono',monospace;font-size:11px;padding:4px 10px;border-radius:8px;display:inline-block;margin-bottom:14px}
+
+/* ═══ CONJUGATION TABLE ═══ */
+.conj-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+@media(max-width:500px){.conj-grid{grid-template-columns:1fr}}
+.conj-cell{text-align:center;padding:18px 10px;border-radius:12px;border:1.5px solid var(--border);background:var(--surface-2);transition:all .3s}
+.conj-cell.revealed{animation:popIn .3s ease}
+.conj-label{font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px}
+.conj-word{font-size:1.5rem;font-weight:700;letter-spacing:-.3px}
+.conj-hidden{color:var(--text-muted);font-size:1.2rem;font-weight:400;letter-spacing:2px}
+
+/* ═══ STATS ═══ */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:500px){.stats-row{grid-template-columns:repeat(2,1fr)}}
+.stat-box{text-align:center;padding:14px 8px;background:var(--surface-2);border-radius:12px;border:1px solid var(--border)}
+.stat-n{font-family:'IBM Plex Mono',monospace;font-size:1.4rem;font-weight:700}
+.stat-l{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-top:3px}
+
+/* Score */
+.score-big{font-family:'IBM Plex Mono',monospace;font-size:3.5rem;font-weight:700}
+.score-lbl{color:var(--text-dim);font-size:1rem;margin-bottom:20px}
+.score-row{display:flex;gap:24px;justify-content:center;margin-bottom:24px}
+.sr-item{text-align:center}
+.sr-num{font-family:'IBM Plex Mono',monospace;font-size:1.5rem;font-weight:700}
+.sr-label{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px}
+
+.mastery-bar{height:6px;background:var(--surface-3);border-radius:6px;overflow:hidden;margin:8px 0}
+.mastery-fill{height:100%;border-radius:6px;transition:width .6s ease}
+
+.hidden{display:none!important}
+.text-center{text-align:center}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- Header -->
+  <div class="header">
+    <div class="header-tag">
+      <div class="dots"><span style="background:var(--v1)"></span><span style="background:var(--v2)"></span><span style="background:var(--v3)"></span></div>
+      Verb Engine
+    </div>
+    <h1><span class="g1">Irregular</span> <span class="g2">Verbs</span> <span class="g3">Master</span></h1>
+    <p>Base Form · Past Simple · Past Participle — master them all</p>
+  </div>
+
+  <!-- Mode Tabs -->
+  <div class="tabs" id="modeTabs"></div>
+
+  <!-- Filters -->
+  <div class="filters" id="filtersBar"></div>
+
+  <!-- Main -->
+  <div id="main"></div>
+
+  <!-- Stats -->
+  <div class="card" id="statsCard">
+    <div class="card-label">Session</div>
+    <div class="stats-row" id="statsRow"></div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+//  IRREGULAR VERBS DATABASE — 110 most used
+// ══════════════════════════════════════════════════════════════
+const VERBS = [
+// ── ESSENTIALS (A1) ──
+{base:"be",past:"was/were",pp:"been",meaning:"ser / estar",example:"I have {pp} here before.",level:"A1",group:"unique",freq:1},
+{base:"have",past:"had",pp:"had",meaning:"tener / haber",example:"She has {pp} lunch already.",level:"A1",group:"no-change-pp",freq:2},
+{base:"do",past:"did",pp:"done",meaning:"hacer",example:"I have {pp} my homework.",level:"A1",group:"unique",freq:3},
+{base:"say",past:"said",pp:"said",meaning:"decir",example:"He {past} hello to everyone.",level:"A1",group:"no-change-pp",freq:4},
+{base:"go",past:"went",pp:"gone",meaning:"ir",example:"They have {pp} to the park.",level:"A1",group:"unique",freq:5},
+{base:"get",past:"got",pp:"got/gotten",meaning:"obtener / conseguir",example:"I've {pp} a new job!",level:"A1",group:"unique",freq:6},
+{base:"make",past:"made",pp:"made",meaning:"hacer / fabricar",example:"She {past} a cake yesterday.",level:"A1",group:"no-change-pp",freq:7},
+{base:"know",past:"knew",pp:"known",meaning:"saber / conocer",example:"I have {pp} him for years.",level:"A1",group:"ow-ew-own",freq:8},
+{base:"think",past:"thought",pp:"thought",meaning:"pensar",example:"I {past} about it all day.",level:"A1",group:"no-change-pp",freq:9},
+{base:"come",past:"came",pp:"come",meaning:"venir",example:"She has {pp} home early.",level:"A1",group:"come-pattern",freq:10},
+{base:"take",past:"took",pp:"taken",meaning:"tomar / llevar",example:"He has {pp} the bus.",level:"A1",group:"ake-ook-aken",freq:11},
+{base:"see",past:"saw",pp:"seen",meaning:"ver",example:"Have you {pp} that movie?",level:"A1",group:"ee-aw-een",freq:12},
+{base:"give",past:"gave",pp:"given",meaning:"dar",example:"She has {pp} me a gift.",level:"A1",group:"ive-ave-iven",freq:13},
+{base:"find",past:"found",pp:"found",meaning:"encontrar",example:"I {past} my keys under the sofa.",level:"A1",group:"no-change-pp",freq:14},
+{base:"tell",past:"told",pp:"told",meaning:"decir / contar",example:"She {past} me the truth.",level:"A1",group:"no-change-pp",freq:15},
+{base:"eat",past:"ate",pp:"eaten",meaning:"comer",example:"I've already {pp} dinner.",level:"A1",group:"eat-ate-eaten",freq:16},
+{base:"drink",past:"drank",pp:"drunk",meaning:"beber",example:"He has {pp} all the water.",level:"A1",group:"ink-ank-unk",freq:17},
+{base:"write",past:"wrote",pp:"written",meaning:"escribir",example:"She has {pp} three books.",level:"A1",group:"ite-ote-itten",freq:18},
+{base:"read",past:"read",pp:"read",meaning:"leer",example:"I {past} that article yesterday.",level:"A1",group:"no-change-all",freq:19},
+{base:"run",past:"ran",pp:"run",meaning:"correr",example:"He has {pp} five marathons.",level:"A1",group:"come-pattern",freq:20},
+{base:"put",past:"put",pp:"put",meaning:"poner",example:"She {past} the book on the table.",level:"A1",group:"no-change-all",freq:21},
+{base:"buy",past:"bought",pp:"bought",meaning:"comprar",example:"I {past} a new phone.",level:"A1",group:"uy-ought",freq:22},
+{base:"sit",past:"sat",pp:"sat",meaning:"sentarse",example:"We {past} in the front row.",level:"A1",group:"no-change-pp",freq:23},
+{base:"stand",past:"stood",pp:"stood",meaning:"estar de pie / pararse",example:"She {past} there for an hour.",level:"A1",group:"no-change-pp",freq:24},
+{base:"sleep",past:"slept",pp:"slept",meaning:"dormir",example:"I {past} for ten hours last night.",level:"A1",group:"eep-ept",freq:25},
+// ── COMMON (A2) ──
+{base:"speak",past:"spoke",pp:"spoken",meaning:"hablar",example:"Have you {pp} to your boss?",level:"A2",group:"eak-oke-oken",freq:26},
+{base:"bring",past:"brought",pp:"brought",meaning:"traer",example:"She {past} cookies to the party.",level:"A2",group:"ing-ought",freq:27},
+{base:"begin",past:"began",pp:"begun",meaning:"empezar / comenzar",example:"The movie has {pp}.",level:"A2",group:"ink-ank-unk",freq:28},
+{base:"keep",past:"kept",pp:"kept",meaning:"mantener / guardar",example:"I've {pp} all your letters.",level:"A2",group:"eep-ept",freq:29},
+{base:"hold",past:"held",pp:"held",meaning:"sostener / mantener",example:"She {past} the baby in her arms.",level:"A2",group:"no-change-pp",freq:30},
+{base:"leave",past:"left",pp:"left",meaning:"irse / dejar",example:"He {past} the office at 5.",level:"A2",group:"no-change-pp",freq:31},
+{base:"meet",past:"met",pp:"met",meaning:"conocer / reunirse",example:"I {past} her at a conference.",level:"A2",group:"eet-et",freq:32},
+{base:"pay",past:"paid",pp:"paid",meaning:"pagar",example:"I've already {pp} the bill.",level:"A2",group:"no-change-pp",freq:33},
+{base:"send",past:"sent",pp:"sent",meaning:"enviar",example:"She {past} me an email.",level:"A2",group:"end-ent",freq:34},
+{base:"build",past:"built",pp:"built",meaning:"construir",example:"They {past} a new school.",level:"A2",group:"no-change-pp",freq:35},
+{base:"spend",past:"spent",pp:"spent",meaning:"gastar / pasar (tiempo)",example:"We {past} the weekend camping.",level:"A2",group:"end-ent",freq:36},
+{base:"lose",past:"lost",pp:"lost",meaning:"perder",example:"I've {pp} my wallet!",level:"A2",group:"no-change-pp",freq:37},
+{base:"win",past:"won",pp:"won",meaning:"ganar",example:"Our team {past} the championship.",level:"A2",group:"no-change-pp",freq:38},
+{base:"feel",past:"felt",pp:"felt",meaning:"sentir",example:"I {past} sick yesterday.",level:"A2",group:"eel-elt",freq:39},
+{base:"cut",past:"cut",pp:"cut",meaning:"cortar",example:"She {past} the paper in half.",level:"A2",group:"no-change-all",freq:40},
+{base:"let",past:"let",pp:"let",meaning:"dejar / permitir",example:"They {past} us enter for free.",level:"A2",group:"no-change-all",freq:41},
+{base:"hear",past:"heard",pp:"heard",meaning:"oír / escuchar",example:"I {past} a strange noise.",level:"A2",group:"no-change-pp",freq:42},
+{base:"grow",past:"grew",pp:"grown",meaning:"crecer",example:"The plant has {pp} a lot.",level:"A2",group:"ow-ew-own",freq:43},
+{base:"teach",past:"taught",pp:"taught",meaning:"enseñar",example:"She {past} English for 10 years.",level:"A2",group:"no-change-pp",freq:44},
+{base:"catch",past:"caught",pp:"caught",meaning:"atrapar / coger",example:"The dog {past} the ball.",level:"A2",group:"no-change-pp",freq:45},
+{base:"choose",past:"chose",pp:"chosen",meaning:"elegir / escoger",example:"She has {pp} the blue dress.",level:"A2",group:"oose-ose-osen",freq:46},
+{base:"fall",past:"fell",pp:"fallen",meaning:"caer",example:"He {past} off his bicycle.",level:"A2",group:"all-ell-allen",freq:47},
+{base:"break",past:"broke",pp:"broken",meaning:"romper",example:"Someone has {pp} the window.",level:"A2",group:"eak-oke-oken",freq:48},
+{base:"drive",past:"drove",pp:"driven",meaning:"conducir / manejar",example:"I've {pp} that road many times.",level:"A2",group:"ive-ove-iven",freq:49},
+{base:"fly",past:"flew",pp:"flown",meaning:"volar",example:"She has {pp} to London twice.",level:"A2",group:"y-ew-own",freq:50},
+{base:"draw",past:"drew",pp:"drawn",meaning:"dibujar",example:"The artist {past} a portrait.",level:"A2",group:"aw-ew-awn",freq:51},
+{base:"throw",past:"threw",pp:"thrown",meaning:"lanzar / tirar",example:"He {past} the ball across the field.",level:"A2",group:"ow-ew-own",freq:52},
+{base:"sing",past:"sang",pp:"sung",meaning:"cantar",example:"She {past} beautifully at the concert.",level:"A2",group:"ink-ank-unk",freq:53},
+{base:"swim",past:"swam",pp:"swum",meaning:"nadar",example:"We {past} in the lake.",level:"A2",group:"ink-ank-unk",freq:54},
+{base:"wear",past:"wore",pp:"worn",meaning:"vestir / llevar puesto",example:"She has {pp} that dress before.",level:"A2",group:"ear-ore-orn",freq:55},
+// ── INTERMEDIATE (B1) ──
+{base:"understand",past:"understood",pp:"understood",meaning:"entender / comprender",example:"I {past} the instructions clearly.",level:"B1",group:"no-change-pp",freq:56},
+{base:"lead",past:"led",pp:"led",meaning:"liderar / guiar",example:"She {past} the team to victory.",level:"B1",group:"no-change-pp",freq:57},
+{base:"set",past:"set",pp:"set",meaning:"establecer / poner",example:"He {past} the alarm for 6am.",level:"B1",group:"no-change-all",freq:58},
+{base:"show",past:"showed",pp:"shown",meaning:"mostrar",example:"She has {pp} me the way.",level:"B1",group:"ow-ew-own",freq:59},
+{base:"mean",past:"meant",pp:"meant",meaning:"significar / querer decir",example:"I {past} what I said.",level:"B1",group:"no-change-pp",freq:60},
+{base:"become",past:"became",pp:"become",meaning:"convertirse / llegar a ser",example:"She has {pp} a doctor.",level:"B1",group:"come-pattern",freq:61},
+{base:"rise",past:"rose",pp:"risen",meaning:"subir / levantarse",example:"The sun has {pp} early today.",level:"B1",group:"ise-ose-isen",freq:62},
+{base:"spread",past:"spread",pp:"spread",meaning:"difundir / extender",example:"The news {past} quickly.",level:"B1",group:"no-change-all",freq:63},
+{base:"hang",past:"hung",pp:"hung",meaning:"colgar",example:"She {past} the picture on the wall.",level:"B1",group:"no-change-pp",freq:64},
+{base:"deal",past:"dealt",pp:"dealt",meaning:"tratar / repartir",example:"He {past} with the problem calmly.",level:"B1",group:"eal-ealt",freq:65},
+{base:"fight",past:"fought",pp:"fought",meaning:"pelear / luchar",example:"They {past} bravely in the war.",level:"B1",group:"no-change-pp",freq:66},
+{base:"hit",past:"hit",pp:"hit",meaning:"golpear",example:"The ball {past} the window.",level:"B1",group:"no-change-all",freq:67},
+{base:"lie",past:"lay",pp:"lain",meaning:"acostarse / yacer",example:"She has {pp} down for a nap.",level:"B1",group:"unique",freq:68},
+{base:"lay",past:"laid",pp:"laid",meaning:"poner / colocar",example:"She {past} the book on the table.",level:"B1",group:"no-change-pp",freq:69},
+{base:"forget",past:"forgot",pp:"forgotten",meaning:"olvidar",example:"I've {pp} his name.",level:"B1",group:"et-ot-otten",freq:70},
+{base:"hide",past:"hid",pp:"hidden",meaning:"esconder",example:"She has {pp} the present.",level:"B1",group:"ide-id-idden",freq:71},
+{base:"shake",past:"shook",pp:"shaken",meaning:"sacudir / temblar",example:"He {past} my hand firmly.",level:"B1",group:"ake-ook-aken",freq:72},
+{base:"blow",past:"blew",pp:"blown",meaning:"soplar",example:"The wind has {pp} the roof off.",level:"B1",group:"ow-ew-own",freq:73},
+{base:"steal",past:"stole",pp:"stolen",meaning:"robar",example:"Someone has {pp} my bike.",level:"B1",group:"eal-ole-olen",freq:74},
+{base:"tear",past:"tore",pp:"torn",meaning:"rasgar / romper",example:"She {past} the paper in half.",level:"B1",group:"ear-ore-orn",freq:75},
+{base:"feed",past:"fed",pp:"fed",meaning:"alimentar",example:"I've {pp} the cat already.",level:"B1",group:"eed-ed",freq:76},
+{base:"shut",past:"shut",pp:"shut",meaning:"cerrar",example:"Please {base} the door.",level:"B1",group:"no-change-all",freq:77},
+{base:"cost",past:"cost",pp:"cost",meaning:"costar",example:"The trip {past} us $500.",level:"B1",group:"no-change-all",freq:78},
+{base:"dig",past:"dug",pp:"dug",meaning:"cavar / excavar",example:"They {past} a hole in the garden.",level:"B1",group:"no-change-pp",freq:79},
+{base:"lend",past:"lent",pp:"lent",meaning:"prestar",example:"She {past} me her umbrella.",level:"B1",group:"end-ent",freq:80},
+// ── UPPER-INT (B2) ──
+{base:"withdraw",past:"withdrew",pp:"withdrawn",meaning:"retirar(se)",example:"He {past} money from the ATM.",level:"B2",group:"aw-ew-awn",freq:81},
+{base:"overcome",past:"overcame",pp:"overcome",meaning:"superar / vencer",example:"She has {pp} many obstacles.",level:"B2",group:"come-pattern",freq:82},
+{base:"undergo",past:"underwent",pp:"undergone",meaning:"someterse a / experimentar",example:"He {past} surgery last week.",level:"B2",group:"unique",freq:83},
+{base:"arise",past:"arose",pp:"arisen",meaning:"surgir / presentarse",example:"A problem has {pp}.",level:"B2",group:"ise-ose-isen",freq:84},
+{base:"seek",past:"sought",pp:"sought",meaning:"buscar",example:"They {past} help from experts.",level:"B2",group:"no-change-pp",freq:85},
+{base:"bind",past:"bound",pp:"bound",meaning:"atar / vincular",example:"The contract {past} them legally.",level:"B2",group:"ind-ound",freq:86},
+{base:"strike",past:"struck",pp:"struck/stricken",meaning:"golpear / atacar",example:"Lightning {past} the tower.",level:"B2",group:"no-change-pp",freq:87},
+{base:"swear",past:"swore",pp:"sworn",meaning:"jurar",example:"She {past} to tell the truth.",level:"B2",group:"ear-ore-orn",freq:88},
+{base:"forecast",past:"forecast",pp:"forecast",meaning:"pronosticar",example:"They {past} rain for tomorrow.",level:"B2",group:"no-change-all",freq:89},
+{base:"forbid",past:"forbade",pp:"forbidden",meaning:"prohibir",example:"Smoking is {pp} in this area.",level:"B2",group:"id-ade-idden",freq:90},
+{base:"freeze",past:"froze",pp:"frozen",meaning:"congelar(se)",example:"The lake has {pp} over.",level:"B2",group:"eeze-oze-ozen",freq:91},
+{base:"slide",past:"slid",pp:"slid",meaning:"deslizar(se)",example:"The door {past} open silently.",level:"B2",group:"no-change-pp",freq:92},
+{base:"weave",past:"wove",pp:"woven",meaning:"tejer",example:"She {past} a beautiful basket.",level:"B2",group:"eave-ove-oven",freq:93},
+{base:"burst",past:"burst",pp:"burst",meaning:"estallar / reventar",example:"The balloon {past} suddenly.",level:"B2",group:"no-change-all",freq:94},
+{base:"forgive",past:"forgave",pp:"forgiven",meaning:"perdonar",example:"She has {pp} him for the mistake.",level:"B2",group:"ive-ave-iven",freq:95},
+// ── ADVANCED (C1) ──
+{base:"undertake",past:"undertook",pp:"undertaken",meaning:"emprender / comprometerse a",example:"They {past} a massive project.",level:"C1",group:"ake-ook-aken",freq:96},
+{base:"uphold",past:"upheld",pp:"upheld",meaning:"mantener / defender (decisión)",example:"The court {past} the ruling.",level:"C1",group:"no-change-pp",freq:97},
+{base:"withstand",past:"withstood",pp:"withstood",meaning:"resistir / soportar",example:"The building {past} the earthquake.",level:"C1",group:"no-change-pp",freq:98},
+{base:"overthrow",past:"overthrew",pp:"overthrown",meaning:"derrocar",example:"The regime was {pp} in 1989.",level:"C1",group:"ow-ew-own",freq:99},
+{base:"partake",past:"partook",pp:"partaken",meaning:"participar / tomar parte",example:"Everyone {past} in the celebration.",level:"C1",group:"ake-ook-aken",freq:100},
+{base:"stride",past:"strode",pp:"stridden",meaning:"caminar con paso largo",example:"She {past} confidently into the room.",level:"C1",group:"unique",freq:101},
+{base:"strive",past:"strove",pp:"striven",meaning:"esforzarse",example:"He has {pp} for excellence.",level:"C1",group:"ive-ove-iven",freq:102},
+{base:"cling",past:"clung",pp:"clung",meaning:"aferrarse",example:"She {past} to her mother's hand.",level:"C1",group:"no-change-pp",freq:103},
+{base:"grind",past:"ground",pp:"ground",meaning:"moler / triturar",example:"He {past} the coffee beans fresh.",level:"C1",group:"ind-ound",freq:104},
+{base:"mislead",past:"misled",pp:"misled",meaning:"engañar / inducir a error",example:"The ad {past} many consumers.",level:"C1",group:"no-change-pp",freq:105},
+{base:"sow",past:"sowed",pp:"sown",meaning:"sembrar",example:"They have {pp} the seeds already.",level:"C1",group:"ow-ew-own",freq:106},
+{base:"wring",past:"wrung",pp:"wrung",meaning:"retorcer / estrujar",example:"She {past} the water from the cloth.",level:"C1",group:"no-change-pp",freq:107},
+{base:"behold",past:"beheld",pp:"beheld",meaning:"contemplar / observar",example:"They {past} a magnificent view.",level:"C1",group:"no-change-pp",freq:108},
+{base:"forsake",past:"forsook",pp:"forsaken",meaning:"abandonar / renunciar a",example:"He has {pp} his old habits.",level:"C1",group:"ake-ook-aken",freq:109},
+{base:"slay",past:"slew",pp:"slain",meaning:"matar (literario)",example:"The hero {past} the dragon.",level:"C1",group:"unique",freq:110}
+];
+
+// Pattern descriptions
+const PATTERNS = {
+  "no-change-all": {label:"No change",desc:"Same in all 3 forms", ex:"put → put → put"},
+  "no-change-pp": {label:"Past = PP",desc:"Past Simple = Past Participle", ex:"find → found → found"},
+  "unique": {label:"Unique",desc:"All three forms differ irregularly", ex:"be → was → been"},
+  "ow-ew-own": {label:"-ow/-ew/-own",desc:"Base -ow, Past -ew, PP -own", ex:"know → knew → known"},
+  "ake-ook-aken": {label:"-ake/-ook/-aken",desc:"Base -ake, Past -ook, PP -aken", ex:"take → took → taken"},
+  "ink-ank-unk": {label:"-i/-a/-u",desc:"Vowel shifts i→a→u", ex:"drink → drank → drunk"},
+  "ee-aw-een": {label:"-ee/-aw/-een",desc:"Pattern with -ee/-aw/-een", ex:"see → saw → seen"},
+  "ive-ave-iven": {label:"-ive/-ave/-iven",desc:"Base -ive, Past -ave, PP -iven", ex:"give → gave → given"},
+  "ive-ove-iven": {label:"-ive/-ove/-iven",desc:"Base -ive, Past -ove, PP -iven", ex:"drive → drove → driven"},
+  "eak-oke-oken": {label:"-eak/-oke/-oken",desc:"Break/speak pattern", ex:"speak → spoke → spoken"},
+  "ear-ore-orn": {label:"-ear/-ore/-orn",desc:"Wear/tear/swear pattern", ex:"wear → wore → worn"},
+  "come-pattern": {label:"Come pattern",desc:"Past changes, PP = Base", ex:"come → came → come"},
+  "eep-ept": {label:"-eep/-ept",desc:"Sleep/keep pattern", ex:"sleep → slept → slept"},
+  "eet-et": {label:"-eet/-et",desc:"Meet pattern", ex:"meet → met → met"},
+  "end-ent": {label:"-end/-ent",desc:"Send/spend/lend pattern", ex:"send → sent → sent"},
+  "eel-elt": {label:"-eel/-elt",desc:"Feel pattern", ex:"feel → felt → felt"},
+  "uy-ought": {label:"-uy/-ought",desc:"Buy/bring/think pattern", ex:"buy → bought → bought"},
+  "ing-ought": {label:"-ing/-ought",desc:"Bring/think pattern", ex:"bring → brought → brought"},
+  "ite-ote-itten": {label:"-ite/-ote/-itten",desc:"Write pattern", ex:"write → wrote → written"},
+  "eat-ate-eaten": {label:"-eat/-ate/-eaten",desc:"Eat pattern", ex:"eat → ate → eaten"},
+  "eal-ole-olen": {label:"-eal/-ole/-olen",desc:"Steal pattern", ex:"steal → stole → stolen"},
+  "eed-ed": {label:"-eed/-ed",desc:"Feed/bleed pattern", ex:"feed → fed → fed"},
+  "eal-ealt": {label:"-eal/-ealt",desc:"Deal pattern", ex:"deal → dealt → dealt"},
+  "all-ell-allen": {label:"-all/-ell/-allen",desc:"Fall pattern", ex:"fall → fell → fallen"},
+  "y-ew-own": {label:"-y/-ew/-own",desc:"Fly pattern", ex:"fly → flew → flown"},
+  "aw-ew-awn": {label:"-aw/-ew/-awn",desc:"Draw/withdraw pattern", ex:"draw → drew → drawn"},
+  "ise-ose-isen": {label:"-ise/-ose/-isen",desc:"Rise/arise pattern", ex:"rise → rose → risen"},
+  "et-ot-otten": {label:"-et/-ot/-otten",desc:"Forget/get pattern", ex:"forget → forgot → forgotten"},
+  "ide-id-idden": {label:"-ide/-id/-idden",desc:"Hide pattern", ex:"hide → hid → hidden"},
+  "id-ade-idden": {label:"-id/-ade/-idden",desc:"Forbid pattern", ex:"forbid → forbade → forbidden"},
+  "ind-ound": {label:"-ind/-ound",desc:"Bind/find/grind pattern", ex:"bind → bound → bound"},
+  "oose-ose-osen": {label:"-oose/-ose/-osen",desc:"Choose pattern", ex:"choose → chose → chosen"},
+  "eeze-oze-ozen": {label:"-eeze/-oze/-ozen",desc:"Freeze pattern", ex:"freeze → froze → frozen"},
+  "eave-ove-oven": {label:"-eave/-ove/-oven",desc:"Weave pattern", ex:"weave → wove → woven"},
+};
+
+// ══════════════════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════════════════
+const MODES = [
+  {id:'reference',label:'📖 Full List'},
+  {id:'flashcards',label:'📇 Flashcards'},
+  {id:'quiz',label:'🧠 Quiz'},
+  {id:'fill',label:'✍️ Fill-In'},
+  {id:'patterns',label:'🔗 Patterns'},
+];
+const LEVELS = ['all','A1','A2','B1','B2','C1'];
+
+let S = {
+  mode:'reference', level:'all', patternFilter:null, search:'',
+  fcIdx:0, fcFlipped:false,
+  qItems:[], qIdx:0, qAnswers:[], qAnswered:false, qType:'meaning',
+  fItems:[], fIdx:0, fAnswered:false, fCorrect:false,
+  stats:{attempts:0,correct:0,streak:0,best:0},
+  mastered: new Set()
+};
+
+// ══════════════════════════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════════════════════════
+const shuffle = a => {const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b};
+const filtered = () => {
+  let v = VERBS;
+  if(S.level!=='all') v = v.filter(x=>x.level===S.level);
+  if(S.patternFilter) v = v.filter(x=>x.group===S.patternFilter);
+  return v;
+};
+
+function speak(text){
+  if(!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=.82;
+  const voices=speechSynthesis.getVoices();
+  const v=voices.find(v=>v.lang.startsWith('en')&&v.name.includes('Google'))||voices.find(v=>v.lang.startsWith('en-US'));
+  if(v) u.voice=v;
+  speechSynthesis.speak(u);
+}
+const speakerSVG=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>`;
+const arrowL=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>`;
+const arrowR=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>`;
+
+// ══════════════════════════════════════════════════════════════
+//  RENDER ENGINE
+// ══════════════════════════════════════════════════════════════
+function render(){
+  renderModeTabs();
+  renderFilters();
+  renderMain();
+  renderStats();
+}
+
+function renderModeTabs(){
+  document.getElementById('modeTabs').innerHTML = MODES.map(m=>
+    `<button class="tab ${S.mode===m.id?'active':''}" onclick="setMode('${m.id}')">${m.label}</button>`
+  ).join('');
+}
+
+function renderFilters(){
+  const el=document.getElementById('filtersBar');
+  const levels = LEVELS.filter(l=>l==='all'||VERBS.some(v=>v.level===l));
+  el.innerHTML = `
+    <div class="filter-group">
+      <span class="filter-label">Level</span>
+      ${levels.map(l=>`<button class="fbtn ${S.level===l?'active':''}" onclick="setLevel('${l}')">${l==='all'?'All':l}</button>`).join('')}
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Top</span>
+      <button class="fbtn ${!S.topN?'active':''}" onclick="setTop(null)">All</button>
+      <button class="fbtn ${S.topN===25?'active':''}" onclick="setTop(25)">25</button>
+      <button class="fbtn ${S.topN===50?'active':''}" onclick="setTop(50)">50</button>
+    </div>`;
+}
+
+function renderMain(){
+  const el=document.getElementById('main');
+  switch(S.mode){
+    case 'reference': renderReference(el); break;
+    case 'flashcards': renderFlashcards(el); break;
+    case 'quiz': renderQuiz(el); break;
+    case 'fill': renderFill(el); break;
+    case 'patterns': renderPatterns(el); break;
+  }
+}
+
+function renderStats(){
+  const pct = S.stats.attempts ? Math.round(S.stats.correct/S.stats.attempts*100) : 0;
+  document.getElementById('statsRow').innerHTML = `
+    <div class="stat-box"><div class="stat-n">${S.stats.attempts}</div><div class="stat-l">Attempted</div></div>
+    <div class="stat-box"><div class="stat-n" style="color:var(--success)">${S.stats.correct}</div><div class="stat-l">Correct</div></div>
+    <div class="stat-box"><div class="stat-n" style="color:var(--v2)">${S.stats.streak}</div><div class="stat-l">Streak</div></div>
+    <div class="stat-box"><div class="stat-n" style="color:var(--v1)">${pct}%</div><div class="stat-l">Accuracy</div></div>`;
+}
+
+// ── REFERENCE TABLE ──
+function renderReference(el){
+  let items = filtered();
+  if(S.topN) items = VERBS.filter(v=>v.freq<=S.topN).filter(v=>S.level==='all'||v.level===S.level);
+  el.innerHTML = `
+    <div class="card">
+      <div class="card-label">Irregular Verbs List <span class="pill" style="background:var(--v1-bg);color:var(--v1)">${items.length} verbs</span></div>
+      <input class="search-input" placeholder="Search verbs..." oninput="filterTable(this.value)" id="searchInput">
+      <div class="verb-table-wrap">
+        <table class="verb-table" id="verbTable">
+          <thead>
+            <tr>
+              <th style="width:28px"></th>
+              <th style="color:var(--v1)">Base Form</th>
+              <th style="color:var(--v2)">Past Simple</th>
+              <th style="color:var(--v3)">Past Participle</th>
+              <th>Meaning</th>
+              <th>Lvl</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${items.map(v=>`
+              <tr data-search="${v.base} ${v.past} ${v.pp} ${v.meaning}">
+                <td><button class="speak-btn" onclick="speak('${v.base}, ${v.past}, ${v.pp}')">${speakerSVG}</button></td>
+                <td class="v-base">${v.base}</td>
+                <td class="v-past">${v.past}</td>
+                <td class="v-pp">${v.pp}</td>
+                <td class="v-meaning">${v.meaning}</td>
+                <td><span class="v-lvl">${v.level}</span></td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+function filterTable(val){
+  const term=val.toLowerCase();
+  document.querySelectorAll('#verbTable tbody tr').forEach(r=>{
+    r.style.display=r.dataset.search.toLowerCase().includes(term)?'':'none';
+  });
+}
+
+// ── FLASHCARDS ──
+function renderFlashcards(el){
+  let items=filtered();
+  if(S.topN) items=VERBS.filter(v=>v.freq<=S.topN).filter(v=>S.level==='all'||v.level===S.level);
+  if(!items.length){el.innerHTML='<div class="card text-center"><p style="color:var(--text-dim)">No verbs for this filter.</p></div>';return}
+  const idx=S.fcIdx%items.length;
+  const v=items[idx];
+
+  el.innerHTML=`
+    <div class="fc-container">
+      <div class="fc-card ${S.fcFlipped?'flipped':''}" onclick="flipFC()">
+        <div class="fc-face fc-front">
+          <button class="speak-btn fc-speak" onclick="event.stopPropagation();speak('${v.base}, ${v.past}, ${v.pp}')">${speakerSVG}</button>
+          <div class="fc-form-label c-v1" style="background:var(--v1-bg);border:1px solid var(--v1-border)">#${v.freq} · ${v.level}</div>
+          <div class="fc-verb-big c-v1">${v.base}</div>
+          <div class="conj-grid" style="width:100%;max-width:380px;margin:16px auto">
+            <div class="conj-cell"><div class="conj-label c-v1">Base</div><div class="conj-word c-v1">${v.base}</div></div>
+            <div class="conj-cell"><div class="conj-label c-v2">Past</div><div class="conj-hidden">? ? ?</div></div>
+            <div class="conj-cell"><div class="conj-label c-v3">P.P.</div><div class="conj-hidden">? ? ?</div></div>
+          </div>
+          <div class="fc-hint">Tap to reveal →</div>
+        </div>
+        <div class="fc-face fc-back">
+          <button class="speak-btn fc-speak" onclick="event.stopPropagation();speak('${v.base}, ${v.past}, ${v.pp}. ${v.example.replace(/\{[^}]+\}/g, v.pp)}')">${speakerSVG}</button>
+          <div class="fc-form-label c-v3" style="background:var(--v3-bg);border:1px solid var(--v3-border)">${PATTERNS[v.group]?.label||v.group}</div>
+          <div class="conj-grid revealed" style="width:100%;max-width:400px;margin:12px auto">
+            <div class="conj-cell" style="border-color:var(--v1-border)"><div class="conj-label c-v1">Base</div><div class="conj-word c-v1">${v.base}</div></div>
+            <div class="conj-cell" style="border-color:var(--v2-border)"><div class="conj-label c-v2">Past</div><div class="conj-word c-v2">${v.past}</div></div>
+            <div class="conj-cell" style="border-color:var(--v3-border)"><div class="conj-label c-v3">P.P.</div><div class="conj-word c-v3">${v.pp}</div></div>
+          </div>
+          <div class="fc-meaning-text">${v.meaning}</div>
+          <div class="fc-example-text">"${v.example.replace(/\{past\}/g,'<b style="color:var(--v2)">'+v.past+'</b>').replace(/\{pp\}/g,'<b style="color:var(--v3)">'+v.pp+'</b>').replace(/\{base\}/g,'<b style="color:var(--v1)">'+v.base+'</b>')}"</div>
+        </div>
+      </div>
+    </div>
+    <div class="fc-nav">
+      <button class="fc-nav-btn" onclick="S.fcIdx=Math.max(0,S.fcIdx-1);S.fcFlipped=false;renderMain()">${arrowL}</button>
+      <span class="fc-counter">${idx+1} / ${items.length}</span>
+      <button class="fc-nav-btn" onclick="S.fcIdx++;S.fcFlipped=false;renderMain()">${arrowR}</button>
+    </div>`;
+}
+function flipFC(){S.fcFlipped=!S.fcFlipped;renderMain()}
+
+// ── QUIZ ──
+function initQuiz(){
+  let items=filtered();
+  if(S.topN) items=VERBS.filter(v=>v.freq<=S.topN).filter(v=>S.level==='all'||v.level===S.level);
+  S.qItems=shuffle(items).slice(0,Math.min(10,items.length));
+  S.qIdx=0;S.qAnswers=[];S.qAnswered=false;
+  // Alternate question types
+  S.qTypes=S.qItems.map((_,i)=>['past','pp','meaning'][i%3]);
+}
+
+function renderQuiz(el){
+  if(!S.qItems.length) initQuiz();
+  if(!S.qItems.length){el.innerHTML='<div class="card text-center"><p style="color:var(--text-dim)">No verbs.</p></div>';return}
+  if(S.qIdx>=S.qItems.length){renderQuizEnd(el);return}
+
+  const v=S.qItems[S.qIdx];
+  const type=S.qTypes[S.qIdx];
+  let question, correctAnswer, allItems=VERBS;
+
+  if(type==='past'){
+    question=`What is the <span class="c-v2">Past Simple</span> of <span class="c-v1">"${v.base}"</span>?`;
+    correctAnswer=v.past;
+  } else if(type==='pp'){
+    question=`What is the <span class="c-v3">Past Participle</span> of <span class="c-v1">"${v.base}"</span>?`;
+    correctAnswer=v.pp;
+  } else {
+    question=`What does <span class="c-v1">"${v.base}"</span> (<span class="c-v2">${v.past}</span> / <span class="c-v3">${v.pp}</span>) mean?`;
+    correctAnswer=v.meaning;
+  }
+
+  let opts=[correctAnswer];
+  const pool=shuffle(allItems.filter(x=>x.base!==v.base));
+  for(const p of pool){
+    if(opts.length>=4) break;
+    const val=type==='past'?p.past:type==='pp'?p.pp:p.meaning;
+    if(!opts.includes(val)) opts.push(val);
+  }
+  opts=shuffle(opts);
+
+  const progress=S.qItems.map((_,i)=>{
+    if(i<S.qAnswers.length) return S.qAnswers[i]?'correct':'wrong';
+    if(i===S.qIdx) return 'current'; return '';
+  });
+
+  el.innerHTML=`
+    <div class="card">
+      <div class="card-label">Quiz <span class="pill" style="background:var(--v2-bg);color:var(--v2)">Round ${S.qIdx+1}/${S.qItems.length}</span></div>
+      <div class="quiz-progress">${progress.map(p=>`<div class="qp-dot ${p}"></div>`).join('')}</div>
+      <div class="quiz-q">${question}</div>
+      <div class="quiz-sub">🔊 <a href="javascript:void(0)" onclick="speak('${v.base}, ${v.past}, ${v.pp}')" style="color:var(--v2);text-decoration:none">Listen to pronunciation</a></div>
+      <div class="quiz-grid" id="quizOpts">
+        ${opts.map((o,i)=>`<button class="quiz-opt" data-correct="${o===correctAnswer}" onclick="answerQuiz(this,${o===correctAnswer},'${correctAnswer.replace(/'/g,"\\'")}')">${o}</button>`).join('')}
+      </div>
+      <div class="quiz-fb" id="quizFb"></div>
+      <div class="btn-row">
+        <button class="btn" id="qNextBtn" onclick="S.qIdx++;S.qAnswered=false;renderMain()" style="display:none">Next ${arrowR}</button>
+      </div>
+    </div>`;
+}
+
+function answerQuiz(btn,ok,correct){
+  if(S.qAnswered) return;
+  S.qAnswered=true; S.stats.attempts++;
+  S.qAnswers.push(ok);
+  document.querySelectorAll('.quiz-opt').forEach(o=>{o.classList.add('disabled');if(o.dataset.correct==='true') o.classList.add('reveal')});
+  btn.classList.add(ok?'correct-picked':'wrong-picked');
+  const fb=document.getElementById('quizFb');
+  const v=S.qItems[S.qIdx];
+  if(ok){S.stats.correct++;S.stats.streak++;S.stats.best=Math.max(S.stats.best,S.stats.streak);fb.className='quiz-fb show ok';fb.innerHTML=`✅ Correct! ${v.base} → ${v.past} → ${v.pp}`}
+  else{S.stats.streak=0;fb.className='quiz-fb show no';fb.innerHTML=`❌ Correct answer: <strong>${correct}</strong> — ${v.base} → ${v.past} → ${v.pp}`}
+  document.getElementById('qNextBtn').style.display='inline-flex';
+  renderStats();
+}
+
+function renderQuizEnd(el){
+  const ok=S.qAnswers.filter(Boolean).length;
+  const pct=Math.round(ok/S.qAnswers.length*100);
+  const color=pct>=80?'var(--success)':pct>=50?'var(--warning)':'var(--error)';
+  el.innerHTML=`
+    <div class="card text-center">
+      <div class="score-big" style="color:${color}">${pct}%</div>
+      <div class="score-lbl">Quiz Complete</div>
+      <div class="score-row">
+        <div class="sr-item"><div class="sr-num" style="color:var(--success)">${ok}</div><div class="sr-label">Correct</div></div>
+        <div class="sr-item"><div class="sr-num" style="color:var(--error)">${S.qAnswers.length-ok}</div><div class="sr-label">Wrong</div></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn" onclick="S.qItems=[];setMode('quiz')">🔄 New Quiz</button>
+        <button class="btn" onclick="setMode('fill')">✍️ Practice Fill-In</button>
+      </div>
+    </div>`;
+}
+
+// ── FILL-IN ──
+function initFill(){
+  let items=filtered();
+  if(S.topN) items=VERBS.filter(v=>v.freq<=S.topN).filter(v=>S.level==='all'||v.level===S.level);
+  S.fItems=shuffle(items).slice(0,Math.min(10,items.length));
+  S.fIdx=0;S.fAnswered=false;S.fAnswers=[];
+}
+
+function renderFill(el){
+  if(!S.fItems.length) initFill();
+  if(!S.fItems.length){el.innerHTML='<div class="card text-center"><p style="color:var(--text-dim)">No verbs.</p></div>';return}
+  if(S.fIdx>=S.fItems.length){
+    const ok=S.fAnswers.filter(Boolean).length;
+    const pct=Math.round(ok/S.fAnswers.length*100);
+    const color=pct>=80?'var(--success)':pct>=50?'var(--warning)':'var(--error)';
+    el.innerHTML=`<div class="card text-center"><div class="score-big" style="color:${color}">${pct}%</div><div class="score-lbl">Fill-In Complete</div>
+      <div class="btn-row"><button class="btn" onclick="S.fItems=[];setMode('fill')">🔄 Again</button><button class="btn" onclick="setMode('quiz')">🧠 Quiz</button></div></div>`;
+    return;
+  }
+
+  const v=S.fItems[S.fIdx];
+  // Choose which form to ask: past or pp
+  const askPP = S.fIdx % 2 === 0;
+  const formLabel = askPP ? 'Past Participle' : 'Past Simple';
+  const formColor = askPP ? 'var(--v3)' : 'var(--v2)';
+  const answer = askPP ? v.pp : v.past;
+  const sentence = v.example.replace(/\{(past|pp|base)\}/g, '______');
+
+  const progress=S.fItems.map((_,i)=>{
+    if(i<S.fAnswers.length) return S.fAnswers[i]?'correct':'wrong';
+    if(i===S.fIdx) return 'current'; return '';
+  });
+
+  el.innerHTML=`
+    <div class="card">
+      <div class="card-label">Fill In The Blank <span class="pill" style="background:${askPP?'var(--v3-bg)':'var(--v2-bg)'};color:${formColor}">${S.fIdx+1}/${S.fItems.length}</span></div>
+      <div class="quiz-progress">${progress.map(p=>`<div class="qp-dot ${p}"></div>`).join('')}</div>
+      <div class="fill-form-tag" style="background:${askPP?'var(--v3-bg)':'var(--v2-bg)'};color:${formColor};border:1px solid ${askPP?'var(--v3-border)':'var(--v2-border)'}">Write the ${formLabel} of "${v.base}"</div>
+      <div class="fill-sentence">${sentence.replace('______',`<span class="fill-blank" id="blankSpan">______</span>`)}</div>
+      <div class="fill-input-row">
+        <input class="fill-input" id="fillInput" placeholder="Type the ${formLabel.toLowerCase()}..." autocomplete="off" spellcheck="false"
+          onkeydown="if(event.key==='Enter')checkFill('${answer.replace(/'/g,"\\'")}')">
+        <button class="btn" onclick="checkFill('${answer.replace(/'/g,"\\'")}')">Check</button>
+      </div>
+      <div class="quiz-fb" id="fillFb"></div>
+      <div class="btn-row">
+        <button class="btn" id="fillNext" onclick="S.fIdx++;S.fAnswered=false;renderMain()" style="display:none">Next ${arrowR}</button>
+        <button class="btn" onclick="speak('${v.base}, ${v.past}, ${v.pp}')">${speakerSVG} Listen</button>
+      </div>
+    </div>`;
+  setTimeout(()=>document.getElementById('fillInput')?.focus(),100);
+}
+
+function checkFill(answer){
+  if(S.fAnswered) return;
+  S.fAnswered=true; S.stats.attempts++;
+  const input=document.getElementById('fillInput').value.trim().toLowerCase();
+  // Allow any of the slash-separated alternatives
+  const alts=answer.toLowerCase().split('/').map(s=>s.trim());
+  const ok=alts.includes(input);
+  S.fAnswers.push(ok);
+
+  const blank=document.getElementById('blankSpan');
+  const fb=document.getElementById('fillFb');
+  const v=S.fItems[S.fIdx];
+
+  if(ok){
+    S.stats.correct++;S.stats.streak++;S.stats.best=Math.max(S.stats.best,S.stats.streak);
+    blank.textContent=answer;blank.classList.add('correct-anim');
+    fb.className='quiz-fb show ok';fb.innerHTML=`✅ Perfect! <strong>${v.base}</strong> → <strong>${v.past}</strong> → <strong>${v.pp}</strong>`;
+  } else {
+    S.stats.streak=0;
+    blank.textContent=answer;blank.classList.add('wrong-anim');
+    setTimeout(()=>{blank.classList.remove('wrong-anim');blank.classList.add('correct-anim')},400);
+    fb.className='quiz-fb show no';fb.innerHTML=`❌ You wrote "<strong>${input||'(empty)'}</strong>" — Correct: <strong>${answer}</strong>`;
+  }
+  document.getElementById('fillNext').style.display='inline-flex';
+  renderStats();
+}
+
+// ── PATTERNS ──
+function renderPatterns(el){
+  const groups={};
+  const items=S.level==='all'?VERBS:VERBS.filter(v=>v.level===S.level);
+  items.forEach(v=>{if(!groups[v.group]) groups[v.group]=[];groups[v.group].push(v)});
+
+  const sortedGroups=Object.entries(groups).sort((a,b)=>b[1].length-a[1].length);
+
+  el.innerHTML=`
+    <div class="card">
+      <div class="card-label">Conjugation Patterns <span class="pill" style="background:var(--v3-bg);color:var(--v3)">${sortedGroups.length} patterns</span></div>
+      <p style="color:var(--text-dim);font-size:.88rem;margin-bottom:20px;line-height:1.5">Irregular verbs follow hidden patterns. Learning them by group makes memorization <strong style="color:var(--text)">3× faster</strong>.</p>
+      ${sortedGroups.map(([key,verbs])=>{
+        const p=PATTERNS[key]||{label:key,desc:'',ex:''};
+        return `
+          <div style="margin-bottom:20px;padding:18px;background:var(--surface-2);border-radius:12px;border:1px solid var(--border)">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+              <div>
+                <span style="font-weight:600;font-size:1rem">${p.label}</span>
+                <span style="color:var(--text-muted);font-size:.8rem;margin-left:8px">${p.desc}</span>
+              </div>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-muted);padding:3px 8px;background:var(--surface-3);border-radius:6px">${verbs.length} verbs</span>
+            </div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--v2);margin-bottom:12px">${p.ex}</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px">
+              ${verbs.map(v=>`
+                <span style="padding:5px 12px;border-radius:8px;font-size:13px;background:var(--surface-3);border:1px solid var(--border);cursor:pointer;transition:all .2s"
+                  onclick="speak('${v.base}, ${v.past}, ${v.pp}')"
+                  title="${v.base} → ${v.past} → ${v.pp}">
+                  <span class="c-v1">${v.base}</span>
+                  <span style="color:var(--text-muted);margin:0 3px">→</span>
+                  <span class="c-v2">${v.past}</span>
+                  <span style="color:var(--text-muted);margin:0 3px">→</span>
+                  <span class="c-v3">${v.pp}</span>
+                </span>`).join('')}
+            </div>
+          </div>`;
+      }).join('')}
+    </div>`;
+}
+
+// ══════════════════════════════════════════════════════════════
+//  ACTIONS
+// ══════════════════════════════════════════════════════════════
+function setMode(m){S.mode=m;S.fcIdx=0;S.fcFlipped=false;if(m==='quiz')initQuiz();if(m==='fill')initFill();render()}
+function setLevel(l){S.level=l;S.fcIdx=0;S.qItems=[];S.fItems=[];if(S.mode==='quiz')initQuiz();if(S.mode==='fill')initFill();render()}
+function setTop(n){S.topN=n;S.fcIdx=0;S.qItems=[];S.fItems=[];if(S.mode==='quiz')initQuiz();if(S.mode==='fill')initFill();render()}
+
+// Init
+if('speechSynthesis' in window) speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices();
+render();
+</script>
+</body>
+</html>

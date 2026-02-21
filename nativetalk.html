@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NativeTalk — 1000 Phrases & Questions</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+--bg:#03060c;--s1:#0a0e1b;--s2:#0f1527;--s3:#162038;--s4:#1d2a48;
+--ph:#38bdf8;--phB:rgba(56,189,248,.06);--phD:rgba(56,189,248,.22);
+--qu:#f472b6;--quB:rgba(244,114,182,.06);--quD:rgba(244,114,182,.22);
+--c1:#34d399;--c1B:rgba(52,211,153,.06);--c1D:rgba(52,211,153,.22);
+--c2:#a78bfa;--c2B:rgba(167,139,250,.06);--c2D:rgba(167,139,250,.22);
+--c3:#fbbf24;--c3B:rgba(251,191,36,.06);--c3D:rgba(251,191,36,.22);
+--c4:#fb923c;--c4B:rgba(251,146,60,.06);--c4D:rgba(251,146,60,.22);
+--c5:#f87171;--c5B:rgba(248,113,113,.06);--c5D:rgba(248,113,113,.22);
+--c6:#60a5fa;--c6B:rgba(96,165,250,.06);--c6D:rgba(96,165,250,.22);
+--c7:#e879f9;--c7B:rgba(232,121,249,.06);--c7D:rgba(232,121,249,.22);
+--c8:#2dd4bf;--c8B:rgba(45,212,191,.06);--c8D:rgba(45,212,191,.22);
+--ok:#22c55e;--okB:rgba(34,197,94,.08);--okD:rgba(34,197,94,.22);
+--er:#ef4444;--erB:rgba(239,68,68,.06);--erD:rgba(239,68,68,.22);
+--tx:#e2e8f2;--tx2:#8b97b0;--tx3:#55637b;--bd:rgba(255,255,255,.05);--r:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 30% 0%,rgba(56,189,248,.012),transparent 50%),radial-gradient(ellipse at 70% 100%,rgba(244,114,182,.012),transparent 50%);pointer-events:none}
+.app{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:16px 12px 70px}
+@keyframes fadeD{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeU{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pop{from{transform:scale(.88);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+.hdr{text-align:center;margin-bottom:18px;animation:fadeD .4s ease}
+.hdr-tag{display:inline-flex;align-items:center;gap:6px;padding:4px 13px;border-radius:100px;font-family:'JetBrains Mono',monospace;font-size:8.5px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--tx3);border:1px solid var(--bd);background:var(--s1);margin-bottom:8px}
+.hdr h1{font-size:2rem;font-weight:900;letter-spacing:-.3px;margin-bottom:2px}
+.hdr p{color:var(--tx2);font-size:.82rem}
+
+.sts{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:12px;animation:fadeU .3s ease .04s both}
+@media(max-width:550px){.sts{grid-template-columns:repeat(3,1fr)}}
+.st{padding:9px 4px;background:var(--s1);border:1px solid var(--bd);border-radius:10px;text-align:center}
+.st-n{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:700}
+.st-l{font-size:7px;color:var(--tx3);text-transform:uppercase;letter-spacing:.7px;margin-top:1px}
+
+.tabs{display:flex;gap:3px;justify-content:center;flex-wrap:wrap;margin-bottom:8px;animation:fadeU .3s ease .06s both}
+.tab{padding:6px 13px;border-radius:100px;border:1.5px solid var(--bd);background:var(--s1);color:var(--tx3);font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit}
+.tab:hover{border-color:rgba(255,255,255,.08);color:var(--tx2)}
+.tab.on{background:var(--s3);color:var(--tx);border-color:rgba(255,255,255,.12)}
+
+.frow{display:flex;gap:3px;justify-content:center;flex-wrap:wrap;margin-bottom:12px;animation:fadeU .3s ease .08s both}
+.fp{padding:4px 11px;border-radius:100px;border:1.5px solid var(--bd);background:var(--s1);font-size:10px;font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit;color:var(--tx3)}
+.fp:hover{border-color:rgba(255,255,255,.06)}
+
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:12px;animation:fadeU .3s ease}
+.card-h{padding:10px 14px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:5px;flex-wrap:wrap}
+.card-t{font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:1.4px;color:var(--tx3);display:flex;align-items:center;gap:6px}
+.card-b{padding:14px}
+.pill{padding:2px 8px;border-radius:5px;font-size:8px;font-weight:700;letter-spacing:.3px}
+
+.btn{display:inline-flex;align-items:center;gap:4px;padding:7px 14px;border:1px solid var(--bd);border-radius:9px;background:var(--s2);color:var(--tx2);font-family:inherit;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
+.btn:hover{background:var(--s3);color:var(--tx);border-color:rgba(255,255,255,.08)}
+.btn-sm{padding:5px 10px;font-size:10px}
+.btn-row{display:flex;gap:5px;justify-content:center;flex-wrap:wrap}
+
+.spk{border:none;background:none;cursor:pointer;color:var(--tx3);transition:all .12s;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;padding:4px}
+.spk:hover{color:var(--tx);transform:scale(1.1)}
+.spk svg{width:15px;height:15px}
+
+.srch{width:100%;padding:9px 12px;border:1.5px solid var(--bd);border-radius:9px;background:var(--s2);color:var(--tx);font-family:inherit;font-size:12px;outline:none;transition:border-color .2s;margin-bottom:10px}
+.srch:focus{border-color:var(--phD)}.srch::placeholder{color:var(--tx3)}
+
+.itm{display:flex;align-items:center;gap:8px;padding:9px 10px;background:var(--s2);border-radius:9px;border:1px solid var(--bd);margin-bottom:4px;transition:all .12s;min-height:42px}
+.itm:hover{border-color:rgba(255,255,255,.06);background:var(--s3)}
+.itm .en{font-size:.84rem;font-weight:600;flex:1;line-height:1.4}
+.itm .es{font-size:.78rem;color:var(--tx2);flex:1;line-height:1.4}
+.itm .cat-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.itm .star{cursor:pointer;font-size:13px;flex-shrink:0;opacity:.3;transition:opacity .12s}
+.itm .star:hover,.itm .star.on{opacity:1}
+@media(max-width:560px){.itm .es{display:none}}
+
+.pages{display:flex;align-items:center;justify-content:center;gap:5px;margin-top:10px}
+
+/* Flashcard */
+.fc{min-height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;background:var(--s2);border-radius:14px;border:1.5px solid var(--bd);cursor:pointer;transition:all .2s;text-align:center;user-select:none}
+.fc:hover{border-color:rgba(255,255,255,.08)}
+.fc-lbl{font-family:'JetBrains Mono',monospace;font-size:8px;text-transform:uppercase;letter-spacing:1.2px;color:var(--tx3);margin-bottom:8px}
+.fc-main{font-size:1.2rem;font-weight:700;line-height:1.5}
+.fc-sub{font-size:.88rem;color:var(--tx2);margin-top:8px;line-height:1.4}
+
+/* Quiz */
+.q-p{font-size:1.05rem;font-weight:700;text-align:center;line-height:1.5;margin:8px 0 12px;padding:14px;background:var(--s2);border-radius:11px;border:1px solid var(--bd)}
+.q-g{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:10px 0}
+@media(max-width:480px){.q-g{grid-template-columns:1fr}}
+.q-o{padding:10px 12px;border:1.5px solid var(--bd);border-radius:10px;background:var(--s2);color:var(--tx2);font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;text-align:left;font-family:inherit;line-height:1.3}
+.q-o:hover:not(.dis){border-color:rgba(255,255,255,.08);color:var(--tx);background:var(--s3)}
+.q-o.right{border-color:var(--okD);background:var(--okB);color:var(--ok)}
+.q-o.wrong{border-color:var(--erD);background:var(--erB);color:var(--er)}
+.q-o.dis{pointer-events:none}
+.fb{padding:9px 12px;border-radius:9px;font-size:12px;line-height:1.4;margin:8px 0;display:none;animation:pop .25s ease}
+.fb.show{display:block}
+.prog{display:flex;gap:2px;margin-bottom:10px}
+.prog-d{height:3px;flex:1;border-radius:3px;background:var(--s3);transition:background .3s}
+.prog-d.ok{background:var(--ok)}.prog-d.er{background:var(--er)}.prog-d.cur{background:var(--tx3)}
+
+/* Daily */
+.daily-num{font-family:'JetBrains Mono',monospace;font-size:2.8rem;font-weight:800;text-align:center}
+.daily-sub{text-align:center;color:var(--tx2);margin:2px 0 14px;font-size:.85rem}
+
+.hidden{display:none!important}.tc{text-align:center}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:var(--s3);border-radius:3px}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="hdr">
+  <div class="hdr-tag">🇺🇸 American English</div>
+  <h1><span style="color:var(--ph)">Native</span><span style="color:var(--qu)">Talk</span></h1>
+  <p>500 frases nativas + 500 preguntas comunes del inglés americano</p>
+</div>
+<div class="sts" id="stats"></div>
+<div class="tabs" id="modes"></div>
+<div class="frow" id="filters"></div>
+<div id="main"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// SPEECH
+// ═══════════════════════════════════════════════════════════════
+const spkSVG=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>`;
+function speak(t,r=.82){if(!('speechSynthesis' in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=r;const v=speechSynthesis.getVoices();const p=v.find(x=>x.lang.startsWith('en')&&x.name.includes('Google'))||v.find(x=>x.lang.startsWith('en-US'))||v.find(x=>x.lang.startsWith('en'));if(p)u.voice=p;speechSynthesis.speak(u)}
+if('speechSynthesis' in window)speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices();
+const shuffle=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]]}return b};
+
+// ═══════════════════════════════════════════════════════════════
+// 500 PHRASES + 500 QUESTIONS DATABASE
+// ═══════════════════════════════════════════════════════════════
+const CATS={
+// PHRASE categories
+casual:{n:"Casual & Slang",icon:"😎",c:"var(--ph)",b:"var(--phB)",d:"var(--phD)",sec:"phrases"},
+reactions:{n:"Reactions",icon:"😲",c:"var(--c4)",b:"var(--c4B)",d:"var(--c4D)",sec:"phrases"},
+agree:{n:"Agree & Disagree",icon:"🤝",c:"var(--c1)",b:"var(--c1B)",d:"var(--c1D)",sec:"phrases"},
+time:{n:"Time & Plans",icon:"📅",c:"var(--c2)",b:"var(--c2B)",d:"var(--c2D)",sec:"phrases"},
+feelings:{n:"Feelings",icon:"❤️",c:"var(--c5)",b:"var(--c5B)",d:"var(--c5D)",sec:"phrases"},
+advice:{n:"Advice & Opinions",icon:"💡",c:"var(--c3)",b:"var(--c3B)",d:"var(--c3D)",sec:"phrases"},
+work:{n:"Work & Money",icon:"💼",c:"var(--c8)",b:"var(--c8B)",d:"var(--c8D)",sec:"phrases"},
+social:{n:"Social Life",icon:"🎉",c:"var(--c7)",b:"var(--c7B)",d:"var(--c7D)",sec:"phrases"},
+transitions:{n:"Transitions",icon:"🔗",c:"var(--c6)",b:"var(--c6B)",d:"var(--c6D)",sec:"phrases"},
+polite:{n:"Polite & Formal",icon:"🎩",c:"var(--c1)",b:"var(--c1B)",d:"var(--c1D)",sec:"phrases"},
+// QUESTION categories
+qbasic:{n:"Getting to Know",icon:"👋",c:"var(--qu)",b:"var(--quB)",d:"var(--quD)",sec:"questions"},
+qdaily:{n:"Daily Life Q",icon:"☀️",c:"var(--c4)",b:"var(--c4B)",d:"var(--c4D)",sec:"questions"},
+qwork:{n:"Work & School Q",icon:"💼",c:"var(--c8)",b:"var(--c8B)",d:"var(--c8D)",sec:"questions"},
+qsocial:{n:"Social Q",icon:"💬",c:"var(--c6)",b:"var(--c6B)",d:"var(--c6D)",sec:"questions"},
+qtravel:{n:"Travel Q",icon:"✈️",c:"var(--c2)",b:"var(--c2B)",d:"var(--c2D)",sec:"questions"},
+qfood:{n:"Food & Restaurant Q",icon:"🍕",c:"var(--c3)",b:"var(--c3B)",d:"var(--c3D)",sec:"questions"},
+qopinion:{n:"Opinions Q",icon:"🧠",c:"var(--c7)",b:"var(--c7B)",d:"var(--c7D)",sec:"questions"},
+qhelp:{n:"Help & Requests Q",icon:"🙏",c:"var(--c5)",b:"var(--c5B)",d:"var(--c5D)",sec:"questions"},
+qshop:{n:"Shopping Q",icon:"🛒",c:"var(--c1)",b:"var(--c1B)",d:"var(--c1D)",sec:"questions"},
+qhealth:{n:"Health Q",icon:"🏥",c:"var(--c4)",b:"var(--c4B)",d:"var(--c4D)",sec:"questions"},
+};
+
+const DATA=[
+// ═══════════════════ 500 PHRASES ═══════════════════
+// ── CASUAL & SLANG (50) ──
+{en:"What's up?",es:"¿Qué onda?",cat:"casual"},
+{en:"I'm gonna head out.",es:"Ya me voy.",cat:"casual"},
+{en:"That's sick!",es:"¡Está genial!",cat:"casual"},
+{en:"No biggie.",es:"No es gran cosa.",cat:"casual"},
+{en:"I'm down for that.",es:"Le entro a eso.",cat:"casual"},
+{en:"It's not a big deal.",es:"No es para tanto.",cat:"casual"},
+{en:"I feel you.",es:"Te entiendo.",cat:"casual"},
+{en:"My bad.",es:"Mi culpa.",cat:"casual"},
+{en:"That's dope.",es:"Está cool/genial.",cat:"casual"},
+{en:"I'm beat.",es:"Estoy muerto de cansancio.",cat:"casual"},
+{en:"For real?",es:"¿En serio?",cat:"casual"},
+{en:"You nailed it!",es:"¡Le atinaste!",cat:"casual"},
+{en:"That's a bummer.",es:"Qué mala onda.",cat:"casual"},
+{en:"I'm all set.",es:"Estoy listo.",cat:"casual"},
+{en:"That's lit!",es:"¡Está increíble!",cat:"casual"},
+{en:"I'm just chilling.",es:"Solo estoy relajándome.",cat:"casual"},
+{en:"Same here.",es:"Igual yo.",cat:"casual"},
+{en:"Bet!",es:"¡Sale! / ¡Va!",cat:"casual"},
+{en:"I'm vibing with this.",es:"Me late esto.",cat:"casual"},
+{en:"That slaps!",es:"¡Eso está buenísimo!",cat:"casual"},
+{en:"No cap.",es:"Sin mentir / Neta.",cat:"casual"},
+{en:"I'm lowkey tired.",es:"Estoy un poco cansado.",cat:"casual"},
+{en:"That's sus.",es:"Eso es sospechoso.",cat:"casual"},
+{en:"Dude, chill.",es:"Amigo, tranquilo.",cat:"casual"},
+{en:"It hits different.",es:"Se siente diferente / Pega distinto.",cat:"casual"},
+{en:"I'm out.",es:"Ya me voy.",cat:"casual"},
+{en:"That's a vibe.",es:"Eso tiene buena vibra.",cat:"casual"},
+{en:"Keep it real.",es:"Sé auténtico.",cat:"casual"},
+{en:"That's fire!",es:"¡Está con madre!",cat:"casual"},
+{en:"I'm not gonna lie.",es:"No te voy a mentir.",cat:"casual"},
+{en:"What a catch!",es:"¡Qué hallazgo! / ¡Qué partidazo!",cat:"casual"},
+{en:"I gotta bounce.",es:"Me tengo que ir.",cat:"casual"},
+{en:"Hang tight.",es:"Espérame tantito.",cat:"casual"},
+{en:"I'm stoked!",es:"¡Estoy emocionadísimo!",cat:"casual"},
+{en:"That's a mood.",es:"Me identifico con eso.",cat:"casual"},
+{en:"It's a wrap.",es:"Se acabó.",cat:"casual"},
+{en:"Chill out, man.",es:"Cálmate, amigo.",cat:"casual"},
+{en:"That's legit.",es:"Eso sí es real/de verdad.",cat:"casual"},
+{en:"I'm on it.",es:"Ya me encargo.",cat:"casual"},
+{en:"Sounds good to me.",es:"Me parece bien.",cat:"casual"},
+{en:"I've got your back.",es:"Yo te cubro / Te apoyo.",cat:"casual"},
+{en:"Catch you later.",es:"Nos vemos luego.",cat:"casual"},
+{en:"Don't trip.",es:"No te preocupes.",cat:"casual"},
+{en:"I'm dead!",es:"¡Me muero de risa!",cat:"casual"},
+{en:"It's giving main character energy.",es:"Tiene energía de protagonista.",cat:"casual"},
+{en:"We're good.",es:"Estamos bien / Sin problemas.",cat:"casual"},
+{en:"Slay!",es:"¡Arrasaste! / ¡Lo mataste!",cat:"casual"},
+{en:"That's a flex.",es:"Eso es presumir.",cat:"casual"},
+{en:"I can't even.",es:"No puedo ni con esto.",cat:"casual"},
+{en:"You're tripping.",es:"Estás alucinando.",cat:"casual"},
+// ── REACTIONS (50) ──
+{en:"No way!",es:"¡No puede ser!",cat:"reactions"},
+{en:"Are you serious?",es:"¿Hablas en serio?",cat:"reactions"},
+{en:"That's insane!",es:"¡Eso está loco!",cat:"reactions"},
+{en:"Oh my God!",es:"¡Dios mío!",cat:"reactions"},
+{en:"You're kidding me!",es:"¡Me estás vacilando!",cat:"reactions"},
+{en:"Get out of here!",es:"¡No manches!",cat:"reactions"},
+{en:"That's awesome!",es:"¡Está increíble!",cat:"reactions"},
+{en:"I had no idea!",es:"¡No tenía idea!",cat:"reactions"},
+{en:"That's hilarious!",es:"¡Eso es chistosísimo!",cat:"reactions"},
+{en:"What a nightmare!",es:"¡Qué pesadilla!",cat:"reactions"},
+{en:"That's so sweet!",es:"¡Qué tierno!",cat:"reactions"},
+{en:"I can't believe it!",es:"¡No lo puedo creer!",cat:"reactions"},
+{en:"That's crazy!",es:"¡Qué locura!",cat:"reactions"},
+{en:"Shut up! Really?",es:"¡Cállate! ¿En serio?",cat:"reactions"},
+{en:"That's wild!",es:"¡Qué bárbaro!",cat:"reactions"},
+{en:"Good for you!",es:"¡Qué bien por ti!",cat:"reactions"},
+{en:"Lucky you!",es:"¡Qué suerte la tuya!",cat:"reactions"},
+{en:"Poor thing!",es:"¡Pobrecito!",cat:"reactions"},
+{en:"That's rough.",es:"Eso está difícil.",cat:"reactions"},
+{en:"What a relief!",es:"¡Qué alivio!",cat:"reactions"},
+{en:"That's so random!",es:"¡Eso es muy random!",cat:"reactions"},
+{en:"I'm speechless.",es:"Me quedé sin palabras.",cat:"reactions"},
+{en:"That blew my mind!",es:"¡Me voló la cabeza!",cat:"reactions"},
+{en:"Tell me about it!",es:"¡Ni me digas!",cat:"reactions"},
+{en:"I know, right?",es:"¿Verdad que sí?",cat:"reactions"},
+{en:"It is what it is.",es:"Es lo que es.",cat:"reactions"},
+{en:"That figures.",es:"Era de esperarse.",cat:"reactions"},
+{en:"Bless you!",es:"¡Salud! (cuando estornudas)",cat:"reactions"},
+{en:"You scared me!",es:"¡Me espantaste!",cat:"reactions"},
+{en:"What a mess!",es:"¡Qué desastre!",cat:"reactions"},
+{en:"Seriously though.",es:"Pero en serio.",cat:"reactions"},
+{en:"That's a shame.",es:"Qué lástima.",cat:"reactions"},
+{en:"How come?",es:"¿Cómo es eso? / ¿Por qué?",cat:"reactions"},
+{en:"Fair enough.",es:"Tiene sentido / Está bien.",cat:"reactions"},
+{en:"Figures!",es:"¡Con razón!",cat:"reactions"},
+{en:"That's so weird!",es:"¡Qué raro!",cat:"reactions"},
+{en:"Yikes!",es:"¡Uy! / ¡Qué feo!",cat:"reactions"},
+{en:"That's messed up.",es:"Eso está mal / Qué gacho.",cat:"reactions"},
+{en:"That's the move!",es:"¡Esa es la jugada!",cat:"reactions"},
+{en:"I'm here for it.",es:"Yo le entro / Me interesa.",cat:"reactions"},
+{en:"That's a first.",es:"Es la primera vez que pasa.",cat:"reactions"},
+{en:"Not bad!",es:"¡Nada mal!",cat:"reactions"},
+{en:"About time!",es:"¡Ya era hora!",cat:"reactions"},
+{en:"Oops!",es:"¡Ups!",cat:"reactions"},
+{en:"Nailed it!",es:"¡Perfecto! / ¡Le atinaste!",cat:"reactions"},
+{en:"Typical!",es:"¡Típico!",cat:"reactions"},
+{en:"That's news to me.",es:"Eso es nuevo para mí.",cat:"reactions"},
+{en:"You don't say!",es:"¡No me digas!",cat:"reactions"},
+{en:"Nice one!",es:"¡Buena esa!",cat:"reactions"},
+{en:"I'm impressed!",es:"¡Estoy impresionado!",cat:"reactions"},
+// ── AGREE & DISAGREE (50) ──
+{en:"Absolutely!",es:"¡Totalmente!",cat:"agree"},
+{en:"Exactly!",es:"¡Exacto!",cat:"agree"},
+{en:"That's so true.",es:"Eso es muy cierto.",cat:"agree"},
+{en:"I couldn't agree more.",es:"No podría estar más de acuerdo.",cat:"agree"},
+{en:"You can say that again!",es:"¡Puedes repetirlo!",cat:"agree"},
+{en:"You're telling me!",es:"¡Dímelo a mí!",cat:"agree"},
+{en:"That makes two of us.",es:"Somos dos.",cat:"agree"},
+{en:"I'm with you on that.",es:"Estoy contigo en eso.",cat:"agree"},
+{en:"Totally!",es:"¡Total!",cat:"agree"},
+{en:"You've got a point.",es:"Tienes un punto.",cat:"agree"},
+{en:"I see where you're coming from.",es:"Entiendo de dónde vienes.",cat:"agree"},
+{en:"That's fair.",es:"Eso es justo.",cat:"agree"},
+{en:"I guess so.",es:"Supongo que sí.",cat:"agree"},
+{en:"If you say so.",es:"Si tú lo dices.",cat:"agree"},
+{en:"I suppose you're right.",es:"Supongo que tienes razón.",cat:"agree"},
+{en:"Not necessarily.",es:"No necesariamente.",cat:"agree"},
+{en:"I beg to differ.",es:"Me permito diferir.",cat:"agree"},
+{en:"That's debatable.",es:"Eso es discutible.",cat:"agree"},
+{en:"I don't buy that.",es:"No me la compro.",cat:"agree"},
+{en:"That's not how I see it.",es:"Yo no lo veo así.",cat:"agree"},
+{en:"I don't think so.",es:"No creo.",cat:"agree"},
+{en:"I highly doubt it.",es:"Lo dudo mucho.",cat:"agree"},
+{en:"Not really.",es:"No realmente.",cat:"agree"},
+{en:"I mean, kind of.",es:"O sea, más o menos.",cat:"agree"},
+{en:"I wouldn't go that far.",es:"Yo no llegaría tan lejos.",cat:"agree"},
+{en:"Let's agree to disagree.",es:"Acordemos en no estar de acuerdo.",cat:"agree"},
+{en:"That's one way to look at it.",es:"Esa es una forma de verlo.",cat:"agree"},
+{en:"I hear you, but...",es:"Te escucho, pero...",cat:"agree"},
+{en:"Point taken.",es:"Entendido / Punto tomado.",cat:"agree"},
+{en:"You're right about that.",es:"Tienes razón en eso.",cat:"agree"},
+{en:"Spot on!",es:"¡En el clavo!",cat:"agree"},
+{en:"Couldn't have said it better.",es:"No pude haberlo dicho mejor.",cat:"agree"},
+{en:"That's a stretch.",es:"Eso es mucho decir.",cat:"agree"},
+{en:"Honestly, I disagree.",es:"Honestamente, no estoy de acuerdo.",cat:"agree"},
+{en:"I'm on the fence about it.",es:"Estoy indeciso al respecto.",cat:"agree"},
+{en:"To each their own.",es:"Cada quien sus gustos.",cat:"agree"},
+{en:"It depends.",es:"Depende.",cat:"agree"},
+{en:"In a way, yes.",es:"En cierto modo, sí.",cat:"agree"},
+{en:"That's a good point.",es:"Ese es un buen punto.",cat:"agree"},
+{en:"You make a valid point.",es:"Tienes un punto válido.",cat:"agree"},
+{en:"I can see that.",es:"Puedo ver eso.",cat:"agree"},
+{en:"No doubt about it.",es:"Sin duda.",cat:"agree"},
+{en:"For sure!",es:"¡Seguro!",cat:"agree"},
+{en:"One hundred percent!",es:"¡Cien por ciento!",cat:"agree"},
+{en:"You hit the nail on the head.",es:"Diste en el clavo.",cat:"agree"},
+{en:"I'm not so sure about that.",es:"No estoy tan seguro de eso.",cat:"agree"},
+{en:"That's a no from me.",es:"Eso es un no para mí.",cat:"agree"},
+{en:"Hard pass.",es:"Paso total.",cat:"agree"},
+{en:"I'll pass on that.",es:"Paso de eso.",cat:"agree"},
+{en:"You said it!",es:"¡Tú lo dijiste!",cat:"agree"},
+// ── TIME & PLANS (50) ──
+{en:"I'll be there in a sec.",es:"Llego en un segundo.",cat:"time"},
+{en:"Let me get back to you.",es:"Déjame responderte después.",cat:"time"},
+{en:"Rain check?",es:"¿Lo dejamos para otro día?",cat:"time"},
+{en:"I'm running a little late.",es:"Voy un poco tarde.",cat:"time"},
+{en:"What are you up to later?",es:"¿Qué vas a hacer después?",cat:"time"},
+{en:"I'll swing by around seven.",es:"Me paso como a las siete.",cat:"time"},
+{en:"Something came up.",es:"Me surgió algo.",cat:"time"},
+{en:"Are we still on for tonight?",es:"¿Sigue en pie lo de esta noche?",cat:"time"},
+{en:"Let's play it by ear.",es:"Vamos viendo sobre la marcha.",cat:"time"},
+{en:"I'm free all day.",es:"Estoy libre todo el día.",cat:"time"},
+{en:"I've got plans already.",es:"Ya tengo planes.",cat:"time"},
+{en:"Let's pencil it in.",es:"Vamos agendándolo tentativamente.",cat:"time"},
+{en:"Time flies!",es:"¡El tiempo vuela!",cat:"time"},
+{en:"I lost track of time.",es:"Se me fue el tiempo.",cat:"time"},
+{en:"I'll be right back.",es:"Ya vuelvo.",cat:"time"},
+{en:"What time works for you?",es:"¿A qué hora te queda?",cat:"time"},
+{en:"I'm ahead of schedule.",es:"Voy adelantado.",cat:"time"},
+{en:"Better late than never.",es:"Más vale tarde que nunca.",cat:"time"},
+{en:"Any day now.",es:"Cualquier día de estos.",cat:"time"},
+{en:"It's about time!",es:"¡Ya era hora!",cat:"time"},
+{en:"I'll hit you up later.",es:"Te escribo/hablo después.",cat:"time"},
+{en:"Let's figure it out tomorrow.",es:"Veamos mañana.",cat:"time"},
+{en:"I can't make it today.",es:"No puedo hoy.",cat:"time"},
+{en:"When's a good time?",es:"¿Cuándo es buen momento?",cat:"time"},
+{en:"Maybe next time.",es:"Quizás la próxima.",cat:"time"},
+{en:"In the meantime...",es:"Mientras tanto...",cat:"time"},
+{en:"Let's wrap it up.",es:"Terminemos ya.",cat:"time"},
+{en:"I'm on my way.",es:"Voy en camino.",cat:"time"},
+{en:"How long will it take?",es:"¿Cuánto va a tardar?",cat:"time"},
+{en:"I've been meaning to call you.",es:"He querido llamarte.",cat:"time"},
+{en:"We should hang out sometime.",es:"Deberíamos salir algún día.",cat:"time"},
+{en:"I overslept.",es:"Me quedé dormido.",cat:"time"},
+{en:"I pulled an all-nighter.",es:"Me desvelé toda la noche.",cat:"time"},
+{en:"Don't wait up for me.",es:"No me esperes despierto.",cat:"time"},
+{en:"I've got a packed schedule.",es:"Tengo la agenda llena.",cat:"time"},
+{en:"Let's take it one day at a time.",es:"Vamos día con día.",cat:"time"},
+{en:"It's getting late.",es:"Se está haciendo tarde.",cat:"time"},
+{en:"I need a minute.",es:"Necesito un momento.",cat:"time"},
+{en:"Right away!",es:"¡Enseguida!",cat:"time"},
+{en:"Just a heads up...",es:"Solo para avisarte...",cat:"time"},
+{en:"I'll let you know ASAP.",es:"Te aviso lo más pronto posible.",cat:"time"},
+{en:"Let's keep it short.",es:"Seamos breves.",cat:"time"},
+{en:"I won't be long.",es:"No tardo.",cat:"time"},
+{en:"Let me check my calendar.",es:"Déjame revisar mi calendario.",cat:"time"},
+{en:"We're running out of time.",es:"Se nos acaba el tiempo.",cat:"time"},
+{en:"Hold on a second.",es:"Espera un segundo.",cat:"time"},
+{en:"I'll be there before you know it.",es:"Llego antes de que te des cuenta.",cat:"time"},
+{en:"It's been ages!",es:"¡Ha pasado un siglo!",cat:"time"},
+{en:"I'll keep you posted.",es:"Te mantengo informado.",cat:"time"},
+{en:"Let's call it a night.",es:"Dejémoslo por esta noche.",cat:"time"},
+// ── FEELINGS (50) ──
+{en:"I'm over the moon!",es:"¡Estoy feliz de la vida!",cat:"feelings"},
+{en:"I'm feeling under the weather.",es:"Me siento mal.",cat:"feelings"},
+{en:"I'm on cloud nine!",es:"¡Estoy en las nubes de felicidad!",cat:"feelings"},
+{en:"I'm stressed out.",es:"Estoy estresado.",cat:"feelings"},
+{en:"I couldn't care less.",es:"Me vale / Me da igual.",cat:"feelings"},
+{en:"That really gets on my nerves.",es:"Eso realmente me saca de quicio.",cat:"feelings"},
+{en:"I'm fed up with this.",es:"Estoy harto de esto.",cat:"feelings"},
+{en:"I'm having a blast!",es:"¡La estoy pasando increíble!",cat:"feelings"},
+{en:"I feel like a million bucks!",es:"¡Me siento de maravilla!",cat:"feelings"},
+{en:"I'm bummed out.",es:"Estoy desanimado.",cat:"feelings"},
+{en:"It breaks my heart.",es:"Me parte el corazón.",cat:"feelings"},
+{en:"I'm on edge.",es:"Estoy nervioso/tenso.",cat:"feelings"},
+{en:"I'm at a loss for words.",es:"No tengo palabras.",cat:"feelings"},
+{en:"I'm freaking out!",es:"¡Estoy en pánico!",cat:"feelings"},
+{en:"I feel drained.",es:"Me siento agotado.",cat:"feelings"},
+{en:"I'm pumped!",es:"¡Estoy emocionado!",cat:"feelings"},
+{en:"I couldn't be happier.",es:"No podría ser más feliz.",cat:"feelings"},
+{en:"It's driving me crazy.",es:"Me está volviendo loco.",cat:"feelings"},
+{en:"I'm torn between the two.",es:"Estoy dividido entre los dos.",cat:"feelings"},
+{en:"I've got butterflies in my stomach.",es:"Tengo mariposas en el estómago.",cat:"feelings"},
+{en:"I'm so done.",es:"Ya no puedo más.",cat:"feelings"},
+{en:"I feel like crap.",es:"Me siento fatal.",cat:"feelings"},
+{en:"I'm hanging in there.",es:"Ahí la llevo.",cat:"feelings"},
+{en:"I'm thrilled!",es:"¡Estoy emocionadísimo!",cat:"feelings"},
+{en:"I'm having second thoughts.",es:"Estoy teniendo dudas.",cat:"feelings"},
+{en:"I feel so out of place.",es:"Me siento fuera de lugar.",cat:"feelings"},
+{en:"I'm dying to know!",es:"¡Me muero por saber!",cat:"feelings"},
+{en:"I'm at peace with it.",es:"Estoy en paz con eso.",cat:"feelings"},
+{en:"I'm sick and tired of it.",es:"Estoy harto de eso.",cat:"feelings"},
+{en:"I'm overwhelmed.",es:"Estoy abrumado.",cat:"feelings"},
+{en:"I feel left out.",es:"Me siento excluido.",cat:"feelings"},
+{en:"My heart sank.",es:"Se me fue el alma al piso.",cat:"feelings"},
+{en:"I'm homesick.",es:"Extraño mi casa.",cat:"feelings"},
+{en:"I'm grateful for that.",es:"Estoy agradecido por eso.",cat:"feelings"},
+{en:"I'm losing my mind!",es:"¡Estoy perdiendo la cabeza!",cat:"feelings"},
+{en:"I feel alive!",es:"¡Me siento vivo!",cat:"feelings"},
+{en:"I've got mixed feelings.",es:"Tengo sentimientos encontrados.",cat:"feelings"},
+{en:"I'm scared to death.",es:"Estoy muerto de miedo.",cat:"feelings"},
+{en:"That warms my heart.",es:"Eso me llena el corazón.",cat:"feelings"},
+{en:"I'm in a good mood today.",es:"Estoy de buen humor hoy.",cat:"feelings"},
+{en:"I can't stand it.",es:"No lo soporto.",cat:"feelings"},
+{en:"I'm touched.",es:"Estoy conmovido.",cat:"feelings"},
+{en:"I feel inspired.",es:"Me siento inspirado.",cat:"feelings"},
+{en:"I'm burning out.",es:"Me estoy quemando (burnout).",cat:"feelings"},
+{en:"I'm walking on air.",es:"Estoy flotando de felicidad.",cat:"feelings"},
+{en:"I feel suffocated.",es:"Me siento sofocado.",cat:"feelings"},
+{en:"I'm on top of the world!",es:"¡Estoy en la cima del mundo!",cat:"feelings"},
+{en:"I'm at my breaking point.",es:"Estoy en mi punto límite.",cat:"feelings"},
+{en:"My blood is boiling.",es:"Me hierve la sangre.",cat:"feelings"},
+{en:"I'm feeling nostalgic.",es:"Estoy nostálgico.",cat:"feelings"},
+// ── ADVICE & OPINIONS (50) ──
+{en:"If I were you, I'd...",es:"Si yo fuera tú, yo...",cat:"advice"},
+{en:"You should definitely try it.",es:"Definitivamente deberías probarlo.",cat:"advice"},
+{en:"Take it from me.",es:"Te lo digo por experiencia.",cat:"advice"},
+{en:"Don't overthink it.",es:"No le des tantas vueltas.",cat:"advice"},
+{en:"Trust your gut.",es:"Confía en tu instinto.",cat:"advice"},
+{en:"It's not the end of the world.",es:"No es el fin del mundo.",cat:"advice"},
+{en:"You've got nothing to lose.",es:"No tienes nada que perder.",cat:"advice"},
+{en:"Just go for it!",es:"¡Solo hazlo!",cat:"advice"},
+{en:"Take your time.",es:"Tómate tu tiempo.",cat:"advice"},
+{en:"Think it through.",es:"Piénsalo bien.",cat:"advice"},
+{en:"You'll figure it out.",es:"Lo vas a resolver.",cat:"advice"},
+{en:"Don't sweat it.",es:"No te agüites.",cat:"advice"},
+{en:"It'll work out.",es:"Va a salir bien.",cat:"advice"},
+{en:"Keep your chin up.",es:"No te desanimes.",cat:"advice"},
+{en:"Look on the bright side.",es:"Mira el lado positivo.",cat:"advice"},
+{en:"That's easier said than done.",es:"Es más fácil decirlo que hacerlo.",cat:"advice"},
+{en:"In my honest opinion...",es:"En mi humilde opinión...",cat:"advice"},
+{en:"If you ask me...",es:"Si me preguntas a mí...",cat:"advice"},
+{en:"I'd say go with option A.",es:"Yo diría que vayas con la opción A.",cat:"advice"},
+{en:"You might want to reconsider.",es:"Quizás quieras reconsiderar.",cat:"advice"},
+{en:"Word of advice...",es:"Un consejo...",cat:"advice"},
+{en:"Don't beat yourself up.",es:"No seas tan duro contigo mismo.",cat:"advice"},
+{en:"Everything happens for a reason.",es:"Todo pasa por algo.",cat:"advice"},
+{en:"Just sleep on it.",es:"Consúltalo con la almohada.",cat:"advice"},
+{en:"It is what it is.",es:"Es lo que es.",cat:"advice"},
+{en:"Better safe than sorry.",es:"Más vale prevenir.",cat:"advice"},
+{en:"The way I see it...",es:"Como yo lo veo...",cat:"advice"},
+{en:"You do you.",es:"Tú haz lo tuyo.",cat:"advice"},
+{en:"No pain, no gain.",es:"Sin dolor no hay ganancia.",cat:"advice"},
+{en:"Hang in there.",es:"Aguanta / Resiste.",cat:"advice"},
+{en:"Let it go.",es:"Déjalo ir.",cat:"advice"},
+{en:"You've got this!",es:"¡Tú puedes!",cat:"advice"},
+{en:"One step at a time.",es:"Un paso a la vez.",cat:"advice"},
+{en:"Don't take it personally.",es:"No te lo tomes personal.",cat:"advice"},
+{en:"What's meant to be will be.",es:"Lo que tenga que ser, será.",cat:"advice"},
+{en:"Actions speak louder than words.",es:"Las acciones hablan más que las palabras.",cat:"advice"},
+{en:"Pick your battles.",es:"Elige tus batallas.",cat:"advice"},
+{en:"When in doubt, don't.",es:"En caso de duda, no lo hagas.",cat:"advice"},
+{en:"You reap what you sow.",es:"Cosechas lo que siembras.",cat:"advice"},
+{en:"It's now or never.",es:"Es ahora o nunca.",cat:"advice"},
+{en:"Stay in your lane.",es:"Quédate en lo tuyo.",cat:"advice"},
+{en:"Mind your own business.",es:"Métete en tus asuntos.",cat:"advice"},
+{en:"Keep an open mind.",es:"Mantén la mente abierta.",cat:"advice"},
+{en:"Don't burn bridges.",es:"No quemes puentes.",cat:"advice"},
+{en:"Knowledge is power.",es:"El conocimiento es poder.",cat:"advice"},
+{en:"Practice makes perfect.",es:"La práctica hace al maestro.",cat:"advice"},
+{en:"There's no shortcut to success.",es:"No hay atajo para el éxito.",cat:"advice"},
+{en:"Fake it till you make it.",es:"Fíngelo hasta que lo logres.",cat:"advice"},
+{en:"The ball's in your court.",es:"La decisión es tuya.",cat:"advice"},
+{en:"Don't count your chickens before they hatch.",es:"No vendas la piel del oso antes de cazarlo.",cat:"advice"},
+// ── WORK & MONEY (50) ──
+{en:"I clocked in early today.",es:"Entré temprano al trabajo hoy.",cat:"work"},
+{en:"I'm swamped at work.",es:"Estoy ahogado de trabajo.",cat:"work"},
+{en:"I got laid off.",es:"Me despidieron.",cat:"work"},
+{en:"I'm looking to make a career change.",es:"Busco un cambio de carrera.",cat:"work"},
+{en:"Let's circle back on that.",es:"Retomemos eso después.",cat:"work"},
+{en:"I'll loop you in.",es:"Te incluyo en la conversación.",cat:"work"},
+{en:"We need to crunch the numbers.",es:"Necesitamos revisar los números.",cat:"work"},
+{en:"I got a raise!",es:"¡Me dieron un aumento!",cat:"work"},
+{en:"The meeting ran over.",es:"La junta se extendió.",cat:"work"},
+{en:"I'm pulling a double shift.",es:"Estoy haciendo turno doble.",cat:"work"},
+{en:"Money doesn't grow on trees.",es:"El dinero no crece en los árboles.",cat:"work"},
+{en:"I'm living paycheck to paycheck.",es:"Vivo de quincena en quincena.",cat:"work"},
+{en:"That's a rip-off!",es:"¡Eso es un robo!",cat:"work"},
+{en:"I'm saving up for a car.",es:"Estoy ahorrando para un carro.",cat:"work"},
+{en:"I'm on a tight budget.",es:"Tengo un presupuesto ajustado.",cat:"work"},
+{en:"It's not worth the money.",es:"No vale la pena el dinero.",cat:"work"},
+{en:"I'm broke.",es:"Estoy quebrado / sin dinero.",cat:"work"},
+{en:"Can you spot me twenty bucks?",es:"¿Me prestas veinte dólares?",cat:"work"},
+{en:"I owe you one.",es:"Te debo una.",cat:"work"},
+{en:"Let me pick up the tab.",es:"Yo pago la cuenta.",cat:"work"},
+{en:"We're in the red.",es:"Estamos en números rojos.",cat:"work"},
+{en:"Business is booming!",es:"¡El negocio va viento en popa!",cat:"work"},
+{en:"I need to hustle.",es:"Necesito chambear duro.",cat:"work"},
+{en:"That's a steal!",es:"¡Es una ganga!",cat:"work"},
+{en:"I'm putting in my two weeks' notice.",es:"Voy a dar mi aviso de renuncia.",cat:"work"},
+{en:"Let's cut to the chase.",es:"Vamos al grano.",cat:"work"},
+{en:"I've got a lot on my plate.",es:"Tengo mucho entre manos.",cat:"work"},
+{en:"I need to step up my game.",es:"Necesito echarle más ganas.",cat:"work"},
+{en:"I'm burnt out.",es:"Estoy quemado / agotado.",cat:"work"},
+{en:"The grind never stops.",es:"La chamba no para.",cat:"work"},
+{en:"I nailed the interview!",es:"¡Me fue genial en la entrevista!",cat:"work"},
+{en:"I'm calling in sick today.",es:"Voy a reportarme enfermo hoy.",cat:"work"},
+{en:"Let's touch base next week.",es:"Hablemos la próxima semana.",cat:"work"},
+{en:"I dropped the ball on that.",es:"La regué en eso.",cat:"work"},
+{en:"He threw me under the bus.",es:"Me echó la culpa.",cat:"work"},
+{en:"I'm going the extra mile.",es:"Estoy haciendo un esfuerzo extra.",cat:"work"},
+{en:"Time to think outside the box.",es:"Hora de pensar fuera de la caja.",cat:"work"},
+{en:"We're on the same page.",es:"Estamos en la misma sintonía.",cat:"work"},
+{en:"Back to the drawing board.",es:"De vuelta al principio.",cat:"work"},
+{en:"Let's get the ball rolling.",es:"Pongamos las cosas en marcha.",cat:"work"},
+{en:"I got a promotion!",es:"¡Me ascendieron!",cat:"work"},
+{en:"I'll take care of it.",es:"Yo me encargo.",cat:"work"},
+{en:"That's above my pay grade.",es:"Eso no me toca a mí.",cat:"work"},
+{en:"I'm overqualified for this.",es:"Estoy sobrecalificado para esto.",cat:"work"},
+{en:"Let's brainstorm.",es:"Hagamos lluvia de ideas.",cat:"work"},
+{en:"I'm clocking out.",es:"Ya salgo del trabajo.",cat:"work"},
+{en:"I need a mental health day.",es:"Necesito un día para salud mental.",cat:"work"},
+{en:"I landed my dream job!",es:"¡Conseguí el trabajo de mis sueños!",cat:"work"},
+{en:"Side hustle pays the bills.",es:"El trabajo extra paga las cuentas.",cat:"work"},
+{en:"I'm self-employed.",es:"Soy mi propio jefe.",cat:"work"},
+// ── SOCIAL LIFE (50) ──
+{en:"Let's grab a drink.",es:"Vamos por un trago.",cat:"social"},
+{en:"I'm throwing a party this weekend.",es:"Voy a hacer una fiesta este fin.",cat:"social"},
+{en:"Wanna hang out?",es:"¿Quieres salir?",cat:"social"},
+{en:"That was a blast!",es:"¡Estuvo increíble!",cat:"social"},
+{en:"I'll introduce you to my friends.",es:"Te presento a mis amigos.",cat:"social"},
+{en:"We should do this more often.",es:"Deberíamos hacer esto más seguido.",cat:"social"},
+{en:"It's on me tonight.",es:"Yo invito esta noche.",cat:"social"},
+{en:"He's such a party animal.",es:"Es bien fiestero.",cat:"social"},
+{en:"She's the life of the party.",es:"Ella es el alma de la fiesta.",cat:"social"},
+{en:"I'm a homebody.",es:"Soy de casa / casero.",cat:"social"},
+{en:"Let's keep it low-key.",es:"Hagamos algo tranquilo.",cat:"social"},
+{en:"I'll bring the snacks.",es:"Yo llevo los bocadillos.",cat:"social"},
+{en:"That place was packed!",es:"¡Ese lugar estaba lleno!",cat:"social"},
+{en:"We had such a good time.",es:"La pasamos muy bien.",cat:"social"},
+{en:"I'm going to sit this one out.",es:"Yo paso de esta.",cat:"social"},
+{en:"Don't be a stranger!",es:"¡No seas un extraño! / ¡No desaparezcas!",cat:"social"},
+{en:"It's been a while!",es:"¡Ha pasado un rato!",cat:"social"},
+{en:"Let's catch up over coffee.",es:"Pongámonos al día con un café.",cat:"social"},
+{en:"I can't stay long.",es:"No me puedo quedar mucho.",cat:"social"},
+{en:"The more, the merrier!",es:"¡Entre más, mejor!",cat:"social"},
+{en:"I'm not in the mood to go out.",es:"No tengo ganas de salir.",cat:"social"},
+{en:"Let me tag along!",es:"¡Déjame ir con ustedes!",cat:"social"},
+{en:"I'm gonna call it a night.",es:"Ya me voy a dormir.",cat:"social"},
+{en:"Let's hit the town!",es:"¡Salgamos de fiesta!",cat:"social"},
+{en:"I had an amazing time.",es:"La pasé increíble.",cat:"social"},
+{en:"It was nice catching up.",es:"Estuvo bien ponernos al día.",cat:"social"},
+{en:"Are you coming to the barbecue?",es:"¿Vas a venir a la carne asada?",cat:"social"},
+{en:"I'm having people over.",es:"Voy a tener gente en mi casa.",cat:"social"},
+{en:"Let's take a group photo.",es:"Tomemos una foto grupal.",cat:"social"},
+{en:"He ghosted me.",es:"Me dejó de hablar / Me ghosteó.",cat:"social"},
+{en:"We hit it off right away.",es:"Conectamos de inmediato.",cat:"social"},
+{en:"She stood me up.",es:"Me dejó plantado.",cat:"social"},
+{en:"Let's make plans.",es:"Hagamos planes.",cat:"social"},
+{en:"I'm so glad you came!",es:"¡Qué bueno que viniste!",cat:"social"},
+{en:"Thanks for having me.",es:"Gracias por invitarme.",cat:"social"},
+{en:"We should get together soon.",es:"Deberíamos juntarnos pronto.",cat:"social"},
+{en:"I'll save you a seat.",es:"Te guardo un lugar.",cat:"social"},
+{en:"Let's split the bill.",es:"Dividamos la cuenta.",cat:"social"},
+{en:"The vibe was amazing.",es:"La vibra estaba increíble.",cat:"social"},
+{en:"It was a total disaster.",es:"Fue un desastre total.",cat:"social"},
+{en:"I'll pick you up at eight.",es:"Paso por ti a las ocho.",cat:"social"},
+{en:"Give me a ride?",es:"¿Me das un aventón?",cat:"social"},
+{en:"I need to crash early tonight.",es:"Necesito acostarme temprano hoy.",cat:"social"},
+{en:"Let's do brunch on Sunday.",es:"Hagamos brunch el domingo.",cat:"social"},
+{en:"I RSVPed already.",es:"Ya confirmé asistencia.",cat:"social"},
+{en:"I'll make it up to you.",es:"Te lo voy a compensar.",cat:"social"},
+{en:"Count me in!",es:"¡Cuenta conmigo!",cat:"social"},
+{en:"Count me out.",es:"Yo paso.",cat:"social"},
+{en:"I'm pregaming at Jake's.",es:"Estoy tomando antes en casa de Jake.",cat:"social"},
+{en:"Let's bar hop.",es:"Vamos de bar en bar.",cat:"social"},
+// ── TRANSITIONS (50) ──
+{en:"Anyway...",es:"En fin...",cat:"transitions"},
+{en:"By the way...",es:"Por cierto...",cat:"transitions"},
+{en:"Speaking of which...",es:"Hablando de eso...",cat:"transitions"},
+{en:"On a different note...",es:"Cambiando de tema...",cat:"transitions"},
+{en:"Long story short...",es:"En resumen...",cat:"transitions"},
+{en:"At the end of the day...",es:"Al final del día...",cat:"transitions"},
+{en:"Here's the thing...",es:"El punto es...",cat:"transitions"},
+{en:"As I was saying...",es:"Como decía...",cat:"transitions"},
+{en:"First of all...",es:"Primero que nada...",cat:"transitions"},
+{en:"On top of that...",es:"Además de eso...",cat:"transitions"},
+{en:"Not to mention...",es:"Sin mencionar...",cat:"transitions"},
+{en:"For what it's worth...",es:"Para lo que valga...",cat:"transitions"},
+{en:"Bottom line is...",es:"En pocas palabras...",cat:"transitions"},
+{en:"The thing is...",es:"La cosa es que...",cat:"transitions"},
+{en:"Come to think of it...",es:"Ahora que lo pienso...",cat:"transitions"},
+{en:"All things considered...",es:"Considerando todo...",cat:"transitions"},
+{en:"Truth be told...",es:"A decir verdad...",cat:"transitions"},
+{en:"Believe it or not...",es:"Lo creas o no...",cat:"transitions"},
+{en:"In other words...",es:"En otras palabras...",cat:"transitions"},
+{en:"That being said...",es:"Dicho esto...",cat:"transitions"},
+{en:"On a side note...",es:"Como nota aparte...",cat:"transitions"},
+{en:"As far as I know...",es:"Hasta donde yo sé...",cat:"transitions"},
+{en:"More importantly...",es:"Más importante aún...",cat:"transitions"},
+{en:"For instance...",es:"Por ejemplo...",cat:"transitions"},
+{en:"In the meantime...",es:"Mientras tanto...",cat:"transitions"},
+{en:"On the other hand...",es:"Por otro lado...",cat:"transitions"},
+{en:"Having said that...",es:"Habiendo dicho eso...",cat:"transitions"},
+{en:"As a matter of fact...",es:"De hecho...",cat:"transitions"},
+{en:"Either way...",es:"De cualquier forma...",cat:"transitions"},
+{en:"To be fair...",es:"Para ser justo...",cat:"transitions"},
+{en:"Needless to say...",es:"No hace falta decir...",cat:"transitions"},
+{en:"In a nutshell...",es:"En pocas palabras...",cat:"transitions"},
+{en:"To make matters worse...",es:"Para empeorar las cosas...",cat:"transitions"},
+{en:"Ironically enough...",es:"Irónicamente...",cat:"transitions"},
+{en:"Funnily enough...",es:"Curiosamente...",cat:"transitions"},
+{en:"Last but not least...",es:"Por último pero no menos importante...",cat:"transitions"},
+{en:"Aside from that...",es:"Aparte de eso...",cat:"transitions"},
+{en:"What I'm trying to say is...",es:"Lo que trato de decir es...",cat:"transitions"},
+{en:"That reminds me...",es:"Eso me recuerda...",cat:"transitions"},
+{en:"Going back to what I said...",es:"Volviendo a lo que dije...",cat:"transitions"},
+{en:"In any case...",es:"En todo caso...",cat:"transitions"},
+{en:"As it turns out...",es:"Resulta que...",cat:"transitions"},
+{en:"So basically...",es:"Entonces básicamente...",cat:"transitions"},
+{en:"Let me put it this way...",es:"Déjame ponerlo así...",cat:"transitions"},
+{en:"Now that you mention it...",es:"Ahora que lo mencionas...",cat:"transitions"},
+{en:"Moving on...",es:"Continuando...",cat:"transitions"},
+{en:"With that in mind...",es:"Con eso en mente...",cat:"transitions"},
+{en:"Not gonna lie...",es:"No te voy a mentir...",cat:"transitions"},
+{en:"Honestly speaking...",es:"Hablando honestamente...",cat:"transitions"},
+{en:"All jokes aside...",es:"Dejando las bromas de lado...",cat:"transitions"},
+// ── POLITE & FORMAL (50) ──
+{en:"I really appreciate it.",es:"Lo aprecio mucho.",cat:"polite"},
+{en:"That's very kind of you.",es:"Eso es muy amable de tu parte.",cat:"polite"},
+{en:"I didn't mean to bother you.",es:"No quise molestarte.",cat:"polite"},
+{en:"Would you mind if I...?",es:"¿Te importaría si yo...?",cat:"polite"},
+{en:"Please don't hesitate to ask.",es:"No dudes en preguntar.",cat:"polite"},
+{en:"I'm sorry for the inconvenience.",es:"Disculpa por la molestia.",cat:"polite"},
+{en:"It was a pleasure meeting you.",es:"Fue un placer conocerte.",cat:"polite"},
+{en:"I hope I'm not interrupting.",es:"Espero no estar interrumpiendo.",cat:"polite"},
+{en:"After you.",es:"Después de usted.",cat:"polite"},
+{en:"No worries at all.",es:"No te preocupes para nada.",cat:"polite"},
+{en:"I owe you an apology.",es:"Te debo una disculpa.",cat:"polite"},
+{en:"I didn't mean it that way.",es:"No lo quise decir así.",cat:"polite"},
+{en:"I hope you don't mind.",es:"Espero que no te importe.",cat:"polite"},
+{en:"That means a lot to me.",es:"Eso significa mucho para mí.",cat:"polite"},
+{en:"I'd be happy to help.",es:"Con gusto te ayudo.",cat:"polite"},
+{en:"Please take your time.",es:"Tómate tu tiempo, por favor.",cat:"polite"},
+{en:"Allow me to explain.",es:"Permíteme explicar.",cat:"polite"},
+{en:"I completely understand.",es:"Entiendo completamente.",cat:"polite"},
+{en:"Thank you for your patience.",es:"Gracias por tu paciencia.",cat:"polite"},
+{en:"It won't happen again.",es:"No volverá a pasar.",cat:"polite"},
+{en:"My sincerest apologies.",es:"Mis más sinceras disculpas.",cat:"polite"},
+{en:"I'll keep that in mind.",es:"Lo tendré en cuenta.",cat:"polite"},
+{en:"Please, go ahead.",es:"Por favor, adelante.",cat:"polite"},
+{en:"Let me know if you need anything.",es:"Avísame si necesitas algo.",cat:"polite"},
+{en:"I look forward to hearing from you.",es:"Espero tener noticias tuyas.",cat:"polite"},
+{en:"It's the least I can do.",es:"Es lo menos que puedo hacer.",cat:"polite"},
+{en:"I couldn't have done it without you.",es:"No habría podido sin ti.",cat:"polite"},
+{en:"You shouldn't have!",es:"¡No te hubieras molestado!",cat:"polite"},
+{en:"I'm truly grateful.",es:"Estoy verdaderamente agradecido.",cat:"polite"},
+{en:"Please accept my condolences.",es:"Acepta mis condolencias.",cat:"polite"},
+{en:"You have my word.",es:"Tienes mi palabra.",cat:"polite"},
+{en:"Rest assured.",es:"Ten la seguridad.",cat:"polite"},
+{en:"Pardon me.",es:"Disculpe.",cat:"polite"},
+{en:"I beg your pardon?",es:"¿Disculpa? / ¿Perdón?",cat:"polite"},
+{en:"With all due respect...",es:"Con todo respeto...",cat:"polite"},
+{en:"I'd rather not, if you don't mind.",es:"Preferiría no hacerlo, si no te importa.",cat:"polite"},
+{en:"Please, don't go to any trouble.",es:"Por favor, no te molestes.",cat:"polite"},
+{en:"That won't be necessary.",es:"Eso no será necesario.",cat:"polite"},
+{en:"I'm afraid I can't make it.",es:"Me temo que no puedo ir.",cat:"polite"},
+{en:"If it's not too much trouble...",es:"Si no es mucha molestia...",cat:"polite"},
+{en:"I'd like to express my gratitude.",es:"Quisiera expresar mi gratitud.",cat:"polite"},
+{en:"Much obliged.",es:"Muy agradecido.",cat:"polite"},
+{en:"Do you happen to know...?",es:"¿De casualidad sabes...?",cat:"polite"},
+{en:"I was wondering if...",es:"Me preguntaba si...",cat:"polite"},
+{en:"I hope everything works out.",es:"Espero que todo salga bien.",cat:"polite"},
+{en:"Please send my regards.",es:"Por favor manda mis saludos.",cat:"polite"},
+{en:"Thank you for having me.",es:"Gracias por recibirme.",cat:"polite"},
+{en:"I don't want to impose.",es:"No quiero imponer.",cat:"polite"},
+{en:"That's so thoughtful of you.",es:"Qué detalle de tu parte.",cat:"polite"},
+{en:"I'm honored.",es:"Me siento honrado.",cat:"polite"},
+
+// ═══════════════════ 500 QUESTIONS ═══════════════════
+// ── GETTING TO KNOW (50) ──
+{en:"What do you do for a living?",es:"¿A qué te dedicas?",cat:"qbasic"},
+{en:"Where did you grow up?",es:"¿Dónde creciste?",cat:"qbasic"},
+{en:"How long have you lived here?",es:"¿Cuánto tiempo has vivido aquí?",cat:"qbasic"},
+{en:"Do you have any brothers or sisters?",es:"¿Tienes hermanos o hermanas?",cat:"qbasic"},
+{en:"What's your favorite thing to do on weekends?",es:"¿Qué es lo que más te gusta hacer los fines?",cat:"qbasic"},
+{en:"Are you from around here?",es:"¿Eres de por aquí?",cat:"qbasic"},
+{en:"What brought you here?",es:"¿Qué te trajo aquí?",cat:"qbasic"},
+{en:"How's your family doing?",es:"¿Cómo está tu familia?",cat:"qbasic"},
+{en:"What are your hobbies?",es:"¿Cuáles son tus hobbies?",cat:"qbasic"},
+{en:"Do you have any pets?",es:"¿Tienes mascotas?",cat:"qbasic"},
+{en:"Where do you see yourself in five years?",es:"¿Dónde te ves en cinco años?",cat:"qbasic"},
+{en:"What's your biggest pet peeve?",es:"¿Qué es lo que más te molesta?",cat:"qbasic"},
+{en:"Are you a morning person or a night owl?",es:"¿Eres madrugador o noctámbulo?",cat:"qbasic"},
+{en:"What kind of music are you into?",es:"¿Qué tipo de música te gusta?",cat:"qbasic"},
+{en:"Have you traveled much?",es:"¿Has viajado mucho?",cat:"qbasic"},
+{en:"What's the best advice anyone ever gave you?",es:"¿Cuál es el mejor consejo que te han dado?",cat:"qbasic"},
+{en:"What are you passionate about?",es:"¿Qué te apasiona?",cat:"qbasic"},
+{en:"Do you speak any other languages?",es:"¿Hablas otros idiomas?",cat:"qbasic"},
+{en:"What's your dream vacation?",es:"¿Cuáles son tus vacaciones soñadas?",cat:"qbasic"},
+{en:"If you could live anywhere, where would it be?",es:"Si pudieras vivir donde sea, ¿dónde sería?",cat:"qbasic"},
+{en:"What's something most people don't know about you?",es:"¿Qué es algo que la mayoría no sabe de ti?",cat:"qbasic"},
+{en:"What's your go-to comfort food?",es:"¿Cuál es tu comida de confort?",cat:"qbasic"},
+{en:"Are you an introvert or an extrovert?",es:"¿Eres introvertido o extrovertido?",cat:"qbasic"},
+{en:"What's the last show you binge-watched?",es:"¿Cuál es la última serie que maratoneaste?",cat:"qbasic"},
+{en:"What would you do if you won the lottery?",es:"¿Qué harías si te ganaras la lotería?",cat:"qbasic"},
+{en:"Do you believe in love at first sight?",es:"¿Crees en el amor a primera vista?",cat:"qbasic"},
+{en:"What's your biggest fear?",es:"¿Cuál es tu mayor miedo?",cat:"qbasic"},
+{en:"What are you most grateful for?",es:"¿Por qué estás más agradecido?",cat:"qbasic"},
+{en:"What's the craziest thing you've ever done?",es:"¿Cuál es la cosa más loca que has hecho?",cat:"qbasic"},
+{en:"Who's your role model?",es:"¿Quién es tu modelo a seguir?",cat:"qbasic"},
+{en:"What's your guilty pleasure?",es:"¿Cuál es tu placer culposo?",cat:"qbasic"},
+{en:"Do you have a bucket list?",es:"¿Tienes una lista de cosas por hacer antes de morir?",cat:"qbasic"},
+{en:"What was your childhood like?",es:"¿Cómo fue tu infancia?",cat:"qbasic"},
+{en:"What's your zodiac sign?",es:"¿Cuál es tu signo zodiacal?",cat:"qbasic"},
+{en:"Are you superstitious?",es:"¿Eres supersticioso?",cat:"qbasic"},
+{en:"What's your love language?",es:"¿Cuál es tu lenguaje del amor?",cat:"qbasic"},
+{en:"What keeps you up at night?",es:"¿Qué te quita el sueño?",cat:"qbasic"},
+{en:"If you could have dinner with anyone, who would it be?",es:"Si pudieras cenar con cualquier persona, ¿quién sería?",cat:"qbasic"},
+{en:"What's your favorite childhood memory?",es:"¿Cuál es tu recuerdo favorito de la infancia?",cat:"qbasic"},
+{en:"Do you believe in ghosts?",es:"¿Crees en los fantasmas?",cat:"qbasic"},
+{en:"What's on your playlist right now?",es:"¿Qué tienes en tu playlist ahora?",cat:"qbasic"},
+{en:"Are you a cat person or a dog person?",es:"¿Eres de gatos o de perros?",cat:"qbasic"},
+{en:"What's your hidden talent?",es:"¿Cuál es tu talento oculto?",cat:"qbasic"},
+{en:"What's your favorite holiday?",es:"¿Cuál es tu día festivo favorito?",cat:"qbasic"},
+{en:"Do you cook often?",es:"¿Cocinas seguido?",cat:"qbasic"},
+{en:"What's your favorite movie of all time?",es:"¿Cuál es tu película favorita de todos los tiempos?",cat:"qbasic"},
+{en:"Are you a coffee or tea person?",es:"¿Eres de café o de té?",cat:"qbasic"},
+{en:"What's the best book you've ever read?",es:"¿Cuál es el mejor libro que has leído?",cat:"qbasic"},
+{en:"How do you usually spend your evenings?",es:"¿Cómo pasas tus noches normalmente?",cat:"qbasic"},
+{en:"What's something you'd love to learn?",es:"¿Qué es algo que te encantaría aprender?",cat:"qbasic"},
+// ── DAILY LIFE Q (50) ──
+{en:"What time do you usually wake up?",es:"¿A qué hora te despiertas normalmente?",cat:"qdaily"},
+{en:"How was your day?",es:"¿Cómo te fue hoy?",cat:"qdaily"},
+{en:"Did you sleep well last night?",es:"¿Dormiste bien anoche?",cat:"qdaily"},
+{en:"What are you having for dinner?",es:"¿Qué vas a cenar?",cat:"qdaily"},
+{en:"What did you do today?",es:"¿Qué hiciste hoy?",cat:"qdaily"},
+{en:"How's the traffic today?",es:"¿Cómo está el tráfico hoy?",cat:"qdaily"},
+{en:"What's the weather like today?",es:"¿Cómo está el clima hoy?",cat:"qdaily"},
+{en:"Did you work out today?",es:"¿Hiciste ejercicio hoy?",cat:"qdaily"},
+{en:"What are you watching these days?",es:"¿Qué estás viendo últimamente?",cat:"qdaily"},
+{en:"Have you eaten yet?",es:"¿Ya comiste?",cat:"qdaily"},
+{en:"Do you need anything from the store?",es:"¿Necesitas algo de la tienda?",cat:"qdaily"},
+{en:"What time do you usually go to bed?",es:"¿A qué hora te acuestas normalmente?",cat:"qdaily"},
+{en:"How do you get to work?",es:"¿Cómo llegas al trabajo?",cat:"qdaily"},
+{en:"Is everything okay?",es:"¿Todo está bien?",cat:"qdaily"},
+{en:"What are you up to this weekend?",es:"¿Qué vas a hacer este fin de semana?",cat:"qdaily"},
+{en:"Did you remember to lock the door?",es:"¿Te acordaste de cerrar la puerta?",cat:"qdaily"},
+{en:"Can you pick up some milk?",es:"¿Puedes comprar leche?",cat:"qdaily"},
+{en:"What time is your appointment?",es:"¿A qué hora es tu cita?",cat:"qdaily"},
+{en:"Did you take the dog for a walk?",es:"¿Sacaste al perro a pasear?",cat:"qdaily"},
+{en:"How long have you been waiting?",es:"¿Cuánto tiempo llevas esperando?",cat:"qdaily"},
+{en:"Do you want me to drive?",es:"¿Quieres que yo maneje?",cat:"qdaily"},
+{en:"What's for breakfast?",es:"¿Qué hay de desayunar?",cat:"qdaily"},
+{en:"Did you pay the electric bill?",es:"¿Pagaste la cuenta de la luz?",cat:"qdaily"},
+{en:"Where did I put my keys?",es:"¿Dónde puse mis llaves?",cat:"qdaily"},
+{en:"Is there anything good on TV?",es:"¿Hay algo bueno en la tele?",cat:"qdaily"},
+{en:"Can you turn down the music?",es:"¿Puedes bajarle a la música?",cat:"qdaily"},
+{en:"Who's picking up the kids?",es:"¿Quién recoge a los niños?",cat:"qdaily"},
+{en:"Are you done with the bathroom?",es:"¿Ya terminaste en el baño?",cat:"qdaily"},
+{en:"What time does the game start?",es:"¿A qué hora empieza el juego?",cat:"qdaily"},
+{en:"Do you have cash on you?",es:"¿Traes efectivo?",cat:"qdaily"},
+{en:"When was the last time you cleaned your room?",es:"¿Cuándo fue la última vez que limpiaste tu cuarto?",cat:"qdaily"},
+{en:"What's your Wi-Fi password?",es:"¿Cuál es la contraseña del Wi-Fi?",cat:"qdaily"},
+{en:"Do you want to order food?",es:"¿Quieres pedir comida?",cat:"qdaily"},
+{en:"Are you almost ready?",es:"¿Ya casi estás listo?",cat:"qdaily"},
+{en:"Where are we going?",es:"¿A dónde vamos?",cat:"qdaily"},
+{en:"How far is it from here?",es:"¿Qué tan lejos está de aquí?",cat:"qdaily"},
+{en:"What time should I set the alarm?",es:"¿A qué hora pongo la alarma?",cat:"qdaily"},
+{en:"Did you take your medicine?",es:"¿Te tomaste tu medicina?",cat:"qdaily"},
+{en:"Can I borrow your charger?",es:"¿Me prestas tu cargador?",cat:"qdaily"},
+{en:"How's the food?",es:"¿Cómo está la comida?",cat:"qdaily"},
+{en:"Did you get my text?",es:"¿Te llegó mi mensaje?",cat:"qdaily"},
+{en:"What should we have for lunch?",es:"¿Qué comemos?",cat:"qdaily"},
+{en:"Are you still awake?",es:"¿Sigues despierto?",cat:"qdaily"},
+{en:"Do you want the lights on or off?",es:"¿Quieres la luz prendida o apagada?",cat:"qdaily"},
+{en:"Is it supposed to rain today?",es:"¿Se supone que va a llover hoy?",cat:"qdaily"},
+{en:"When's the last day to pay rent?",es:"¿Cuándo es el último día para pagar la renta?",cat:"qdaily"},
+{en:"Can you give me a wake-up call?",es:"¿Me puedes despertar?",cat:"qdaily"},
+{en:"What happened to the leftovers?",es:"¿Qué pasó con la comida que sobró?",cat:"qdaily"},
+{en:"Did you water the plants?",es:"¿Regaste las plantas?",cat:"qdaily"},
+{en:"How much battery do you have left?",es:"¿Cuánta batería te queda?",cat:"qdaily"},
+// ── WORK & SCHOOL Q (50) ──
+{en:"How's work going?",es:"¿Cómo va el trabajo?",cat:"qwork"},
+{en:"When do you get off work?",es:"¿A qué hora sales del trabajo?",cat:"qwork"},
+{en:"Did you finish the project?",es:"¿Terminaste el proyecto?",cat:"qwork"},
+{en:"What's the deadline?",es:"¿Cuándo es la fecha límite?",cat:"qwork"},
+{en:"Who's your boss?",es:"¿Quién es tu jefe?",cat:"qwork"},
+{en:"Do you get along with your coworkers?",es:"¿Te llevas bien con tus compañeros?",cat:"qwork"},
+{en:"What time is the meeting?",es:"¿A qué hora es la junta?",cat:"qwork"},
+{en:"Did you get the email I sent?",es:"¿Recibiste el correo que mandé?",cat:"qwork"},
+{en:"How did the interview go?",es:"¿Cómo te fue en la entrevista?",cat:"qwork"},
+{en:"Are they hiring?",es:"¿Están contratando?",cat:"qwork"},
+{en:"What do you like most about your job?",es:"¿Qué es lo que más te gusta de tu trabajo?",cat:"qwork"},
+{en:"What are you majoring in?",es:"¿Qué estás estudiando?",cat:"qwork"},
+{en:"When do you graduate?",es:"¿Cuándo te gradúas?",cat:"qwork"},
+{en:"How's school going?",es:"¿Cómo te va en la escuela?",cat:"qwork"},
+{en:"Did you study for the test?",es:"¿Estudiaste para el examen?",cat:"qwork"},
+{en:"What grade did you get?",es:"¿Qué calificación sacaste?",cat:"qwork"},
+{en:"Do you have homework tonight?",es:"¿Tienes tarea esta noche?",cat:"qwork"},
+{en:"What class do you have next?",es:"¿Qué clase tienes después?",cat:"qwork"},
+{en:"Are you taking any online courses?",es:"¿Estás tomando cursos en línea?",cat:"qwork"},
+{en:"How many hours do you work a week?",es:"¿Cuántas horas trabajas a la semana?",cat:"qwork"},
+{en:"Do you work weekends?",es:"¿Trabajas los fines de semana?",cat:"qwork"},
+{en:"Have you ever worked from home?",es:"¿Alguna vez has trabajado desde casa?",cat:"qwork"},
+{en:"What's your salary like?",es:"¿Cómo es tu salario?",cat:"qwork"},
+{en:"Do you get benefits?",es:"¿Tienes prestaciones?",cat:"qwork"},
+{en:"How many vacation days do you get?",es:"¿Cuántos días de vacaciones tienes?",cat:"qwork"},
+{en:"Is your job stressful?",es:"¿Tu trabajo es estresante?",cat:"qwork"},
+{en:"Would you recommend your company?",es:"¿Recomendarías tu empresa?",cat:"qwork"},
+{en:"What's the hardest part of your job?",es:"¿Cuál es la parte más difícil de tu trabajo?",cat:"qwork"},
+{en:"Do you see yourself staying long-term?",es:"¿Te ves quedándote a largo plazo?",cat:"qwork"},
+{en:"Have you ever thought about switching careers?",es:"¿Has pensado en cambiar de carrera?",cat:"qwork"},
+{en:"What did you want to be when you grew up?",es:"¿Qué querías ser de grande?",cat:"qwork"},
+{en:"What skills are they looking for?",es:"¿Qué habilidades buscan?",cat:"qwork"},
+{en:"Did you update your resume?",es:"¿Actualizaste tu currículum?",cat:"qwork"},
+{en:"How's the commute to your office?",es:"¿Cómo es el trayecto a tu oficina?",cat:"qwork"},
+{en:"Do you like your professor?",es:"¿Te cae bien tu profesor?",cat:"qwork"},
+{en:"What's the dress code at your job?",es:"¿Cuál es el código de vestimenta?",cat:"qwork"},
+{en:"Can you work remotely?",es:"¿Puedes trabajar remoto?",cat:"qwork"},
+{en:"How did the presentation go?",es:"¿Cómo te fue en la presentación?",cat:"qwork"},
+{en:"Are you thinking about grad school?",es:"¿Estás pensando en la maestría?",cat:"qwork"},
+{en:"What's your GPA?",es:"¿Cuál es tu promedio?",cat:"qwork"},
+{en:"Did you pass the exam?",es:"¿Pasaste el examen?",cat:"qwork"},
+{en:"Who's your favorite teacher?",es:"¿Quién es tu maestro favorito?",cat:"qwork"},
+{en:"Are you applying for a scholarship?",es:"¿Estás solicitando una beca?",cat:"qwork"},
+{en:"How do you manage your time?",es:"¿Cómo manejas tu tiempo?",cat:"qwork"},
+{en:"Did they approve your time off?",es:"¿Te aprobaron tus días libres?",cat:"qwork"},
+{en:"Who's covering for you while you're gone?",es:"¿Quién te cubre mientras no estás?",cat:"qwork"},
+{en:"What software do you use at work?",es:"¿Qué software usan en tu trabajo?",cat:"qwork"},
+{en:"Do you have a mentor?",es:"¿Tienes un mentor?",cat:"qwork"},
+{en:"How's the company culture?",es:"¿Cómo es la cultura de la empresa?",cat:"qwork"},
+{en:"Are you up for a promotion?",es:"¿Estás en candidatura para un ascenso?",cat:"qwork"},
+// ── SOCIAL Q (50) ──
+{en:"Are you seeing anyone?",es:"¿Estás saliendo con alguien?",cat:"qsocial"},
+{en:"How did you two meet?",es:"¿Cómo se conocieron?",cat:"qsocial"},
+{en:"How long have you been together?",es:"¿Cuánto tiempo llevan juntos?",cat:"qsocial"},
+{en:"Do you want to go out this weekend?",es:"¿Quieres salir este fin?",cat:"qsocial"},
+{en:"Who else is coming?",es:"¿Quién más viene?",cat:"qsocial"},
+{en:"What should I wear?",es:"¿Qué me pongo?",cat:"qsocial"},
+{en:"Where should we meet?",es:"¿Dónde nos vemos?",cat:"qsocial"},
+{en:"Have you heard from Sarah lately?",es:"¿Has sabido de Sarah últimamente?",cat:"qsocial"},
+{en:"Did you see what she posted?",es:"¿Viste lo que publicó?",cat:"qsocial"},
+{en:"What's your Instagram?",es:"¿Cuál es tu Instagram?",cat:"qsocial"},
+{en:"Can I get your number?",es:"¿Me das tu número?",cat:"qsocial"},
+{en:"Do you want to be friends?",es:"¿Quieres que seamos amigos?",cat:"qsocial"},
+{en:"What happened between you two?",es:"¿Qué pasó entre ustedes dos?",cat:"qsocial"},
+{en:"Are they still together?",es:"¿Siguen juntos?",cat:"qsocial"},
+{en:"Did you break up?",es:"¿Terminaron?",cat:"qsocial"},
+{en:"Who's that guy?",es:"¿Quién es ese tipo?",cat:"qsocial"},
+{en:"Are you close with your family?",es:"¿Eres cercano a tu familia?",cat:"qsocial"},
+{en:"Do you hang out with your neighbors?",es:"¿Convives con tus vecinos?",cat:"qsocial"},
+{en:"How many people are coming to the party?",es:"¿Cuántas personas van a la fiesta?",cat:"qsocial"},
+{en:"Do you think he likes me?",es:"¿Crees que le gusto?",cat:"qsocial"},
+{en:"What's the drama about?",es:"¿De qué es el chisme?",cat:"qsocial"},
+{en:"Are you on good terms with your ex?",es:"¿Quedaste en buenos términos con tu ex?",cat:"qsocial"},
+{en:"What's the dress code for the event?",es:"¿Cuál es el código de vestimenta del evento?",cat:"qsocial"},
+{en:"Should I bring anything?",es:"¿Llevo algo?",cat:"qsocial"},
+{en:"What are you guys talking about?",es:"¿De qué están hablando?",cat:"qsocial"},
+{en:"Do you know anyone here?",es:"¿Conoces a alguien aquí?",cat:"qsocial"},
+{en:"Can I invite my roommate?",es:"¿Puedo invitar a mi compañero de cuarto?",cat:"qsocial"},
+{en:"How do you know each other?",es:"¿Cómo se conocen?",cat:"qsocial"},
+{en:"Did you RSVP?",es:"¿Confirmaste asistencia?",cat:"qsocial"},
+{en:"Is it a formal event?",es:"¿Es un evento formal?",cat:"qsocial"},
+{en:"What's the vibe like there?",es:"¿Cómo es el ambiente ahí?",cat:"qsocial"},
+{en:"Is it kid-friendly?",es:"¿Es para toda la familia?",cat:"qsocial"},
+{en:"Did you have fun last night?",es:"¿Te divertiste anoche?",cat:"qsocial"},
+{en:"Why didn't you come?",es:"¿Por qué no fuiste?",cat:"qsocial"},
+{en:"Did anyone ask about me?",es:"¿Alguien preguntó por mí?",cat:"qsocial"},
+{en:"What time should I show up?",es:"¿A qué hora llego?",cat:"qsocial"},
+{en:"Is there parking?",es:"¿Hay estacionamiento?",cat:"qsocial"},
+{en:"Should we carpool?",es:"¿Nos vamos juntos en un carro?",cat:"qsocial"},
+{en:"Is this place good for a first date?",es:"¿Este lugar es bueno para una primera cita?",cat:"qsocial"},
+{en:"Want to do a movie night?",es:"¿Hacemos noche de películas?",cat:"qsocial"},
+{en:"Can I add you on Facebook?",es:"¿Te puedo agregar en Facebook?",cat:"qsocial"},
+{en:"Did you get the invite?",es:"¿Te llegó la invitación?",cat:"qsocial"},
+{en:"Are you bringing a plus one?",es:"¿Vas a llevar acompañante?",cat:"qsocial"},
+{en:"When's the last time you saw them?",es:"¿Cuándo fue la última vez que los viste?",cat:"qsocial"},
+{en:"What do people usually do for fun here?",es:"¿Qué hace la gente para divertirse aquí?",cat:"qsocial"},
+{en:"Do you have a best friend?",es:"¿Tienes un mejor amigo?",cat:"qsocial"},
+{en:"Are you an only child?",es:"¿Eres hijo único?",cat:"qsocial"},
+{en:"What's your relationship status?",es:"¿Cuál es tu estado sentimental?",cat:"qsocial"},
+{en:"Did he propose?",es:"¿Le pidió matrimonio?",cat:"qsocial"},
+{en:"When's the wedding?",es:"¿Cuándo es la boda?",cat:"qsocial"},
+// ── TRAVEL Q (50) ──
+{en:"Have you ever been to Europe?",es:"¿Has ido a Europa?",cat:"qtravel"},
+{en:"What's your favorite place you've visited?",es:"¿Cuál es tu lugar favorito que has visitado?",cat:"qtravel"},
+{en:"How long is your trip?",es:"¿Cuánto dura tu viaje?",cat:"qtravel"},
+{en:"Where are you headed?",es:"¿A dónde vas?",cat:"qtravel"},
+{en:"Did you book your hotel yet?",es:"¿Ya reservaste tu hotel?",cat:"qtravel"},
+{en:"Is this your first time here?",es:"¿Es tu primera vez aquí?",cat:"qtravel"},
+{en:"Do you have your passport?",es:"¿Traes tu pasaporte?",cat:"qtravel"},
+{en:"What airline are you flying?",es:"¿En qué aerolínea vuelas?",cat:"qtravel"},
+{en:"Did you check in already?",es:"¿Ya hiciste check-in?",cat:"qtravel"},
+{en:"Is the flight direct?",es:"¿El vuelo es directo?",cat:"qtravel"},
+{en:"How long is the layover?",es:"¿Cuánto dura la escala?",cat:"qtravel"},
+{en:"Did you pack everything?",es:"¿Empacaste todo?",cat:"qtravel"},
+{en:"What gate is your flight?",es:"¿En qué puerta es tu vuelo?",cat:"qtravel"},
+{en:"How was your flight?",es:"¿Cómo estuvo tu vuelo?",cat:"qtravel"},
+{en:"Did you get jet-lagged?",es:"¿Te dio jet lag?",cat:"qtravel"},
+{en:"Where's a good place to eat around here?",es:"¿Dónde es buen lugar para comer por aquí?",cat:"qtravel"},
+{en:"Is it worth visiting?",es:"¿Vale la pena visitarlo?",cat:"qtravel"},
+{en:"Do they take credit cards?",es:"¿Aceptan tarjeta?",cat:"qtravel"},
+{en:"Is it safe to walk here at night?",es:"¿Es seguro caminar aquí de noche?",cat:"qtravel"},
+{en:"Can you recommend a tour?",es:"¿Puedes recomendar un tour?",cat:"qtravel"},
+{en:"How much should I tip?",es:"¿Cuánto debo dejar de propina?",cat:"qtravel"},
+{en:"Do you know any hidden gems?",es:"¿Conoces joyas ocultas?",cat:"qtravel"},
+{en:"What's the best time to visit?",es:"¿Cuál es la mejor época para visitar?",cat:"qtravel"},
+{en:"How do I get to downtown?",es:"¿Cómo llego al centro?",cat:"qtravel"},
+{en:"Is Uber available here?",es:"¿Hay Uber aquí?",cat:"qtravel"},
+{en:"Did you rent a car?",es:"¿Rentaste un carro?",cat:"qtravel"},
+{en:"What's the speed limit here?",es:"¿Cuál es el límite de velocidad aquí?",cat:"qtravel"},
+{en:"Do I need a visa?",es:"¿Necesito visa?",cat:"qtravel"},
+{en:"How much luggage can I bring?",es:"¿Cuánto equipaje puedo llevar?",cat:"qtravel"},
+{en:"What's the check-out time?",es:"¿A qué hora es el check-out?",cat:"qtravel"},
+{en:"Can I get a late checkout?",es:"¿Puedo hacer check-out tarde?",cat:"qtravel"},
+{en:"Does the room have a view?",es:"¿La habitación tiene vista?",cat:"qtravel"},
+{en:"Is there room service?",es:"¿Hay servicio al cuarto?",cat:"qtravel"},
+{en:"Where can I exchange money?",es:"¿Dónde puedo cambiar dinero?",cat:"qtravel"},
+{en:"What's the local currency?",es:"¿Cuál es la moneda local?",cat:"qtravel"},
+{en:"How far is it from the airport?",es:"¿Qué tan lejos está del aeropuerto?",cat:"qtravel"},
+{en:"What time is sunrise?",es:"¿A qué hora sale el sol?",cat:"qtravel"},
+{en:"Are there mosquitoes?",es:"¿Hay mosquitos?",cat:"qtravel"},
+{en:"What should I pack?",es:"¿Qué debería empacar?",cat:"qtravel"},
+{en:"Can you watch my stuff for a second?",es:"¿Me cuidas mis cosas un segundo?",cat:"qtravel"},
+{en:"Where's the nearest pharmacy?",es:"¿Dónde queda la farmacia más cercana?",cat:"qtravel"},
+{en:"How much does a taxi cost?",es:"¿Cuánto cuesta un taxi?",cat:"qtravel"},
+{en:"Is there a student discount?",es:"¿Hay descuento para estudiantes?",cat:"qtravel"},
+{en:"What's the Wi-Fi password?",es:"¿Cuál es la contraseña del Wi-Fi?",cat:"qtravel"},
+{en:"When does the museum close?",es:"¿A qué hora cierra el museo?",cat:"qtravel"},
+{en:"Can I take photos here?",es:"¿Puedo tomar fotos aquí?",cat:"qtravel"},
+{en:"Where's the best view?",es:"¿Dónde está la mejor vista?",cat:"qtravel"},
+{en:"Is tipping expected here?",es:"¿Se espera propina aquí?",cat:"qtravel"},
+{en:"Do you have a travel adapter?",es:"¿Tienes un adaptador de viaje?",cat:"qtravel"},
+{en:"Which terminal is my flight?",es:"¿En qué terminal es mi vuelo?",cat:"qtravel"},
+// ── FOOD & RESTAURANT Q (50) ──
+{en:"What's good here?",es:"¿Qué es bueno aquí?",cat:"qfood"},
+{en:"Can I see the menu?",es:"¿Me da el menú?",cat:"qfood"},
+{en:"What's the special today?",es:"¿Cuál es el especial de hoy?",cat:"qfood"},
+{en:"Is this gluten-free?",es:"¿Esto es libre de gluten?",cat:"qfood"},
+{en:"How spicy is this?",es:"¿Qué tan picante es esto?",cat:"qfood"},
+{en:"Can I get this to go?",es:"¿Me lo puede poner para llevar?",cat:"qfood"},
+{en:"Do you have any vegan options?",es:"¿Tienen opciones veganas?",cat:"qfood"},
+{en:"What's in this dish?",es:"¿Qué lleva este platillo?",cat:"qfood"},
+{en:"Can I substitute the fries for a salad?",es:"¿Puedo cambiar las papas por ensalada?",cat:"qfood"},
+{en:"How long is the wait?",es:"¿Cuánto es la espera?",cat:"qfood"},
+{en:"Do you take reservations?",es:"¿Aceptan reservaciones?",cat:"qfood"},
+{en:"Can we get a booth?",es:"¿Nos puede dar un reservado?",cat:"qfood"},
+{en:"What do you recommend?",es:"¿Qué recomienda?",cat:"qfood"},
+{en:"Is the fish fresh?",es:"¿El pescado es fresco?",cat:"qfood"},
+{en:"Can I get extra sauce on the side?",es:"¿Me puede dar salsa extra aparte?",cat:"qfood"},
+{en:"Are you ready to order?",es:"¿Están listos para ordenar?",cat:"qfood"},
+{en:"What size does it come in?",es:"¿En qué tamaño viene?",cat:"qfood"},
+{en:"Do you deliver?",es:"¿Hacen entregas a domicilio?",cat:"qfood"},
+{en:"What's your favorite restaurant?",es:"¿Cuál es tu restaurante favorito?",cat:"qfood"},
+{en:"Have you tried that new place?",es:"¿Ya fuiste al lugar nuevo?",cat:"qfood"},
+{en:"How do you like your eggs?",es:"¿Cómo te gustan los huevos?",cat:"qfood"},
+{en:"Do you want fries with that?",es:"¿Quieres papas con eso?",cat:"qfood"},
+{en:"Should we split a pizza?",es:"¿Compartimos una pizza?",cat:"qfood"},
+{en:"What's your signature dish?",es:"¿Cuál es su platillo estrella?",cat:"qfood"},
+{en:"Is that homemade?",es:"¿Eso es casero?",cat:"qfood"},
+{en:"Do you have a happy hour?",es:"¿Tienen happy hour?",cat:"qfood"},
+{en:"Can I get a doggy bag?",es:"¿Me da una bolsa para llevar?",cat:"qfood"},
+{en:"What's on tap?",es:"¿Qué cervezas de barril tienen?",cat:"qfood"},
+{en:"Can we get the check?",es:"¿Nos trae la cuenta?",cat:"qfood"},
+{en:"Is gratuity included?",es:"¿La propina está incluida?",cat:"qfood"},
+{en:"Do you have outdoor seating?",es:"¿Tienen mesas afuera?",cat:"qfood"},
+{en:"Can I make a substitution?",es:"¿Puedo hacer una sustitución?",cat:"qfood"},
+{en:"What's your drink of choice?",es:"¿Cuál es tu bebida favorita?",cat:"qfood"},
+{en:"Are you allergic to anything?",es:"¿Eres alérgico a algo?",cat:"qfood"},
+{en:"Do you want to try a bite?",es:"¿Quieres probar un poco?",cat:"qfood"},
+{en:"What kind of dressing do you want?",es:"¿Qué tipo de aderezo quieres?",cat:"qfood"},
+{en:"Is there a kids' menu?",es:"¿Hay menú infantil?",cat:"qfood"},
+{en:"What's the portion size like?",es:"¿De qué tamaño son las porciones?",cat:"qfood"},
+{en:"Do they have good reviews?",es:"¿Tienen buenas reseñas?",cat:"qfood"},
+{en:"Is there a minimum order?",es:"¿Hay pedido mínimo?",cat:"qfood"},
+{en:"Can I customize my order?",es:"¿Puedo personalizar mi pedido?",cat:"qfood"},
+{en:"Do they use MSG?",es:"¿Usan glutamato?",cat:"qfood"},
+{en:"What's the soup of the day?",es:"¿Cuál es la sopa del día?",cat:"qfood"},
+{en:"Do you have decaf?",es:"¿Tienen descafeinado?",cat:"qfood"},
+{en:"How do you want your steak?",es:"¿Cómo quieres tu carne?",cat:"qfood"},
+{en:"Should we get appetizers?",es:"¿Pedimos entradas?",cat:"qfood"},
+{en:"What wine pairs with this?",es:"¿Qué vino va con esto?",cat:"qfood"},
+{en:"Can you make it less sweet?",es:"¿Lo puede hacer menos dulce?",cat:"qfood"},
+{en:"Is there a corkage fee?",es:"¿Cobran descorche?",cat:"qfood"},
+{en:"Want to grab coffee after?",es:"¿Vamos por un café después?",cat:"qfood"},
+// ── OPINIONS Q (50) ──
+{en:"What do you think about that?",es:"¿Qué opinas de eso?",cat:"qopinion"},
+{en:"Do you agree with me?",es:"¿Estás de acuerdo conmigo?",cat:"qopinion"},
+{en:"What's your take on this?",es:"¿Cuál es tu opinión sobre esto?",cat:"qopinion"},
+{en:"How do you feel about it?",es:"¿Cómo te sientes al respecto?",cat:"qopinion"},
+{en:"Would you say it's worth it?",es:"¿Dirías que vale la pena?",cat:"qopinion"},
+{en:"What would you do in my situation?",es:"¿Qué harías en mi situación?",cat:"qopinion"},
+{en:"Do you think I'm making the right decision?",es:"¿Crees que estoy tomando la decisión correcta?",cat:"qopinion"},
+{en:"Is that a good idea?",es:"¿Es una buena idea?",cat:"qopinion"},
+{en:"What are the pros and cons?",es:"¿Cuáles son las ventajas y desventajas?",cat:"qopinion"},
+{en:"Do you think it'll work out?",es:"¿Crees que va a funcionar?",cat:"qopinion"},
+{en:"What's your honest opinion?",es:"¿Cuál es tu opinión honesta?",cat:"qopinion"},
+{en:"Should I go for it?",es:"¿Debería intentarlo?",cat:"qopinion"},
+{en:"Am I overthinking this?",es:"¿Le estoy dando muchas vueltas?",cat:"qopinion"},
+{en:"Does that make sense?",es:"¿Eso tiene sentido?",cat:"qopinion"},
+{en:"Is this too much?",es:"¿Esto es demasiado?",cat:"qopinion"},
+{en:"What would you recommend?",es:"¿Qué recomendarías?",cat:"qopinion"},
+{en:"Do you think I'm wrong?",es:"¿Crees que estoy equivocado?",cat:"qopinion"},
+{en:"Is it too late to change my mind?",es:"¿Es muy tarde para cambiar de opinión?",cat:"qopinion"},
+{en:"What side are you on?",es:"¿De qué lado estás?",cat:"qopinion"},
+{en:"Do you think it's fair?",es:"¿Crees que es justo?",cat:"qopinion"},
+{en:"Which one do you prefer?",es:"¿Cuál prefieres?",cat:"qopinion"},
+{en:"Is it just me, or...?",es:"¿Soy solo yo, o...?",cat:"qopinion"},
+{en:"Don't you think so?",es:"¿No crees?",cat:"qopinion"},
+{en:"What's the best way to handle this?",es:"¿Cuál es la mejor forma de manejar esto?",cat:"qopinion"},
+{en:"Am I being unreasonable?",es:"¿Estoy siendo irrazonable?",cat:"qopinion"},
+{en:"Should I say something?",es:"¿Debería decir algo?",cat:"qopinion"},
+{en:"Do you think they're right?",es:"¿Crees que tienen razón?",cat:"qopinion"},
+{en:"What's the catch?",es:"¿Cuál es la trampa?",cat:"qopinion"},
+{en:"Is it too good to be true?",es:"¿Es demasiado bueno para ser verdad?",cat:"qopinion"},
+{en:"What's the worst that could happen?",es:"¿Qué es lo peor que puede pasar?",cat:"qopinion"},
+{en:"Do you think it matters?",es:"¿Crees que importa?",cat:"qopinion"},
+{en:"What's the point of that?",es:"¿Cuál es el punto de eso?",cat:"qopinion"},
+{en:"Is there a better option?",es:"¿Hay una mejor opción?",cat:"qopinion"},
+{en:"Would you trust them?",es:"¿Les tendrías confianza?",cat:"qopinion"},
+{en:"How important is this to you?",es:"¿Qué tan importante es esto para ti?",cat:"qopinion"},
+{en:"Do you think I should apologize?",es:"¿Crees que debería disculparme?",cat:"qopinion"},
+{en:"What message does that send?",es:"¿Qué mensaje da eso?",cat:"qopinion"},
+{en:"Is that normal?",es:"¿Eso es normal?",cat:"qopinion"},
+{en:"What are the chances?",es:"¿Cuáles son las probabilidades?",cat:"qopinion"},
+{en:"Does this look good on me?",es:"¿Se me ve bien esto?",cat:"qopinion"},
+{en:"Should I be worried?",es:"¿Debería preocuparme?",cat:"qopinion"},
+{en:"Is this a red flag?",es:"¿Esto es una bandera roja?",cat:"qopinion"},
+{en:"Do you think I can pull it off?",es:"¿Crees que lo pueda lograr?",cat:"qopinion"},
+{en:"What do you make of it?",es:"¿Qué entiendes de eso?",cat:"qopinion"},
+{en:"Can you see both sides?",es:"¿Puedes ver ambos lados?",cat:"qopinion"},
+{en:"What's the right thing to do?",es:"¿Cuál es lo correcto?",cat:"qopinion"},
+{en:"Is it okay to feel this way?",es:"¿Está bien sentirse así?",cat:"qopinion"},
+{en:"Do you think age matters?",es:"¿Crees que la edad importa?",cat:"qopinion"},
+{en:"What would your parents say?",es:"¿Qué dirían tus papás?",cat:"qopinion"},
+{en:"Have you made up your mind?",es:"¿Ya tomaste una decisión?",cat:"qopinion"},
+// ── HELP & REQUESTS Q (50) ──
+{en:"Can you do me a favor?",es:"¿Me haces un favor?",cat:"qhelp"},
+{en:"Could you help me with something?",es:"¿Me podrías ayudar con algo?",cat:"qhelp"},
+{en:"Do you mind if I sit here?",es:"¿Te molesta si me siento aquí?",cat:"qhelp"},
+{en:"Could you pass me that?",es:"¿Me pasas eso?",cat:"qhelp"},
+{en:"Would you mind closing the window?",es:"¿Te importaría cerrar la ventana?",cat:"qhelp"},
+{en:"Can you explain that to me?",es:"¿Me lo puedes explicar?",cat:"qhelp"},
+{en:"Do you have a pen I can borrow?",es:"¿Tienes una pluma que me prestes?",cat:"qhelp"},
+{en:"Could you speak up a little?",es:"¿Podrías hablar un poco más fuerte?",cat:"qhelp"},
+{en:"Would it be okay if I left early?",es:"¿Estaría bien si me voy temprano?",cat:"qhelp"},
+{en:"Is there anything I can do?",es:"¿Hay algo que pueda hacer?",cat:"qhelp"},
+{en:"Do you need a hand?",es:"¿Necesitas ayuda?",cat:"qhelp"},
+{en:"Can you hold this for a second?",es:"¿Me sostienes esto un segundo?",cat:"qhelp"},
+{en:"Could you give me directions?",es:"¿Me podrías dar indicaciones?",cat:"qhelp"},
+{en:"Would you mind watching my bag?",es:"¿Te importaría cuidar mi bolsa?",cat:"qhelp"},
+{en:"Can I use your phone for a sec?",es:"¿Puedo usar tu teléfono un momento?",cat:"qhelp"},
+{en:"Could you translate this for me?",es:"¿Me podrías traducir esto?",cat:"qhelp"},
+{en:"Do you know how to fix this?",es:"¿Sabes cómo arreglar esto?",cat:"qhelp"},
+{en:"Can you show me how it works?",es:"¿Me puedes enseñar cómo funciona?",cat:"qhelp"},
+{en:"Would you be willing to help?",es:"¿Estarías dispuesto a ayudar?",cat:"qhelp"},
+{en:"Could I trouble you for a minute?",es:"¿Te puedo molestar un minuto?",cat:"qhelp"},
+{en:"Is it okay to ask you something?",es:"¿Está bien si te pregunto algo?",cat:"qhelp"},
+{en:"Can you keep a secret?",es:"¿Puedes guardar un secreto?",cat:"qhelp"},
+{en:"Would you mind moving over?",es:"¿Te importaría moverte?",cat:"qhelp"},
+{en:"Can I get a second opinion?",es:"¿Puedo pedir una segunda opinión?",cat:"qhelp"},
+{en:"Do you know where I can find...?",es:"¿Sabes dónde puedo encontrar...?",cat:"qhelp"},
+{en:"Could you remind me later?",es:"¿Me puedes recordar después?",cat:"qhelp"},
+{en:"Would you mind repeating that?",es:"¿Te importaría repetir eso?",cat:"qhelp"},
+{en:"Can you take a picture of us?",es:"¿Nos puedes tomar una foto?",cat:"qhelp"},
+{en:"Could you drop me off here?",es:"¿Me puedes dejar aquí?",cat:"qhelp"},
+{en:"Do you happen to have a tissue?",es:"¿De casualidad tienes un pañuelo?",cat:"qhelp"},
+{en:"Can you proofread this for me?",es:"¿Me puedes revisar esto?",cat:"qhelp"},
+{en:"Would you mind turning the heat up?",es:"¿Te importaría subir la calefacción?",cat:"qhelp"},
+{en:"Could you check if it's open?",es:"¿Podrías checar si está abierto?",cat:"qhelp"},
+{en:"Can you cover for me?",es:"¿Me puedes cubrir?",cat:"qhelp"},
+{en:"Do you mind if I tag along?",es:"¿Te importa si voy con ustedes?",cat:"qhelp"},
+{en:"Could you keep it down?",es:"¿Podrías bajarle al ruido?",cat:"qhelp"},
+{en:"Would it be possible to reschedule?",es:"¿Sería posible reprogramar?",cat:"qhelp"},
+{en:"Can I leave this here?",es:"¿Puedo dejar esto aquí?",cat:"qhelp"},
+{en:"Could I get your Wi-Fi password?",es:"¿Me das tu contraseña de Wi-Fi?",cat:"qhelp"},
+{en:"Would you mind driving?",es:"¿Te importaría manejar?",cat:"qhelp"},
+{en:"Can you forward me that email?",es:"¿Me puedes reenviar ese correo?",cat:"qhelp"},
+{en:"Do you mind if I open the window?",es:"¿Te molesta si abro la ventana?",cat:"qhelp"},
+{en:"Could you save my spot?",es:"¿Me guardas mi lugar?",cat:"qhelp"},
+{en:"Can I get some water?",es:"¿Me da agua?",cat:"qhelp"},
+{en:"Would you be able to pick me up?",es:"¿Podrías pasar por mí?",cat:"qhelp"},
+{en:"Could I borrow your car?",es:"¿Me prestas tu carro?",cat:"qhelp"},
+{en:"Can you walk me through it?",es:"¿Me lo puedes explicar paso a paso?",cat:"qhelp"},
+{en:"Do you know a good mechanic?",es:"¿Conoces un buen mecánico?",cat:"qhelp"},
+{en:"Could you scoot over?",es:"¿Te puedes recorrer?",cat:"qhelp"},
+{en:"Would you mind not smoking here?",es:"¿Te importaría no fumar aquí?",cat:"qhelp"},
+// ── SHOPPING Q (50) ──
+{en:"How much is this?",es:"¿Cuánto cuesta esto?",cat:"qshop"},
+{en:"Do you have this in a different size?",es:"¿Lo tienen en otra talla?",cat:"qshop"},
+{en:"Can I try this on?",es:"¿Me lo puedo probar?",cat:"qshop"},
+{en:"Where's the fitting room?",es:"¿Dónde está el probador?",cat:"qshop"},
+{en:"Do you have this in blue?",es:"¿Lo tienen en azul?",cat:"qshop"},
+{en:"Is this on sale?",es:"¿Esto está en oferta?",cat:"qshop"},
+{en:"What's your return policy?",es:"¿Cuál es su política de devolución?",cat:"qshop"},
+{en:"Do you price match?",es:"¿Igualan precios?",cat:"qshop"},
+{en:"Is there a warranty?",es:"¿Tiene garantía?",cat:"qshop"},
+{en:"Can I pay with my phone?",es:"¿Puedo pagar con el teléfono?",cat:"qshop"},
+{en:"Do you have any discounts?",es:"¿Tienen algún descuento?",cat:"qshop"},
+{en:"Where's the checkout counter?",es:"¿Dónde está la caja?",cat:"qshop"},
+{en:"Can you hold this for me?",es:"¿Me lo puede apartar?",cat:"qshop"},
+{en:"Is this the latest model?",es:"¿Este es el modelo más reciente?",cat:"qshop"},
+{en:"Do you have gift cards?",es:"¿Tienen tarjetas de regalo?",cat:"qshop"},
+{en:"Can I get a receipt?",es:"¿Me da un recibo?",cat:"qshop"},
+{en:"When does the sale end?",es:"¿Cuándo termina la oferta?",cat:"qshop"},
+{en:"Is this available online?",es:"¿Esto está disponible en línea?",cat:"qshop"},
+{en:"Do you offer free shipping?",es:"¿Ofrecen envío gratis?",cat:"qshop"},
+{en:"How long will delivery take?",es:"¿Cuánto tarda el envío?",cat:"qshop"},
+{en:"Can I exchange this?",es:"¿Lo puedo cambiar?",cat:"qshop"},
+{en:"Do you have a loyalty program?",es:"¿Tienen programa de lealtad?",cat:"qshop"},
+{en:"Is this tax-free?",es:"¿Esto es libre de impuestos?",cat:"qshop"},
+{en:"What aisle is the cereal in?",es:"¿En qué pasillo está el cereal?",cat:"qshop"},
+{en:"Can I get this gift-wrapped?",es:"¿Lo pueden envolver para regalo?",cat:"qshop"},
+{en:"Do you have a catalog?",es:"¿Tienen catálogo?",cat:"qshop"},
+{en:"What's the best deal you have?",es:"¿Cuál es la mejor oferta que tienen?",cat:"qshop"},
+{en:"Is this buy one get one free?",es:"¿Esto es de 2x1?",cat:"qshop"},
+{en:"Do you carry organic products?",es:"¿Manejan productos orgánicos?",cat:"qshop"},
+{en:"Can I return this without a receipt?",es:"¿Puedo devolver esto sin recibo?",cat:"qshop"},
+{en:"How does the sizing run?",es:"¿Las tallas son grandes o chicas?",cat:"qshop"},
+{en:"Is this full price?",es:"¿Esto es a precio completo?",cat:"qshop"},
+{en:"Do you have a student discount?",es:"¿Tienen descuento de estudiante?",cat:"qshop"},
+{en:"What material is this made of?",es:"¿De qué material es?",cat:"qshop"},
+{en:"Is this waterproof?",es:"¿Esto es a prueba de agua?",cat:"qshop"},
+{en:"Where are the restrooms?",es:"¿Dónde están los baños?",cat:"qshop"},
+{en:"Can I split the payment?",es:"¿Puedo dividir el pago?",cat:"qshop"},
+{en:"Do you accept Apple Pay?",es:"¿Aceptan Apple Pay?",cat:"qshop"},
+{en:"When do you close?",es:"¿A qué hora cierran?",cat:"qshop"},
+{en:"Is this the right size for me?",es:"¿Esta es la talla correcta para mí?",cat:"qshop"},
+{en:"What's the most popular item?",es:"¿Cuál es el artículo más popular?",cat:"qshop"},
+{en:"Can I speak to a manager?",es:"¿Puedo hablar con un gerente?",cat:"qshop"},
+{en:"Is there a waiting list?",es:"¿Hay lista de espera?",cat:"qshop"},
+{en:"Do you match online prices?",es:"¿Igualan precios de internet?",cat:"qshop"},
+{en:"Can I pre-order this?",es:"¿Lo puedo pre-ordenar?",cat:"qshop"},
+{en:"When will you restock?",es:"¿Cuándo vuelven a surtir?",cat:"qshop"},
+{en:"Is there a limit per customer?",es:"¿Hay límite por cliente?",cat:"qshop"},
+{en:"Where's the electronics section?",es:"¿Dónde está la sección de electrónica?",cat:"qshop"},
+{en:"Do you have a bigger bag?",es:"¿Tienen una bolsa más grande?",cat:"qshop"},
+{en:"Can I see that one in the display?",es:"¿Puedo ver ese que está en exhibición?",cat:"qshop"},
+// ── HEALTH Q (50) ──
+{en:"How are you feeling today?",es:"¿Cómo te sientes hoy?",cat:"qhealth"},
+{en:"Does it hurt when I press here?",es:"¿Te duele cuando presiono aquí?",cat:"qhealth"},
+{en:"When did the symptoms start?",es:"¿Cuándo empezaron los síntomas?",cat:"qhealth"},
+{en:"Are you taking any medication?",es:"¿Estás tomando algún medicamento?",cat:"qhealth"},
+{en:"Do you have any allergies?",es:"¿Tienes alguna alergia?",cat:"qhealth"},
+{en:"Have you been sleeping well?",es:"¿Has dormido bien?",cat:"qhealth"},
+{en:"How often do you exercise?",es:"¿Qué tan seguido haces ejercicio?",cat:"qhealth"},
+{en:"Do you have health insurance?",es:"¿Tienes seguro médico?",cat:"qhealth"},
+{en:"When was your last check-up?",es:"¿Cuándo fue tu último chequeo?",cat:"qhealth"},
+{en:"Do you need to see a doctor?",es:"¿Necesitas ver a un doctor?",cat:"qhealth"},
+{en:"Are you eating well?",es:"¿Estás comiendo bien?",cat:"qhealth"},
+{en:"How much water do you drink a day?",es:"¿Cuánta agua tomas al día?",cat:"qhealth"},
+{en:"Do you smoke?",es:"¿Fumas?",cat:"qhealth"},
+{en:"How are your stress levels?",es:"¿Cómo están tus niveles de estrés?",cat:"qhealth"},
+{en:"Is it getting better or worse?",es:"¿Está mejorando o empeorando?",cat:"qhealth"},
+{en:"Did you get your flu shot?",es:"¿Te pusieron la vacuna de la gripe?",cat:"qhealth"},
+{en:"What did the doctor say?",es:"¿Qué dijo el doctor?",cat:"qhealth"},
+{en:"Are you contagious?",es:"¿Eres contagioso?",cat:"qhealth"},
+{en:"When is your next appointment?",es:"¿Cuándo es tu próxima cita?",cat:"qhealth"},
+{en:"Should you be resting?",es:"¿No deberías estar descansando?",cat:"qhealth"},
+{en:"Does this medicine have side effects?",es:"¿Este medicamento tiene efectos secundarios?",cat:"qhealth"},
+{en:"Can I take this on an empty stomach?",es:"¿Puedo tomar esto en ayunas?",cat:"qhealth"},
+{en:"How many times a day should I take it?",es:"¿Cuántas veces al día lo tomo?",cat:"qhealth"},
+{en:"Where does it hurt?",es:"¿Dónde te duele?",cat:"qhealth"},
+{en:"Is it broken or sprained?",es:"¿Está roto o torcido?",cat:"qhealth"},
+{en:"Do you need an X-ray?",es:"¿Necesitas una radiografía?",cat:"qhealth"},
+{en:"Have you had this before?",es:"¿Te ha pasado esto antes?",cat:"qhealth"},
+{en:"How long have you felt this way?",es:"¿Cuánto tiempo te has sentido así?",cat:"qhealth"},
+{en:"Are you keeping hydrated?",es:"¿Te estás manteniendo hidratado?",cat:"qhealth"},
+{en:"Did you eat something bad?",es:"¿Comiste algo que te cayó mal?",cat:"qhealth"},
+{en:"Do you need to go to urgent care?",es:"¿Necesitas ir a urgencias?",cat:"qhealth"},
+{en:"Is the pharmacy open?",es:"¿La farmacia está abierta?",cat:"qhealth"},
+{en:"Can I take Advil for this?",es:"¿Puedo tomar Advil para esto?",cat:"qhealth"},
+{en:"How's your blood pressure?",es:"¿Cómo está tu presión?",cat:"qhealth"},
+{en:"Are you up to date on your vaccines?",es:"¿Estás al corriente con tus vacunas?",cat:"qhealth"},
+{en:"Did you get a second opinion?",es:"¿Pediste una segunda opinión?",cat:"qhealth"},
+{en:"Is the pain constant or comes and goes?",es:"¿El dolor es constante o va y viene?",cat:"qhealth"},
+{en:"How's your mental health?",es:"¿Cómo está tu salud mental?",cat:"qhealth"},
+{en:"Are you getting enough sleep?",es:"¿Estás durmiendo lo suficiente?",cat:"qhealth"},
+{en:"Do you need me to take you to the hospital?",es:"¿Necesitas que te lleve al hospital?",cat:"qhealth"},
+{en:"Have you tried home remedies?",es:"¿Has probado remedios caseros?",cat:"qhealth"},
+{en:"Is it safe to drive on this medication?",es:"¿Es seguro manejar con este medicamento?",cat:"qhealth"},
+{en:"Did you stretch before working out?",es:"¿Estiraste antes de hacer ejercicio?",cat:"qhealth"},
+{en:"When was the last time you ate?",es:"¿Cuándo fue la última vez que comiste?",cat:"qhealth"},
+{en:"Are you feeling any dizziness?",es:"¿Sientes mareo?",cat:"qhealth"},
+{en:"Should I call 911?",es:"¿Llamo al 911?",cat:"qhealth"},
+{en:"Do you have a family history of that?",es:"¿Tienes antecedentes familiares de eso?",cat:"qhealth"},
+{en:"How's your appetite?",es:"¿Cómo está tu apetito?",cat:"qhealth"},
+{en:"Is it a sharp pain or a dull ache?",es:"¿Es un dolor agudo o un dolor sordo?",cat:"qhealth"},
+{en:"Are you feeling better now?",es:"¿Ya te sientes mejor?",cat:"qhealth"},
+];
+
+// ═══════════════════════════════════════════════════════════════
+// STATE & STORAGE
+// ═══════════════════════════════════════════════════════════════
+let starred=new Set(JSON.parse(localStorage.getItem('nt_stars')||'[]'));
+let learned=new Set(JSON.parse(localStorage.getItem('nt_learn')||'[]'));
+let stats=JSON.parse(localStorage.getItem('nt_stats')||'{"attempts":0,"correct":0,"day":"","dayCount":0}');
+const today=new Date().toISOString().slice(0,10);
+if(stats.day!==today){stats.day=today;stats.dayCount=0}
+function saveSt(){localStorage.setItem('nt_stars',JSON.stringify([...starred]))}
+function saveLe(){localStorage.setItem('nt_learn',JSON.stringify([...learned]))}
+function saveSs(){localStorage.setItem('nt_stats',JSON.stringify(stats))}
+
+const MODES=[
+  {id:'browse',l:'📋 Lista'},{id:'daily',l:'📅 Diario'},
+  {id:'flash',l:'🃏 Flash'},{id:'quiz',l:'🧠 Quiz'},
+  {id:'write',l:'✍️ Escribir'},
+];
+const SECS=['all','phrases','questions','starred'];
+
+let S={mode:'browse',sec:'all',cat:'all',page:0,perPage:25,search:'',
+  items:[],idx:0,answers:[],answered:false,flipped:false};
+
+function getFiltered(){
+  let p=[...DATA];
+  if(S.sec==='phrases')p=p.filter(x=>CATS[x.cat]?.sec==='phrases');
+  if(S.sec==='questions')p=p.filter(x=>CATS[x.cat]?.sec==='questions');
+  if(S.sec==='starred')p=DATA.filter((_,i)=>starred.has(i));
+  if(S.cat!=='all')p=p.filter(x=>x.cat===S.cat);
+  return p;
+}
+function catsBySection(){
+  const sec=S.sec;
+  return Object.entries(CATS).filter(([k,v])=>sec==='all'||sec==='starred'||v.sec===sec);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════════
+function R(){rStats();rModes();rFilters();rMain()}
+
+function rStats(){
+  const ph=DATA.filter(x=>CATS[x.cat]?.sec==='phrases').length;
+  const qu=DATA.filter(x=>CATS[x.cat]?.sec==='questions').length;
+  document.getElementById('stats').innerHTML=`
+    <div class="st"><div class="st-n" style="color:var(--ph)">${ph}</div><div class="st-l">Frases</div></div>
+    <div class="st"><div class="st-n" style="color:var(--qu)">${qu}</div><div class="st-l">Preguntas</div></div>
+    <div class="st"><div class="st-n" style="color:var(--ok)">${learned.size}</div><div class="st-l">Aprendidas</div></div>
+    <div class="st"><div class="st-n" style="color:var(--c3)">${stats.dayCount}</div><div class="st-l">Hoy</div></div>
+    <div class="st"><div class="st-n">${starred.size}⭐</div><div class="st-l">Favoritas</div></div>`;
+}
+
+function rModes(){document.getElementById('modes').innerHTML=MODES.map(m=>`<button class="tab ${S.mode===m.id?'on':''}" onclick="setMode('${m.id}')">${m.l}</button>`).join('')}
+
+function rFilters(){
+  const el=document.getElementById('filters');
+  const secBtns=SECS.map(s=>{const on=S.sec===s;
+    const labels={all:`Todos (${DATA.length})`,phrases:`💬 Frases (${DATA.filter(x=>CATS[x.cat]?.sec==='phrases').length})`,
+      questions:`❓ Preguntas (${DATA.filter(x=>CATS[x.cat]?.sec==='questions').length})`,starred:`⭐ (${starred.size})`};
+    const colors={all:'',phrases:on?`border-color:var(--phD);background:var(--phB);color:var(--ph)`:'',
+      questions:on?`border-color:var(--quD);background:var(--quB);color:var(--qu)`:'',starred:on?`border-color:var(--c3D);background:var(--c3B);color:var(--c3)`:''};
+    return`<button class="fp" style="${on&&!colors[s]?'border-color:rgba(255,255,255,.12);background:var(--s3);color:var(--tx)':''}${colors[s]}" onclick="setSec('${s}')">${labels[s]}</button>`;
+  }).join('');
+
+  const cats=catsBySection();
+  const catBtns=cats.length&&S.sec!=='starred'?cats.map(([k,v])=>{const on=S.cat===k;const cnt=DATA.filter(x=>x.cat===k).length;
+    return`<button class="fp" style="${on?`border-color:${v.d};background:${v.b};color:${v.c}`:''}" onclick="setCat('${k}')">${v.icon} ${cnt}</button>`;
+  }).join(''):'';
+
+  el.innerHTML=secBtns+(catBtns?'<span style="margin:0 2px;color:var(--tx3)">|</span>'+catBtns:'');
+}
+
+function rMain(){({browse:rBrowse,daily:rDaily,flash:rFlash,quiz:rQuiz,write:rWrite})[S.mode](document.getElementById('main'))}
+
+// ═══ BROWSE ═══
+function rBrowse(el){
+  let list=getFiltered();
+  if(S.search){const q=S.search.toLowerCase();list=list.filter(x=>x.en.toLowerCase().includes(q)||x.es.toLowerCase().includes(q))}
+  const total=list.length,pages=Math.ceil(total/S.perPage);
+  const page=list.slice(S.page*S.perPage,(S.page+1)*S.perPage);
+
+  el.innerHTML=`<div class="card"><div class="card-h"><div class="card-t">${total} items</div></div><div class="card-b">
+    <input class="srch" placeholder="🔍 Buscar..." value="${S.search}" oninput="S.search=this.value;S.page=0;rMain()">
+    ${page.map(p=>{const gIdx=DATA.indexOf(p);const c=CATS[p.cat]||{};const isQ=c.sec==='questions';const st=starred.has(gIdx);const le=learned.has(gIdx);
+      return`<div class="itm" style="${le?'opacity:.55':''}">
+        <button class="spk" onclick="event.stopPropagation();speak('${esc(p.en)}')">${spkSVG}</button>
+        <span class="cat-dot" style="background:${c.c||'var(--tx3)'}"></span>
+        <div class="en">${isQ?'<span style="color:var(--qu)">Q</span> ':''}${p.en}</div>
+        <div class="es">${p.es}</div>
+        <span class="star ${st?'on':''}" onclick="event.stopPropagation();toggleStar(${gIdx})">${st?'⭐':'☆'}</span>
+      </div>`}).join('')}
+    <div class="pages">
+      <button class="btn btn-sm" ${S.page<=0?'disabled':''} onclick="S.page--;rMain()">←</button>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--tx3)">${S.page+1}/${pages||1}</span>
+      <button class="btn btn-sm" ${S.page>=pages-1?'disabled':''} onclick="S.page++;rMain()">→</button>
+    </div>
+  </div></div>`;
+}
+
+// ═══ DAILY ═══
+function rDaily(el){
+  const pool=DATA.filter((_,i)=>!learned.has(i));
+  const dailyN=15;const items=shuffle(pool).slice(0,dailyN);
+
+  el.innerHTML=`<div class="card"><div class="card-b tc">
+    <div style="font-size:.8rem;color:var(--tx3);margin-bottom:4px">ESTUDIO DIARIO</div>
+    <div class="daily-num" style="color:var(--c3)">${stats.dayCount}</div>
+    <div class="daily-sub">frases estudiadas hoy</div>
+    <div style="font-size:.82rem;color:var(--tx2);margin-bottom:14px">${learned.size} aprendidas de ${DATA.length} total</div>
+    <div style="height:6px;background:var(--s3);border-radius:4px;margin-bottom:16px;overflow:hidden">
+      <div style="height:100%;width:${(learned.size/DATA.length*100).toFixed(1)}%;background:var(--ok);border-radius:4px;transition:width .3s"></div>
+    </div>
+  </div></div>
+  <div class="card"><div class="card-h"><div class="card-t">📅 ${dailyN} frases de hoy</div>
+    <button class="btn btn-sm" onclick="playAll()" style="background:var(--phB);border-color:var(--phD);color:var(--ph)">▶ Todas</button>
+  </div><div class="card-b">
+    ${items.map(p=>{const gIdx=DATA.indexOf(p);const c=CATS[p.cat]||{};const le=learned.has(gIdx);
+      return`<div class="itm">
+        <button class="spk" onclick="speak('${esc(p.en)}')">${spkSVG}</button>
+        <span class="cat-dot" style="background:${c.c||'var(--tx3)'}"></span>
+        <div class="en">${p.en}</div>
+        <div class="es">${p.es}</div>
+        <button class="btn btn-sm ${le?'':'hidden'}" disabled style="color:var(--ok);border-color:var(--okD);font-size:9px">✓</button>
+        <button class="btn btn-sm ${le?'hidden':''}" onclick="markLearned(${gIdx},this)" style="font-size:9px">✓ Ok</button>
+      </div>`}).join('')}
+  </div></div>`;
+  window._dailyItems=items;
+}
+function markLearned(idx,btn){learned.add(idx);stats.dayCount++;saveLe();saveSs();R()}
+function playAll(){const items=window._dailyItems;if(!items)return;let i=0;function next(){if(i>=items.length)return;speak(items[i].en,.8);i++;setTimeout(next,2200)}next()}
+
+// ═══ FLASH ═══
+function initFlash(){S.items=shuffle(getFiltered()).slice(0,20);S.idx=0;S.flipped=false}
+function rFlash(el){
+  if(!S.items.length)initFlash();
+  if(!S.items.length){el.innerHTML='<div class="card"><div class="card-b tc" style="color:var(--tx2)">No hay frases.</div></div>';return}
+  if(S.idx>=S.items.length){el.innerHTML=`<div class="card"><div class="card-b tc"><div style="font-size:1.4rem;margin-bottom:6px">🎉</div><div style="font-weight:700;margin-bottom:12px">Ronda completada</div><div class="btn-row"><button class="btn" style="background:var(--okB);border-color:var(--okD);color:var(--ok)" onclick="S.items=[];rMain()">🔄 Nueva</button></div></div></div>`;return}
+  const p=S.items[S.idx];const c=CATS[p.cat]||{};
+  el.innerHTML=`<div class="card"><div class="card-h"><div class="card-t">${S.idx+1}/${S.items.length}</div>
+    <button class="btn btn-sm" onclick="speak('${esc(p.en)}',.75)">🔊</button></div>
+    <div class="card-b">
+      <div class="prog">${S.items.map((_,i)=>`<div class="prog-d ${i<S.idx?'ok':i===S.idx?'cur':''}"></div>`).join('')}</div>
+      <div class="fc" onclick="S.flipped=!S.flipped;rMain()">
+        ${S.flipped?`<div class="fc-lbl" style="color:${c.c||'var(--tx3)'}">🇺🇸 English</div><div class="fc-main" style="color:${c.c||'var(--tx)'}">${p.en}</div><div class="fc-sub">${p.es}</div>`
+        :`<div class="fc-lbl">🇲🇽 Español</div><div class="fc-main">${p.es}</div><div style="font-size:.78rem;color:var(--tx3);margin-top:10px">Toca para ver en inglés</div>`}
+      </div>
+      <div class="btn-row" style="margin-top:10px">
+        <button class="btn" onclick="S.idx++;S.flipped=false;rMain()">Siguiente →</button>
+        <button class="btn btn-sm" onclick="speak('${esc(p.en)}',.55)">🐢</button>
+        <button class="btn btn-sm" onclick="speak('${esc(p.en)}',1)">🐇</button>
+      </div>
+    </div></div>`;
+  if(S.flipped)speak(p.en,.8);
+}
+
+// ═══ QUIZ ═══
+function initQuiz(){S.items=shuffle(getFiltered()).slice(0,12);S.idx=0;S.answers=[];S.answered=false}
+function rQuiz(el){
+  if(!S.items.length)initQuiz();
+  if(S.idx>=S.items.length){
+    const ok=S.answers.filter(Boolean).length;const pct=Math.round(ok/S.answers.length*100);
+    el.innerHTML=`<div class="card"><div class="card-b tc">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:2.5rem;font-weight:700;color:${pct>=75?'var(--ok)':pct>=50?'var(--c3)':'var(--er)'}">${pct}%</div>
+      <div style="color:var(--tx2);margin:4px 0 14px">${ok}/${S.answers.length}</div>
+      <div class="btn-row"><button class="btn" style="background:var(--okB);border-color:var(--okD);color:var(--ok)" onclick="S.items=[];rMain()">🔄 Nueva</button></div>
+    </div></div>`;return}
+  const p=S.items[S.idx];const prog=S.items.map((_,i)=>i<S.answers.length?(S.answers[i]?'ok':'er'):i===S.idx?'cur':'');
+  let opts=[p.en];const pool=shuffle(DATA.filter(x=>x.en!==p.en));
+  for(const o of pool){if(opts.length>=4)break;if(!opts.includes(o.en))opts.push(o.en)}
+  opts=shuffle(opts);
+  el.innerHTML=`<div class="card"><div class="card-h"><div class="card-t">${S.idx+1}/${S.items.length}</div>
+    <button class="btn btn-sm" onclick="speak('${esc(p.en)}',.8)">🔊</button></div><div class="card-b">
+    <div class="prog">${prog.map(x=>`<div class="prog-d ${x}"></div>`).join('')}</div>
+    <div class="q-p">${p.es}</div>
+    <div class="q-g" id="qO">${opts.map(o=>`<button class="q-o" onclick="aQ(this,${o===p.en},'${esc(p.en)}')">${o}</button>`).join('')}</div>
+    <div class="fb" id="qF"></div>
+    <div class="btn-row"><button class="btn hidden" id="nB" onclick="S.idx++;S.answered=false;rMain()">→</button></div>
+  </div></div>`;
+}
+function aQ(btn,ok,correct){
+  if(S.answered)return;S.answered=true;stats.attempts++;S.answers.push(ok);
+  document.querySelectorAll('#qO .q-o').forEach(o=>{o.classList.add('dis');if(o.textContent===correct)o.classList.add('right')});
+  btn.classList.add(ok?'right':'wrong');
+  const fb=document.getElementById('qF');fb.classList.add('show');
+  fb.style.cssText=ok?'background:var(--okB);border:1px solid var(--okD);color:#86efac':'background:var(--erB);border:1px solid var(--erD);color:#fca5a5';
+  if(ok){stats.correct++;fb.textContent='✅ ¡Correcto!';speak(correct,.85)}
+  else fb.innerHTML='❌ '+correct;
+  document.getElementById('nB').classList.remove('hidden');saveSs();rStats();
+}
+
+// ═══ WRITE ═══
+function initWrite(){S.items=shuffle(getFiltered()).slice(0,10);S.idx=0;S.answers=[];S.answered=false}
+function rWrite(el){
+  if(!S.items.length)initWrite();
+  if(S.idx>=S.items.length){
+    const ok=S.answers.filter(Boolean).length;const pct=Math.round(ok/S.answers.length*100);
+    el.innerHTML=`<div class="card"><div class="card-b tc">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:2.5rem;font-weight:700;color:${pct>=75?'var(--ok)':'var(--er)'}">${pct}%</div>
+      <div style="color:var(--tx2);margin:4px 0 14px">${ok}/${S.answers.length}</div>
+      <div class="btn-row"><button class="btn" style="background:var(--okB);border-color:var(--okD);color:var(--ok)" onclick="S.items=[];rMain()">🔄 Nueva</button></div>
+    </div></div>`;return}
+  const p=S.items[S.idx];const prog=S.items.map((_,i)=>i<S.answers.length?(S.answers[i]?'ok':'er'):i===S.idx?'cur':'');
+  el.innerHTML=`<div class="card"><div class="card-h"><div class="card-t">${S.idx+1}/${S.items.length}</div>
+    <button class="btn btn-sm" onclick="speak('${esc(p.en)}',.6)">🐢 Pista</button></div><div class="card-b">
+    <div class="prog">${prog.map(x=>`<div class="prog-d ${x}"></div>`).join('')}</div>
+    <div class="q-p" style="font-size:.95rem">${p.es}</div>
+    <input class="srch" id="wI" placeholder="Escribe en inglés..." autocomplete="off" spellcheck="false" style="text-align:center;font-size:14px" onkeydown="if(event.key==='Enter'&&!S.answered)cW()">
+    <div class="fb" id="wF"></div>
+    <div class="btn-row" style="margin-top:8px">
+      <button class="btn" id="cB" onclick="cW()" style="background:var(--okB);border-color:var(--okD);color:var(--ok)">✓ Verificar</button>
+      <button class="btn hidden" id="wN" onclick="S.idx++;S.answered=false;rMain()">→</button>
+    </div>
+  </div></div>`;
+  setTimeout(()=>document.getElementById('wI')?.focus(),80);
+}
+function cW(){
+  if(S.answered)return;S.answered=true;stats.attempts++;
+  const p=S.items[S.idx];const inp=document.getElementById('wI');
+  const n=s=>s.toLowerCase().replace(/[^\w\s]/g,'').replace(/\s+/g,' ').trim();
+  const ok=n(inp.value)===n(p.en);S.answers.push(ok);
+  const fb=document.getElementById('wF');fb.classList.add('show');
+  if(ok){stats.correct++;inp.style.borderColor='var(--ok)';fb.style.cssText='background:var(--okB);border:1px solid var(--okD);color:#86efac';fb.textContent='✅ ¡Correcto!';speak(p.en,.85)}
+  else{inp.style.borderColor='var(--er)';inp.style.animation='shake .3s';fb.style.cssText='background:var(--erB);border:1px solid var(--erD);color:#fca5a5';fb.innerHTML='❌ <b>'+p.en+'</b>'}
+  document.getElementById('cB').classList.add('hidden');document.getElementById('wN').classList.remove('hidden');saveSs();rStats();
+}
+
+// ═══ HELPERS ═══
+function esc(s){return s.replace(/'/g,"\\'")}
+function toggleStar(i){starred.has(i)?starred.delete(i):starred.add(i);saveSt();R()}
+function setMode(m){S.mode=m;S.items=[];S.page=0;S.search='';R()}
+function setSec(s){S.sec=s;S.cat='all';S.items=[];S.page=0;R()}
+function setCat(c){S.cat=S.cat===c?'all':c;S.items=[];S.page=0;R()}
+
+R();
+</script>
+</body>
+</html>

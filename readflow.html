@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReadFlow — Text Reader with Word Highlighting</title>
+<link href="https://fonts.googleapis.com/css2?family=General+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#060810;--s1:#0b0e18;--s2:#111623;--s3:#181f32;--s4:#212a42;
+  --accent:#60a5fa;--accent-bg:rgba(96,165,250,.07);--accent-bd:rgba(96,165,250,.22);--accent-glow:rgba(96,165,250,.15);
+  --hi:#fbbf24;--hi-bg:rgba(251,191,36,.12);--hi-bd:rgba(251,191,36,.3);--hi-glow:rgba(251,191,36,.2);
+  --ok:#34d399;--ok-bg:rgba(52,211,153,.07);
+  --tx:#e2e7f1;--tx2:#8b96ae;--tx3:#55627a;--bd:rgba(255,255,255,.05);--r:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'General Sans',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 30% 0%,rgba(96,165,250,.025),transparent 55%),radial-gradient(ellipse at 70% 100%,rgba(251,191,36,.015),transparent 50%);pointer-events:none}
+.app{position:relative;z-index:1;max-width:820px;margin:0 auto;padding:24px 16px 80px}
+
+@keyframes fadeD{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeU{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulseGlow{0%,100%{box-shadow:0 0 0 0 var(--hi-glow)}50%{box-shadow:0 0 20px 4px var(--hi-glow)}}
+
+/* Header */
+.hdr{text-align:center;margin-bottom:28px;animation:fadeD .5s ease}
+.hdr-tag{display:inline-flex;align-items:center;gap:8px;padding:5px 16px;border-radius:100px;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:2.5px;color:var(--tx3);border:1px solid var(--bd);background:var(--s1);margin-bottom:14px}
+.hdr-tag .wave{display:flex;align-items:center;gap:2px;height:14px}
+.hdr-tag .wave span{width:2.5px;border-radius:2px;background:var(--accent);animation:w .6s ease-in-out infinite alternate}
+@keyframes w{0%{height:4px}100%{height:12px}}
+.hdr-tag .wave span:nth-child(1){animation-delay:0s}.hdr-tag .wave span:nth-child(2){animation-delay:.1s}.hdr-tag .wave span:nth-child(3){animation-delay:.2s}.hdr-tag .wave span:nth-child(4){animation-delay:.15s}.hdr-tag .wave span:nth-child(5){animation-delay:.05s}
+.hdr h1{font-size:2.4rem;font-weight:800;letter-spacing:-.5px;margin-bottom:5px}
+.hdr h1 .g{background:linear-gradient(135deg,var(--accent),var(--hi));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hdr p{color:var(--tx2);font-size:.9rem}
+
+/* Card */
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:16px;animation:fadeU .4s ease}
+.card-h{padding:14px 20px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.card-t{font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.8px;color:var(--tx3);display:flex;align-items:center;gap:8px}
+.card-b{padding:20px}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border:1px solid var(--bd);border-radius:12px;background:var(--s2);color:var(--tx2);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
+.btn:hover{background:var(--s3);color:var(--tx);border-color:rgba(255,255,255,.1)}
+.btn svg{width:16px;height:16px}
+.btn-sm{padding:7px 14px;font-size:12px;border-radius:10px}
+.btn-accent{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-accent:hover{background:#4d94f7;border-color:#4d94f7;color:#fff}
+.btn-warn{background:rgba(251,191,36,.1);border-color:rgba(251,191,36,.25);color:var(--hi)}
+.btn-warn:hover{background:rgba(251,191,36,.18)}
+.btn-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+
+/* Textarea */
+.text-area{width:100%;padding:16px 18px;border:1.5px solid var(--bd);border-radius:12px;background:var(--s2);color:var(--tx);font-family:'General Sans',sans-serif;font-size:15px;line-height:1.8;resize:vertical;min-height:140px;outline:none;transition:border-color .25s}
+.text-area:focus{border-color:var(--accent-bd)}
+.text-area::placeholder{color:var(--tx3)}
+
+/* Reader Display */
+.reader{padding:24px;background:var(--s2);border-radius:14px;border:1px solid var(--bd);min-height:160px;line-height:2.2;font-size:1.2rem;font-weight:500;position:relative;transition:all .3s}
+.reader.active{border-color:var(--accent-bd)}
+.reader .word{display:inline;padding:2px 1px;border-radius:4px;transition:all .15s;cursor:pointer}
+.reader .word:hover{color:var(--accent)}
+.reader .word.current{background:var(--hi-bg);color:var(--hi);font-weight:700;border-radius:5px;padding:2px 4px;box-shadow:0 0 12px var(--hi-glow)}
+.reader .word.spoken{color:var(--tx2)}
+.reader .word.upcoming{color:var(--tx)}
+.reader .sent-break{display:block;height:8px}
+
+/* Progress */
+.prog-bar{height:4px;background:var(--s3);border-radius:4px;margin:16px 0 8px;overflow:hidden;cursor:pointer;position:relative}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--hi));border-radius:4px;transition:width .15s ease;position:relative}
+.prog-fill::after{content:'';position:absolute;right:0;top:-4px;width:12px;height:12px;border-radius:50%;background:var(--hi);border:2px solid var(--s1);opacity:0;transition:opacity .2s}
+.prog-bar:hover .prog-fill::after{opacity:1}
+.prog-info{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--tx3)}
+
+/* Controls */
+.controls{display:flex;align-items:center;justify-content:center;gap:10px;margin:18px 0;flex-wrap:wrap}
+.ctrl-btn{width:48px;height:48px;border-radius:50%;border:1.5px solid var(--bd);background:var(--s1);color:var(--tx2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.ctrl-btn:hover{background:var(--s3);color:var(--tx);border-color:rgba(255,255,255,.1)}
+.ctrl-btn svg{width:20px;height:20px}
+.ctrl-play{width:60px;height:60px;background:var(--accent);border-color:var(--accent);color:#fff}
+.ctrl-play:hover{background:#4d94f7;border-color:#4d94f7;transform:scale(1.06)}
+.ctrl-play svg{width:24px;height:24px}
+
+/* Speed & Voice */
+.settings-row{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin:14px 0}
+.setting{display:flex;align-items:center;gap:8px;flex:1;min-width:200px}
+.setting-label{font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--tx3);white-space:nowrap}
+.range-wrap{flex:1;display:flex;align-items:center;gap:8px}
+.range{-webkit-appearance:none;width:100%;height:4px;border-radius:4px;background:var(--s3);outline:none}
+.range::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--accent);cursor:pointer;border:2px solid var(--s1)}
+.range::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--accent);cursor:pointer;border:2px solid var(--s1)}
+.range-val{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--accent);min-width:36px;text-align:right;font-weight:600}
+.voice-select{flex:1;padding:8px 12px;border:1px solid var(--bd);border-radius:10px;background:var(--s2);color:var(--tx);font-family:inherit;font-size:12px;outline:none;cursor:pointer}
+.voice-select:focus{border-color:var(--accent-bd)}
+
+/* Font size control */
+.font-row{display:flex;align-items:center;gap:6px}
+.font-btn{width:32px;height:32px;border-radius:8px;border:1px solid var(--bd);background:var(--s1);color:var(--tx3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;transition:all .15s;font-family:inherit}
+.font-btn:hover{background:var(--s3);color:var(--tx)}
+.font-size-val{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--tx2);min-width:36px;text-align:center}
+
+/* Stats */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:4px}
+@media(max-width:500px){.stats-row{grid-template-columns:repeat(2,1fr)}}
+.stat{text-align:center;padding:12px 8px;background:var(--s2);border-radius:12px;border:1px solid var(--bd)}
+.stat-n{font-family:'IBM Plex Mono',monospace;font-size:1.2rem;font-weight:700}
+.stat-l{font-size:9px;color:var(--tx3);text-transform:uppercase;letter-spacing:1px;margin-top:3px}
+
+/* Examples */
+.examples{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.ex-chip{padding:6px 14px;border-radius:100px;border:1px solid var(--bd);background:var(--s2);font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;color:var(--tx2)}
+.ex-chip:hover{border-color:var(--accent-bd);color:var(--accent);background:var(--accent-bg)}
+
+/* Lang toggle */
+.lang-row{display:flex;gap:5px;margin-bottom:12px}
+.lang-btn{padding:6px 14px;border-radius:100px;border:1.5px solid var(--bd);background:var(--s1);font-size:12px;font-weight:600;cursor:pointer;transition:all .25s;font-family:inherit;color:var(--tx3)}
+.lang-btn.on{background:var(--accent-bg);border-color:var(--accent-bd);color:var(--accent)}
+
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hdr">
+    <div class="hdr-tag">
+      <div class="wave"><span></span><span></span><span></span><span></span><span></span></div>
+      Text Reader
+    </div>
+    <h1>Read<span class="g">Flow</span></h1>
+    <p>Pega cualquier texto y escúchalo con resaltado palabra por palabra</p>
+  </div>
+
+  <!-- Input -->
+  <div class="card" id="inputCard">
+    <div class="card-h">
+      <div class="card-t">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Texto
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="lang-row" style="margin:0">
+          <button class="lang-btn on" id="langEn" onclick="setLang('en-US')">🇺🇸 English</button>
+          <button class="lang-btn" id="langEs" onclick="setLang('es-MX')">🇲🇽 Español</button>
+          <button class="lang-btn" id="langFr" onclick="setLang('fr-FR')">🇫🇷 Français</button>
+        </div>
+      </div>
+    </div>
+    <div class="card-b">
+      <textarea class="text-area" id="textInput" placeholder="Pega o escribe cualquier texto aquí...&#10;&#10;Puede ser un artículo, un párrafo de un libro, lyrics, noticias, o cualquier texto que quieras practicar escuchando."></textarea>
+      <div class="examples">
+        <span style="font-size:11px;color:var(--tx3);padding:6px 0">Ejemplos:</span>
+        <button class="ex-chip" onclick="loadExample('news')">📰 News Article</button>
+        <button class="ex-chip" onclick="loadExample('story')">📖 Short Story</button>
+        <button class="ex-chip" onclick="loadExample('science')">🔬 Science</button>
+        <button class="ex-chip" onclick="loadExample('speech')">🎤 Famous Speech</button>
+        <button class="ex-chip" onclick="loadExample('dialog')">💬 Dialogue</button>
+      </div>
+      <div class="btn-row" style="justify-content:flex-start">
+        <button class="btn btn-accent" onclick="loadText()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Cargar y Leer
+        </button>
+        <button class="btn" onclick="document.getElementById('textInput').value='';document.getElementById('textInput').focus()">🗑 Limpiar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reader -->
+  <div class="card" id="readerCard">
+    <div class="card-h">
+      <div class="card-t">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        Lectura
+        <span id="statusPill" class="hidden" style="padding:3px 10px;border-radius:6px;font-size:9px;font-weight:700;letter-spacing:.5px"></span>
+      </div>
+      <div class="font-row">
+        <button class="font-btn" onclick="changeFontSize(-1)">A−</button>
+        <span class="font-size-val" id="fontVal">20px</span>
+        <button class="font-btn" onclick="changeFontSize(1)">A+</button>
+      </div>
+    </div>
+    <div class="card-b">
+      <div class="reader" id="reader">
+        <span style="color:var(--tx3)">El texto aparecerá aquí con resaltado palabra por palabra...</span>
+      </div>
+
+      <!-- Progress -->
+      <div class="prog-bar" id="progBar" onclick="seekToPosition(event)">
+        <div class="prog-fill" id="progFill" style="width:0%"></div>
+      </div>
+      <div class="prog-info">
+        <span id="progWords">0 / 0 palabras</span>
+        <span id="progTime">~0 min</span>
+      </div>
+
+      <!-- Controls -->
+      <div class="controls">
+        <button class="ctrl-btn" onclick="skipWords(-10)" title="Retroceder 10 palabras">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></svg>
+        </button>
+        <button class="ctrl-btn" onclick="skipWords(-1)" title="Palabra anterior">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <button class="ctrl-btn ctrl-play" id="playBtn" onclick="togglePlay()">
+          <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </button>
+        <button class="ctrl-btn" onclick="skipWords(1)" title="Siguiente palabra">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+        <button class="ctrl-btn" onclick="skipWords(10)" title="Avanzar 10 palabras">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
+        </button>
+        <button class="ctrl-btn" onclick="stopReading()" title="Detener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+        </button>
+      </div>
+
+      <!-- Settings -->
+      <div class="settings-row">
+        <div class="setting">
+          <span class="setting-label">Speed</span>
+          <div class="range-wrap">
+            <input type="range" class="range" id="speedRange" min="0.3" max="2" step="0.05" value="0.85" oninput="updateSpeed(this.value)">
+            <span class="range-val" id="speedVal">0.85×</span>
+          </div>
+        </div>
+        <div class="setting">
+          <span class="setting-label">Voice</span>
+          <select class="voice-select" id="voiceSelect" onchange="selectedVoiceIdx=this.selectedIndex"></select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="card">
+    <div class="card-h"><div class="card-t">Estadísticas</div></div>
+    <div class="card-b">
+      <div class="stats-row" id="statsRow">
+        <div class="stat"><div class="stat-n" id="stTotal">0</div><div class="stat-l">Palabras</div></div>
+        <div class="stat"><div class="stat-n" id="stRead" style="color:var(--ok)">0</div><div class="stat-l">Leídas</div></div>
+        <div class="stat"><div class="stat-n" id="stSpeed" style="color:var(--accent)">0.85×</div><div class="stat-l">Velocidad</div></div>
+        <div class="stat"><div class="stat-n" id="stTime" style="color:var(--hi)">0:00</div><div class="stat-l">Tiempo</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+let words = [];         // Array of word strings
+let wordEls = [];       // Array of DOM elements
+let currentIdx = -1;    // Current word being spoken
+let isPlaying = false;
+let isPaused = false;
+let utterance = null;
+let fontSize = 20;
+let speed = 0.85;
+let selectedVoiceIdx = 0;
+let lang = 'en-US';
+let startTime = 0;
+let timerInterval = null;
+
+// ═══════════════════════════════════════════════════════════
+// EXAMPLES
+// ═══════════════════════════════════════════════════════════
+const EXAMPLES = {
+  news: `The global economy is showing signs of recovery after years of uncertainty. According to recent reports, unemployment rates have dropped significantly in major economies, and consumer confidence is at its highest level since the pandemic began. Experts say that the combination of government stimulus programs and increased vaccination rates has contributed to this positive trend. However, challenges remain, including rising inflation and supply chain disruptions that continue to affect businesses worldwide. Many economists predict that the recovery will be uneven, with some sectors bouncing back faster than others.`,
+  story: `The old lighthouse keeper climbed the spiral staircase one last time. After thirty years of watching over the coast, tonight would be his final night. The beam of light swept across the dark ocean, and he thought about all the ships he had guided safely home. Tomorrow, an automated system would take his place. He sat in his worn chair and listened to the waves crashing against the rocks below. A storm was coming, and the wind howled through the cracks in the ancient walls. He smiled. This was exactly how he wanted to remember it.`,
+  science: `The human brain contains approximately eighty-six billion neurons, each connected to thousands of others through synapses. This vast network enables everything from basic reflexes to complex abstract thought. Recent neuroscience research has revealed that the brain is far more adaptable than previously believed. This property, known as neuroplasticity, means that the brain can reorganize itself by forming new neural connections throughout life. Learning a new language, for instance, physically changes the structure of the brain, increasing the density of gray matter in areas associated with language processing and memory.`,
+  speech: `I have a dream that one day this nation will rise up and live out the true meaning of its creed. We hold these truths to be self-evident, that all men are created equal. I have a dream that one day on the red hills of Georgia, the sons of former slaves and the sons of former slave owners will be able to sit down together at the table of brotherhood. I have a dream that my four little children will one day live in a nation where they will not be judged by the color of their skin but by the content of their character.`,
+  dialog: `"Good morning! How can I help you today?" asked the receptionist with a warm smile. "Hi, I have an appointment with Doctor Johnson at ten thirty," replied Sarah, checking her phone. "Of course, please take a seat in the waiting area. The doctor will be with you shortly." Sarah sat down and picked up a magazine from the table. After a few minutes, a nurse appeared at the door. "Sarah Mitchell?" she called. Sarah stood up and followed the nurse down a long corridor. "How are you feeling today?" the nurse asked. "A bit nervous, to be honest," Sarah admitted. "That is completely normal. Doctor Johnson is wonderful, you are in good hands."`
+};
+
+// ═══════════════════════════════════════════════════════════
+// VOICE SETUP
+// ═══════════════════════════════════════════════════════════
+let voices = [];
+
+function loadVoices() {
+  voices = speechSynthesis.getVoices().filter(v => v.lang.startsWith(lang.substring(0, 2)));
+  if (voices.length === 0) voices = speechSynthesis.getVoices();
+  
+  const sel = document.getElementById('voiceSelect');
+  sel.innerHTML = voices.map((v, i) => 
+    `<option value="${i}" ${v.name.includes('Google') ? 'selected' : ''}>${v.name} (${v.lang})</option>`
+  ).join('');
+  
+  // Auto-select Google voice
+  const gi = voices.findIndex(v => v.name.includes('Google') && v.lang.startsWith(lang.substring(0, 2)));
+  if (gi >= 0) { sel.selectedIndex = gi; selectedVoiceIdx = gi; }
+}
+
+if ('speechSynthesis' in window) {
+  speechSynthesis.onvoiceschanged = loadVoices;
+  setTimeout(loadVoices, 100);
+}
+
+function setLang(l) {
+  lang = l;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('on'));
+  if (l === 'en-US') document.getElementById('langEn').classList.add('on');
+  else if (l === 'es-MX') document.getElementById('langEs').classList.add('on');
+  else if (l === 'fr-FR') document.getElementById('langFr').classList.add('on');
+  loadVoices();
+}
+
+// ═══════════════════════════════════════════════════════════
+// TEXT LOADING
+// ═══════════════════════════════════════════════════════════
+function loadText() {
+  const raw = document.getElementById('textInput').value.trim();
+  if (!raw) return;
+  
+  stopReading();
+  
+  // Split into words preserving punctuation and line breaks
+  const tokens = [];
+  const lines = raw.split('\n');
+  
+  lines.forEach((line, li) => {
+    if (line.trim()) {
+      const lineWords = line.trim().split(/\s+/);
+      lineWords.forEach(w => { if (w) tokens.push(w); });
+    }
+    if (li < lines.length - 1) tokens.push('\n');
+  });
+  
+  words = tokens.filter(t => t !== '\n');
+  
+  // Build reader HTML
+  const reader = document.getElementById('reader');
+  reader.innerHTML = '';
+  wordEls = [];
+  let wordIdx = 0;
+  
+  tokens.forEach(token => {
+    if (token === '\n') {
+      reader.appendChild(document.createElement('br'));
+      return;
+    }
+    const span = document.createElement('span');
+    span.className = 'word upcoming';
+    span.textContent = token + ' ';
+    span.dataset.idx = wordIdx;
+    span.onclick = () => jumpToWord(parseInt(span.dataset.idx));
+    reader.appendChild(span);
+    wordEls.push(span);
+    wordIdx++;
+  });
+  
+  currentIdx = -1;
+  updateProgress();
+  updateStats();
+  
+  document.getElementById('stTotal').textContent = words.length;
+  
+  const estMin = Math.ceil(words.length / (speed * 150));
+  document.getElementById('progTime').textContent = `~${estMin} min`;
+}
+
+function loadExample(key) {
+  document.getElementById('textInput').value = EXAMPLES[key];
+  loadText();
+}
+
+// ═══════════════════════════════════════════════════════════
+// SPEECH SYNTHESIS WITH WORD TRACKING
+// ═══════════════════════════════════════════════════════════
+function speakFromIndex(startIdx) {
+  if (startIdx >= words.length) { stopReading(); return; }
+  
+  // Build text from startIdx to end
+  const textToSpeak = words.slice(startIdx).join(' ');
+  
+  speechSynthesis.cancel();
+  utterance = new SpeechSynthesisUtterance(textToSpeak);
+  utterance.lang = lang;
+  utterance.rate = speed;
+  if (voices[selectedVoiceIdx]) utterance.voice = voices[selectedVoiceIdx];
+  
+  let charOffset = 0;
+  // Pre-calculate char positions for each word
+  const wordPositions = [];
+  let pos = 0;
+  words.slice(startIdx).forEach((w, i) => {
+    wordPositions.push({ start: pos, end: pos + w.length, globalIdx: startIdx + i });
+    pos += w.length + 1; // +1 for space
+  });
+  
+  utterance.onboundary = (e) => {
+    if (e.name === 'word') {
+      // Find which word this charIndex belongs to
+      const ci = e.charIndex;
+      let found = -1;
+      for (let i = 0; i < wordPositions.length; i++) {
+        if (ci >= wordPositions[i].start && ci < wordPositions[i].start + wordPositions[i].end - wordPositions[i].start + 1) {
+          found = wordPositions[i].globalIdx;
+          break;
+        }
+      }
+      // Fallback: just find closest
+      if (found === -1) {
+        let best = 0, bestDist = Infinity;
+        wordPositions.forEach((wp, i) => {
+          const dist = Math.abs(ci - wp.start);
+          if (dist < bestDist) { bestDist = dist; best = wp.globalIdx; }
+        });
+        found = best;
+      }
+      
+      highlightWord(found);
+    }
+  };
+  
+  utterance.onend = () => {
+    if (isPlaying && !isPaused) {
+      // Mark remaining as spoken
+      wordEls.forEach(el => { el.classList.remove('current', 'upcoming'); el.classList.add('spoken'); });
+      currentIdx = words.length;
+      updateProgress();
+      stopReading();
+      setStatus('Completado', 'var(--ok)');
+    }
+  };
+  
+  utterance.onerror = (e) => {
+    if (e.error !== 'canceled' && e.error !== 'interrupted') {
+      console.error('Speech error:', e.error);
+    }
+  };
+  
+  speechSynthesis.speak(utterance);
+}
+
+function highlightWord(idx) {
+  if (idx < 0 || idx >= wordEls.length) return;
+  
+  // Remove current from previous
+  if (currentIdx >= 0 && currentIdx < wordEls.length) {
+    wordEls[currentIdx].classList.remove('current');
+    wordEls[currentIdx].classList.add('spoken');
+  }
+  
+  // Mark all before as spoken
+  for (let i = 0; i < idx; i++) {
+    wordEls[i].classList.remove('current', 'upcoming');
+    wordEls[i].classList.add('spoken');
+  }
+  
+  // Set current
+  wordEls[idx].classList.remove('spoken', 'upcoming');
+  wordEls[idx].classList.add('current');
+  
+  // Scroll into view if needed
+  const el = wordEls[idx];
+  const reader = document.getElementById('reader');
+  const rect = el.getBoundingClientRect();
+  const readerRect = reader.getBoundingClientRect();
+  if (rect.bottom > readerRect.bottom - 20 || rect.top < readerRect.top + 20) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  
+  currentIdx = idx;
+  updateProgress();
+  document.getElementById('stRead').textContent = idx + 1;
+}
+
+// ═══════════════════════════════════════════════════════════
+// PLAYBACK CONTROLS
+// ═══════════════════════════════════════════════════════════
+function togglePlay() {
+  if (!words.length) { loadText(); if (!words.length) return; }
+  
+  if (isPlaying && !isPaused) {
+    // Pause
+    speechSynthesis.pause();
+    isPaused = true;
+    updatePlayButton();
+    setStatus('Pausado', 'var(--hi)');
+    clearInterval(timerInterval);
+  } else if (isPaused) {
+    // Resume
+    speechSynthesis.resume();
+    isPaused = false;
+    updatePlayButton();
+    setStatus('Leyendo...', 'var(--accent)');
+    startTimer();
+  } else {
+    // Start
+    isPlaying = true;
+    isPaused = false;
+    const startFrom = currentIdx >= 0 && currentIdx < words.length ? currentIdx : 0;
+    speakFromIndex(startFrom);
+    updatePlayButton();
+    setStatus('Leyendo...', 'var(--accent)');
+    document.getElementById('reader').classList.add('active');
+    startTime = Date.now();
+    startTimer();
+  }
+}
+
+function stopReading() {
+  speechSynthesis.cancel();
+  isPlaying = false;
+  isPaused = false;
+  updatePlayButton();
+  document.getElementById('reader').classList.remove('active');
+  clearInterval(timerInterval);
+  const pill = document.getElementById('statusPill');
+  pill.classList.add('hidden');
+}
+
+function skipWords(n) {
+  if (!words.length) return;
+  
+  const wasPlaying = isPlaying && !isPaused;
+  const newIdx = Math.max(0, Math.min(words.length - 1, (currentIdx < 0 ? 0 : currentIdx) + n));
+  
+  speechSynthesis.cancel();
+  
+  // Reset all highlights from newIdx
+  wordEls.forEach((el, i) => {
+    el.classList.remove('current', 'spoken', 'upcoming');
+    el.classList.add(i < newIdx ? 'spoken' : 'upcoming');
+  });
+  
+  currentIdx = newIdx;
+  highlightWord(newIdx);
+  
+  if (wasPlaying) {
+    isPlaying = true;
+    isPaused = false;
+    speakFromIndex(newIdx);
+  }
+}
+
+function jumpToWord(idx) {
+  if (!words.length) return;
+  const wasPlaying = isPlaying && !isPaused;
+  
+  speechSynthesis.cancel();
+  
+  wordEls.forEach((el, i) => {
+    el.classList.remove('current', 'spoken', 'upcoming');
+    el.classList.add(i < idx ? 'spoken' : 'upcoming');
+  });
+  
+  currentIdx = idx;
+  highlightWord(idx);
+  
+  if (wasPlaying) {
+    isPlaying = true;
+    isPaused = false;
+    speakFromIndex(idx);
+  }
+}
+
+function seekToPosition(e) {
+  if (!words.length) return;
+  const bar = document.getElementById('progBar');
+  const rect = bar.getBoundingClientRect();
+  const pct = (e.clientX - rect.left) / rect.width;
+  const idx = Math.max(0, Math.min(words.length - 1, Math.round(pct * words.length)));
+  jumpToWord(idx);
+}
+
+// ═══════════════════════════════════════════════════════════
+// UI UPDATES
+// ═══════════════════════════════════════════════════════════
+function updatePlayButton() {
+  const btn = document.getElementById('playIcon');
+  if (isPlaying && !isPaused) {
+    btn.innerHTML = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
+  } else {
+    btn.innerHTML = '<polygon points="5 3 19 12 5 21 5 3"/>';
+  }
+}
+
+function updateProgress() {
+  const pct = words.length ? ((currentIdx + 1) / words.length * 100) : 0;
+  document.getElementById('progFill').style.width = pct + '%';
+  document.getElementById('progWords').textContent = `${Math.max(0, currentIdx + 1)} / ${words.length} palabras`;
+}
+
+function updateSpeed(val) {
+  speed = parseFloat(val);
+  document.getElementById('speedVal').textContent = speed.toFixed(2) + '×';
+  document.getElementById('stSpeed').textContent = speed.toFixed(2) + '×';
+  
+  // Restart at current position with new speed
+  if (isPlaying && !isPaused) {
+    speechSynthesis.cancel();
+    speakFromIndex(currentIdx >= 0 ? currentIdx : 0);
+  }
+}
+
+function changeFontSize(delta) {
+  fontSize = Math.max(12, Math.min(36, fontSize + delta * 2));
+  document.getElementById('reader').style.fontSize = fontSize + 'px';
+  document.getElementById('fontVal').textContent = fontSize + 'px';
+}
+
+function setStatus(text, color) {
+  const pill = document.getElementById('statusPill');
+  pill.textContent = text;
+  pill.style.background = color.replace(')', ',.12)').replace('rgba', 'rgba').replace('var(--accent)', 'rgba(96,165,250,.12)').replace('var(--hi)', 'rgba(251,191,36,.12)').replace('var(--ok)', 'rgba(52,211,153,.12)');
+  pill.style.color = color;
+  pill.classList.remove('hidden');
+}
+
+function updateStats() {
+  document.getElementById('stTotal').textContent = words.length;
+  document.getElementById('stRead').textContent = Math.max(0, currentIdx + 1);
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+  if (!startTime) startTime = Date.now();
+  timerInterval = setInterval(() => {
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    const m = Math.floor(elapsed / 60);
+    const s = elapsed % 60;
+    document.getElementById('stTime').textContent = `${m}:${String(s).padStart(2, '0')}`;
+  }, 1000);
+}
+
+// Init reader font size
+document.getElementById('reader').style.fontSize = fontSize + 'px';
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
+  if (e.code === 'Space') { e.preventDefault(); togglePlay(); }
+  if (e.code === 'ArrowLeft') { e.preventDefault(); skipWords(-1); }
+  if (e.code === 'ArrowRight') { e.preventDefault(); skipWords(1); }
+  if (e.code === 'ArrowUp') { e.preventDefault(); skipWords(-10); }
+  if (e.code === 'ArrowDown') { e.preventDefault(); skipWords(10); }
+  if (e.code === 'Escape') { stopReading(); }
+});
+</script>
+</body>
+</html>

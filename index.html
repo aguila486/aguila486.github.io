@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EnglishHub — Tu Centro de Aprendizaje de Inglés</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#06080f;--s1:#0b1020;--s2:#111830;--s3:#182040;
+  --g1:#22d3ee;--g2:#a78bfa;--g3:#f472b6;--g4:#fbbf24;--g5:#34d399;--g6:#fb923c;--g7:#60a5fa;--g8:#e879f9;
+  --tx:#e8ecf4;--tx2:#8694ab;--tx3:#4f5d74;--bd:rgba(255,255,255,.05);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden}
+
+/* BG effects */
+.bg-orb{position:fixed;border-radius:50%;filter:blur(120px);opacity:.035;pointer-events:none;z-index:0}
+.bg-orb.a{width:600px;height:600px;background:var(--g1);top:-200px;left:-100px}
+.bg-orb.b{width:500px;height:500px;background:var(--g3);bottom:-150px;right:-100px}
+.bg-orb.c{width:400px;height:400px;background:var(--g2);top:40%;left:50%;transform:translateX(-50%)}
+
+.app{position:relative;z-index:1;max-width:1000px;margin:0 auto;padding:30px 16px 80px}
+
+@keyframes fadeDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
+@keyframes pulse-ring{0%{box-shadow:0 0 0 0 rgba(34,211,238,.15)}100%{box-shadow:0 0 0 20px transparent}}
+
+/* Header */
+.hero{text-align:center;padding:40px 0 30px;animation:fadeDown .6s ease}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 16px;border-radius:100px;font-family:'Fira Code',monospace;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:3px;color:var(--g1);border:1px solid rgba(34,211,238,.15);background:rgba(34,211,238,.04);margin-bottom:16px}
+.hero-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--g5);animation:pulse-ring 2s infinite}
+.hero h1{font-size:clamp(2.2rem,5vw,3.2rem);font-weight:800;letter-spacing:-.5px;line-height:1.1;margin-bottom:8px;
+  background:linear-gradient(135deg,var(--g1),var(--g2),var(--g3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{color:var(--tx2);font-size:clamp(.85rem,2vw,1rem);max-width:520px;margin:0 auto;line-height:1.5}
+
+/* Stats bar */
+.stats-bar{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:24px 0 30px;animation:fadeUp .5s ease .1s both}
+.stat-chip{display:flex;align-items:center;gap:6px;padding:8px 16px;background:var(--s1);border:1px solid var(--bd);border-radius:100px}
+.stat-chip b{font-family:'Fira Code',monospace;font-size:.85rem}
+.stat-chip span{font-size:.72rem;color:var(--tx3)}
+
+/* Section headers */
+.sec-h{display:flex;align-items:center;gap:10px;margin:28px 0 14px;animation:fadeUp .4s ease}
+.sec-h .line{flex:1;height:1px;background:linear-gradient(90deg,var(--bd),transparent)}
+.sec-h h2{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;color:var(--tx3);white-space:nowrap}
+
+/* App grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+@media(max-width:400px){.grid{grid-template-columns:1fr}}
+
+.app-card{position:relative;background:var(--s1);border:1px solid var(--bd);border-radius:16px;overflow:hidden;cursor:pointer;transition:all .25s ease;text-decoration:none;color:inherit;display:flex;flex-direction:column}
+.app-card:hover{transform:translateY(-3px);border-color:rgba(255,255,255,.08);box-shadow:0 12px 40px rgba(0,0,0,.3)}
+.app-card:hover .card-glow{opacity:1}
+
+.card-glow{position:absolute;inset:0;opacity:0;transition:opacity .3s;pointer-events:none;border-radius:16px}
+
+.card-top{padding:16px 16px 10px;display:flex;align-items:flex-start;gap:12px}
+.card-icon{width:48px;height:48px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;border:1px solid rgba(255,255,255,.06)}
+.card-meta{flex:1;min-width:0}
+.card-num{font-family:'Fira Code',monospace;font-size:8px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:2px}
+.card-title{font-size:.92rem;font-weight:700;line-height:1.3;margin-bottom:3px}
+.card-desc{font-size:.75rem;color:var(--tx2);line-height:1.4}
+
+.card-bottom{padding:8px 16px 14px;margin-top:auto;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.tag{padding:2px 8px;border-radius:5px;font-size:7.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;border:1px solid rgba(255,255,255,.06);background:var(--s2)}
+
+.card-arrow{position:absolute;top:16px;right:14px;width:24px;height:24px;border-radius:50%;background:var(--s2);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;opacity:0;transition:all .2s;color:var(--tx3)}
+.app-card:hover .card-arrow{opacity:1}
+
+/* Hosting section */
+.hosting{background:var(--s1);border:1px solid var(--bd);border-radius:16px;padding:24px;margin-top:30px;animation:fadeUp .4s ease}
+.hosting h3{font-size:1rem;font-weight:700;margin-bottom:4px}
+.hosting p{font-size:.84rem;color:var(--tx2);line-height:1.6}
+.steps{display:grid;gap:8px;margin-top:14px}
+.step{display:flex;gap:12px;align-items:flex-start;padding:12px;background:var(--s2);border-radius:11px;border:1px solid var(--bd)}
+.step-n{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Fira Code',monospace;font-size:.75rem;font-weight:700;flex-shrink:0}
+.step-t{flex:1}
+.step-t b{font-size:.84rem;display:block;margin-bottom:2px}
+.step-t span{font-size:.78rem;color:var(--tx2);line-height:1.5}
+code{font-family:'Fira Code',monospace;font-size:.78rem;padding:2px 7px;background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.12);border-radius:5px;color:var(--g1)}
+
+/* Footer */
+.foot{text-align:center;margin-top:30px;padding-top:20px;border-top:1px solid var(--bd);color:var(--tx3);font-size:.75rem}
+</style>
+</head>
+<body>
+<div class="bg-orb a"></div><div class="bg-orb b"></div><div class="bg-orb c"></div>
+
+<div class="app">
+  <div class="hero">
+    <div class="hero-badge"><span class="dot"></span> 17 Aplicaciones · 100% Gratis</div>
+    <h1>EnglishHub</h1>
+    <p>Tu centro completo de aprendizaje de inglés. Desde pronunciación hasta conversación nativa — todo en un solo lugar.</p>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-chip"><b style="color:var(--g1)">17</b><span>Apps</span></div>
+    <div class="stat-chip"><b style="color:var(--g2)">5,000+</b><span>Palabras</span></div>
+    <div class="stat-chip"><b style="color:var(--g3)">1,000+</b><span>Frases</span></div>
+    <div class="stat-chip"><b style="color:var(--g5)">44</b><span>Sonidos</span></div>
+    <div class="stat-chip"><b style="color:var(--g4)">13</b><span>Semanas</span></div>
+  </div>
+
+  <!-- ═══ PRONUNCIATION & SPEAKING ═══ -->
+  <div class="sec-h"><div class="line"></div><h2>🎤 Pronunciación y Habla</h2><div class="line"></div></div>
+  <div class="grid" id="g1"></div>
+
+  <!-- ═══ VOCABULARY & WORDS ═══ -->
+  <div class="sec-h"><div class="line"></div><h2>📖 Vocabulario y Palabras</h2><div class="line"></div></div>
+  <div class="grid" id="g2"></div>
+
+  <!-- ═══ READING & WRITING ═══ -->
+  <div class="sec-h"><div class="line"></div><h2>📝 Lectura y Escritura</h2><div class="line"></div></div>
+  <div class="grid" id="g3"></div>
+
+  <!-- ═══ PHRASES & CONVERSATION ═══ -->
+  <div class="sec-h"><div class="line"></div><h2>💬 Frases y Conversación</h2><div class="line"></div></div>
+  <div class="grid" id="g4"></div>
+
+  <!-- ═══ GRAMMAR & STRUCTURED ═══ -->
+  <div class="sec-h"><div class="line"></div><h2>🧠 Gramática y Estudio Estructurado</h2><div class="line"></div></div>
+  <div class="grid" id="g5"></div>
+
+  <!-- ═══ GAMES ═══ -->
+  <div class="sec-h"><div class="line"></div><h2>🎮 Juegos</h2><div class="line"></div></div>
+  <div class="grid" id="g6"></div>
+
+  <!-- HOSTING GUIDE -->
+  <div class="hosting">
+    <h3>🌐 Cómo publicar gratis con GitHub Pages</h3>
+    <p>La mejor opción gratuita para hospedar todas estas apps es <b>GitHub Pages</b> — ilimitado, rápido, con HTTPS y sin anuncios.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-n" style="background:var(--g1);background:rgba(34,211,238,.12);color:var(--g1)">1</div>
+        <div class="step-t"><b>Crea una cuenta en GitHub</b><span>Ve a <code>github.com</code> y regístrate gratis.</span></div>
+      </div>
+      <div class="step">
+        <div class="step-n" style="background:rgba(167,139,250,.12);color:var(--g2)">2</div>
+        <div class="step-t"><b>Crea un repositorio nuevo</b><span>Nombre: <code>mi-usuario.github.io</code> (reemplaza "mi-usuario" con tu usuario de GitHub). Márcalo como <b>Public</b>.</span></div>
+      </div>
+      <div class="step">
+        <div class="step-n" style="background:rgba(244,114,182,.12);color:var(--g3)">3</div>
+        <div class="step-t"><b>Sube todos los archivos HTML</b><span>Arrastra todos los <code>.html</code> al repositorio (incluyendo este <code>index.html</code>). Clic en "Commit changes".</span></div>
+      </div>
+      <div class="step">
+        <div class="step-n" style="background:rgba(251,191,36,.12);color:var(--g4)">4</div>
+        <div class="step-t"><b>Activa GitHub Pages</b><span>Ve a Settings → Pages → Source: selecciona <code>main</code> branch → Save.</span></div>
+      </div>
+      <div class="step">
+        <div class="step-n" style="background:rgba(52,211,153,.12);color:var(--g5)">5</div>
+        <div class="step-t"><b>¡Listo! Tu sitio estará en:</b><span><code>https://mi-usuario.github.io</code> — accesible desde cualquier celular o computadora en el mundo.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    EnglishHub — Creado para Ricardo · 17 aplicaciones de aprendizaje de inglés<br>
+    <span style="font-family:'Fira Code',monospace;font-size:10px">De A1 a C2 · CEFR Framework · 2026</span>
+  </div>
+</div>
+
+<script>
+const APPS = {
+g1:[
+  {num:"01",icon:"🎙️",title:"Pronunciation Analyzer",desc:"Analiza tu pronunciación con reconocimiento de voz. Compara lo que dices vs lo correcto con retroalimentación en tiempo real.",
+    file:"pronunciation-analyzer.html",color:"#22d3ee",tags:["Speech Recognition","Fonética","Práctica Oral"]},
+  {num:"02",icon:"🔊",title:"SoundLab — 44 Sonidos",desc:"Los 44 sonidos del inglés (24 consonantes + 20 vocales) con 660 palabras de ejemplo, IPA y descripción articulatoria.",
+    file:"soundlab.html",color:"#a78bfa",tags:["IPA","44 Sonidos","Audio"]},
+  {num:"03",icon:"🗣️",title:"Speak It!",desc:"Practica hablar con reconocimiento de voz. Di frases y oraciones y recibe puntuación de precisión.",
+    file:"speak-it.html",color:"#f472b6",tags:["Speaking","Reconocimiento","Frases"]},
+  {num:"04",icon:"🎭",title:"Shadow Lab",desc:"Técnica de shadowing: escucha y repite inmediatamente. Entrena fluidez y ritmo natural del inglés.",
+    file:"shadow-lab.html",color:"#34d399",tags:["Shadowing","Fluidez","Ritmo"]},
+  {num:"05",icon:"🔗",title:"Connected Speech",desc:"Aprende cómo los nativos conectan sonidos: linking, elision, assimilation y contracciones.",
+    file:"connected-speech.html",color:"#fbbf24",tags:["Linking","Reducción","Nativo"]},
+],
+g2:[
+  {num:"06",icon:"🧪",title:"Word Lab",desc:"Laboratorio de palabras con definiciones, ejemplos, familias de palabras y ejercicios de vocabulario contextual.",
+    file:"word-lab.html",color:"#60a5fa",tags:["Vocabulario","Definiciones","Contexto"]},
+  {num:"07",icon:"🔀",title:"WordLink",desc:"Conecta palabras relacionadas y construye redes semánticas. Aprende vocabulario por asociación.",
+    file:"wordlink.html",color:"#e879f9",tags:["Asociación","Redes","Visual"]},
+  {num:"08",icon:"📸",title:"PicTalk",desc:"Describe imágenes en inglés. Practica vocabulario visual y expresión oral con escenas cotidianas.",
+    file:"pictalk.html",color:"#fb923c",tags:["Imágenes","Descripción","Visual"]},
+],
+g3:[
+  {num:"09",icon:"📖",title:"ReadFlow",desc:"Lectura guiada con textos por nivel. Vocabulario resaltado, comprensión de lectura y velocidad.",
+    file:"readflow.html",color:"#22d3ee",tags:["Lectura","Comprensión","Niveles"]},
+  {num:"10",icon:"✍️",title:"Dictation Lab",desc:"Dictados de inglés: escucha oraciones y escríbelas. Entrena oído y ortografía simultáneamente.",
+    file:"dictation-lab.html",color:"#a78bfa",tags:["Dictado","Escuchar","Escribir"]},
+],
+g4:[
+  {num:"11",icon:"💬",title:"PhraseMaster — 500 Frases",desc:"500 frases esenciales en 10 categorías con 6 modos de estudio: flashcards, quiz, writing, listening.",
+    file:"phrasemaster.html",color:"#f472b6",tags:["500 Frases","6 Modos","Import/Export"]},
+  {num:"12",icon:"🇺🇸",title:"NativeTalk — 1000",desc:"500 frases nativas + 500 preguntas comunes del inglés americano. Slang, expresiones y conversación real.",
+    file:"nativetalk.html",color:"#34d399",tags:["500 Frases","500 Preguntas","Slang"]},
+],
+g5:[
+  {num:"13",icon:"⚡",title:"Irregular Verbs Master",desc:"Domina los verbos irregulares con práctica de las 3 formas (base, past, participle) y audio.",
+    file:"irregular-verbs.html",color:"#fbbf24",tags:["Verbos","Irregulares","3 Formas"]},
+  {num:"14",icon:"⏰",title:"Tense Master",desc:"Domina todos los tiempos verbales del inglés: presente, pasado, futuro, perfecto y progresivo.",
+    file:"tense-master.html",color:"#60a5fa",tags:["Tiempos","Gramática","Conjugación"]},
+  {num:"15",icon:"📅",title:"WeeklyEnglish — 13 Semanas",desc:"Plan estructurado de 13 semanas con vocabulario, matching, traducción, dictado y frases por tema.",
+    file:"weeklyenglish.html",color:"#e879f9",tags:["13 Semanas","390 Palabras","Plan Diario"]},
+],
+g6:[
+  {num:"16",icon:"🔤",title:"CrossWord Lab",desc:"Crucigramas en inglés generados por categoría. Aprende vocabulario resolviendo puzzles.",
+    file:"crossword.html",color:"#fb923c",tags:["Crucigrama","Puzzle","Diversión"]},
+  {num:"17",icon:"☠️",title:"Hangman — 255 Words",desc:"El clásico ahorcado con 255 palabras por categoría y nivel. Adivina letra por letra.",
+    file:"hangman.html",color:"#ef4444",tags:["Ahorcado","255 Palabras","Juego"]},
+],
+};
+
+function renderCard(app){
+  const c = app.color;
+  return `<a href="${app.file}" class="app-card" style="animation:fadeUp .4s ease both">
+    <div class="card-glow" style="background:radial-gradient(ellipse at 30% 0%,${c}08,transparent 70%)"></div>
+    <div class="card-arrow">→</div>
+    <div class="card-top">
+      <div class="card-icon" style="background:${c}0a;border-color:${c}18">${app.icon}</div>
+      <div class="card-meta">
+        <div class="card-num" style="color:${c}">App ${app.num}</div>
+        <div class="card-title">${app.title}</div>
+        <div class="card-desc">${app.desc}</div>
+      </div>
+    </div>
+    <div class="card-bottom">
+      ${app.tags.map(t=>`<span class="tag" style="color:${c};border-color:${c}18">${t}</span>`).join('')}
+    </div>
+  </a>`;
+}
+
+Object.entries(APPS).forEach(([gid, apps])=>{
+  const el = document.getElementById(gid);
+  if(el) el.innerHTML = apps.map((a,i)=>{
+    a._delay = i * 0.06;
+    return renderCard(a).replace('fadeUp .4s',`fadeUp .4s ease ${a._delay}s`);
+  }).join('');
+});
+</script>
+</body>
+</html>

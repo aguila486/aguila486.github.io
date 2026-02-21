@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hangman — English Vocabulary Game</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Azeret+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#05070e;--s1:#0a0e1a;--s2:#0f1526;--s3:#161e34;--s4:#1d2843;
+  --easy:#34d399;--easy-bg:rgba(52,211,153,.06);--easy-bd:rgba(52,211,153,.22);
+  --med:#f59e0b;--med-bg:rgba(245,158,11,.06);--med-bd:rgba(245,158,11,.22);
+  --hard:#f472b6;--hard-bg:rgba(244,114,182,.06);--hard-bd:rgba(244,114,182,.22);
+  --accent:#818cf8;--accent-bg:rgba(129,140,248,.06);--accent-bd:rgba(129,140,248,.22);
+  --ok:#22c55e;--ok-bg:rgba(34,197,94,.1);--ok-bd:rgba(34,197,94,.22);
+  --err:#ef4444;--err-bg:rgba(239,68,68,.08);--err-bd:rgba(239,68,68,.22);
+  --tx:#e2e8f2;--tx2:#8b97b0;--tx3:#55637b;--bd:rgba(255,255,255,.05);--r:16px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Baloo 2',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(129,140,248,.02),transparent 55%),radial-gradient(ellipse at 20% 100%,rgba(52,211,153,.015),transparent 50%),radial-gradient(ellipse at 80% 100%,rgba(244,114,182,.015),transparent 50%);pointer-events:none}
+.app{position:relative;z-index:1;max-width:780px;margin:0 auto;padding:20px 16px 60px}
+
+@keyframes fadeD{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeU{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pop{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes swing{0%{transform:rotate(0deg)}25%{transform:rotate(8deg)}75%{transform:rotate(-8deg)}100%{transform:rotate(0deg)}}
+@keyframes letterReveal{from{transform:scale(0) rotateX(90deg);opacity:0}to{transform:scale(1) rotateX(0);opacity:1}}
+
+.hdr{text-align:center;margin-bottom:22px;animation:fadeD .5s ease}
+.hdr-tag{display:inline-flex;align-items:center;gap:8px;padding:5px 16px;border-radius:100px;font-family:'Azeret Mono',monospace;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;color:var(--tx3);border:1px solid var(--bd);background:var(--s1);margin-bottom:12px}
+.hdr h1{font-size:2.5rem;font-weight:800;letter-spacing:-.3px;margin-bottom:2px}
+.hdr p{color:var(--tx2);font-size:.88rem}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:16px;animation:fadeU .4s ease .06s both}
+@media(max-width:520px){.stats{grid-template-columns:repeat(3,1fr)}}
+.st{padding:10px 6px;background:var(--s1);border:1px solid var(--bd);border-radius:12px;text-align:center}
+.st-n{font-family:'Azeret Mono',monospace;font-size:1.1rem;font-weight:700}
+.st-l{font-size:8px;color:var(--tx3);text-transform:uppercase;letter-spacing:1px;margin-top:1px}
+
+/* Difficulty pills */
+.diff-row{display:flex;gap:6px;justify-content:center;margin-bottom:18px;animation:fadeU .4s ease .1s both}
+.diff{padding:8px 20px;border-radius:100px;border:1.5px solid var(--bd);background:var(--s1);font-size:13px;font-weight:700;cursor:pointer;transition:all .25s;font-family:inherit}
+.diff:hover{border-color:rgba(255,255,255,.1)}
+
+/* Card */
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:14px;animation:fadeU .4s ease}
+.card-h{padding:12px 18px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.card-t{font-family:'Azeret Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.8px;color:var(--tx3);display:flex;align-items:center;gap:8px}
+.card-b{padding:20px}
+.pill{padding:2px 10px;border-radius:6px;font-size:9px;font-weight:700;letter-spacing:.5px}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border:1px solid var(--bd);border-radius:11px;background:var(--s2);color:var(--tx2);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap}
+.btn:hover{background:var(--s3);color:var(--tx);border-color:rgba(255,255,255,.1)}
+.btn-sm{padding:7px 14px;font-size:12px}
+.btn-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+
+/* ═══ HANGMAN SVG ═══ */
+.hang-zone{display:flex;justify-content:center;margin:10px 0 16px}
+.hang-svg{filter:drop-shadow(0 0 20px rgba(129,140,248,.06))}
+.hang-svg .base{stroke:var(--s4);stroke-width:3;stroke-linecap:round}
+.hang-svg .body{stroke:var(--tx);stroke-width:2.5;stroke-linecap:round;fill:none;transition:opacity .3s}
+.hang-svg .body.hidden{opacity:0}
+.hang-svg .body.show{opacity:1}
+.hang-svg .head{fill:none;stroke:var(--tx);stroke-width:2.5;transition:opacity .3s}
+.hang-svg .head.hidden{opacity:0}
+.hang-svg .head.show{opacity:1}
+.hang-svg .face{fill:var(--tx);font-size:10px;text-anchor:middle;opacity:0;transition:opacity .3s}
+.hang-svg .face.show{opacity:1}
+.hang-svg.dead .body.show{stroke:var(--err)}
+.hang-svg.dead .head.show{stroke:var(--err)}
+.hang-svg.dead{animation:swing 1s ease}
+.hang-svg.won .body.show{stroke:var(--ok)}
+.hang-svg.won .head.show{stroke:var(--ok)}
+
+/* ═══ WORD DISPLAY ═══ */
+.word-zone{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin:16px 0 20px;min-height:56px}
+.letter-slot{width:40px;height:52px;display:flex;align-items:center;justify-content:center;border-bottom:3px solid var(--s4);font-family:'Azeret Mono',monospace;font-size:1.6rem;font-weight:800;text-transform:uppercase;transition:all .2s;position:relative}
+@media(max-width:500px){.letter-slot{width:32px;height:44px;font-size:1.3rem}}
+.letter-slot.filled{border-color:var(--accent);animation:letterReveal .3s ease}
+.letter-slot.correct{border-color:var(--ok);color:var(--ok)}
+.letter-slot.wrong-reveal{border-color:var(--err);color:var(--err);opacity:.6}
+.letter-slot.space{border-color:transparent;width:20px}
+.word-sep{width:6px}
+
+/* Hint */
+.hint-box{text-align:center;margin:10px 0 14px;font-size:.9rem;color:var(--tx2);line-height:1.6;padding:10px 16px;background:var(--s2);border-radius:10px;border:1px solid var(--bd)}
+.hint-box .hint-label{font-family:'Azeret Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--tx3);margin-bottom:4px}
+
+/* ═══ KEYBOARD ═══ */
+.keyboard{display:flex;flex-direction:column;align-items:center;gap:6px;margin:6px 0}
+.kb-row{display:flex;gap:5px;justify-content:center}
+.key{width:38px;height:42px;border-radius:9px;border:1.5px solid var(--bd);background:var(--s2);color:var(--tx);font-family:'Azeret Mono',monospace;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;text-transform:uppercase}
+@media(max-width:500px){.key{width:32px;height:38px;font-size:13px;border-radius:7px}}
+.key:hover:not(.used){background:var(--s3);border-color:rgba(255,255,255,.12);transform:translateY(-1px)}
+.key:active:not(.used){transform:translateY(1px)}
+.key.hit{background:var(--ok-bg);border-color:var(--ok-bd);color:var(--ok)}
+.key.miss{background:var(--err-bg);border-color:var(--err-bd);color:var(--err);opacity:.35}
+.key.used{pointer-events:none}
+
+/* Result overlay */
+.result{text-align:center;padding:20px;animation:pop .4s ease}
+.result-emoji{font-size:3rem;margin-bottom:8px}
+.result-title{font-size:1.4rem;font-weight:800;margin-bottom:4px}
+.result-word{font-family:'Azeret Mono',monospace;font-size:1.1rem;margin:8px 0;padding:8px 20px;background:var(--s2);border-radius:10px;display:inline-block;letter-spacing:3px;text-transform:uppercase}
+.result-def{font-size:.88rem;color:var(--tx2);margin-bottom:16px;max-width:400px;margin-left:auto;margin-right:auto;line-height:1.6}
+
+.tc{text-align:center}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hdr">
+    <div class="hdr-tag">☠️ Vocabulary Game</div>
+    <h1>Hang<span style="color:var(--accent)">man</span></h1>
+    <p>Adivina la palabra en inglés letra por letra</p>
+  </div>
+
+  <div class="stats" id="statsBar"></div>
+  <div class="diff-row" id="diffRow"></div>
+  <div id="main"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// 250+ WORDS DATABASE
+// ═══════════════════════════════════════════════════════════
+const WORDS = {
+easy: [
+  {w:"CAT",d:"A small domesticated feline pet",h:"It says meow"},
+  {w:"DOG",d:"A loyal animal that barks",h:"Man's best friend"},
+  {w:"SUN",d:"The star that lights our day",h:"It rises every morning"},
+  {w:"CAR",d:"A vehicle with four wheels",h:"You drive it on the road"},
+  {w:"BED",d:"Furniture for sleeping",h:"You rest here at night"},
+  {w:"CUP",d:"A container for drinking",h:"You put coffee in it"},
+  {w:"HAT",d:"A covering worn on the head",h:"Protects you from the sun"},
+  {w:"MAP",d:"A drawing showing places and roads",h:"Helps you find directions"},
+  {w:"PEN",d:"A tool for writing with ink",h:"You use it to write"},
+  {w:"KEY",d:"Opens a lock",h:"You carry it to open your door"},
+  {w:"BOX",d:"A container with flat sides",h:"Gifts come inside one"},
+  {w:"ICE",d:"Frozen water",h:"Very cold and slippery"},
+  {w:"RED",d:"The color of blood",h:"Roses are this color"},
+  {w:"EGG",d:"Comes from a chicken",h:"You eat it for breakfast"},
+  {w:"BUS",d:"A large vehicle for many passengers",h:"Public transportation"},
+  {w:"FISH",d:"An animal that lives in water",h:"It has fins and scales"},
+  {w:"BIRD",d:"An animal with feathers that flies",h:"It has wings"},
+  {w:"BOOK",d:"Pages with words to read",h:"You find them in a library"},
+  {w:"BALL",d:"A round object used in games",h:"You kick or throw it"},
+  {w:"TREE",d:"A tall plant with a trunk",h:"It has leaves and branches"},
+  {w:"RAIN",d:"Water falling from clouds",h:"You need an umbrella"},
+  {w:"DOOR",d:"You open it to enter a room",h:"It has a handle"},
+  {w:"FOOD",d:"What you eat to stay alive",h:"It stops your hunger"},
+  {w:"MILK",d:"A white drink from cows",h:"Goes well with cereal"},
+  {w:"HAND",d:"The part of your body with five fingers",h:"You wave with it"},
+  {w:"STAR",d:"A bright point of light in the night sky",h:"You see them at night"},
+  {w:"SHOE",d:"You wear it on your foot",h:"Comes in pairs"},
+  {w:"CAKE",d:"A sweet baked dessert",h:"You eat it on birthdays"},
+  {w:"BLUE",d:"The color of a clear sky",h:"The ocean is this color"},
+  {w:"NOSE",d:"The part of your face used for smelling",h:"Between your eyes and mouth"},
+  {w:"BABY",d:"A very young child",h:"Smaller than a toddler"},
+  {w:"FIRE",d:"Hot bright flames",h:"It burns and gives heat"},
+  {w:"MOON",d:"The bright object in the night sky",h:"It orbits the Earth"},
+  {w:"RICE",d:"A white grain eaten worldwide",h:"Common food in Asia"},
+  {w:"WALL",d:"A vertical structure in a building",h:"You hang pictures on it"},
+  {w:"KING",d:"A male ruler of a country",h:"Wears a crown"},
+  {w:"LION",d:"A large wild cat called king of the jungle",h:"It has a mane"},
+  {w:"RING",d:"A circular band worn on a finger",h:"Given at weddings"},
+  {w:"GAME",d:"An activity played for fun",h:"You play it to have fun"},
+  {w:"GOLD",d:"A precious yellow metal",h:"Very valuable and shiny"},
+  {w:"DUCK",d:"A water bird that quacks",h:"It swims in ponds"},
+  {w:"FROG",d:"A small green animal that jumps",h:"Lives near water, says ribbit"},
+  {w:"LAMP",d:"A device that produces light",h:"You turn it on at night"},
+  {w:"SNOW",d:"White frozen flakes from the sky",h:"Covers the ground in winter"},
+  {w:"BOAT",d:"A small vessel for water travel",h:"Smaller than a ship"},
+  {w:"FORK",d:"A utensil with prongs for eating",h:"You use it with a knife"},
+  {w:"ROAD",d:"A paved path for vehicles",h:"Cars drive on it"},
+  {w:"SONG",d:"A piece of music with words",h:"You sing it"},
+  {w:"COIN",d:"A small round piece of metal money",h:"You find them in your pocket"},
+  {w:"BEAR",d:"A large furry wild animal",h:"Loves honey"},
+  {w:"FARM",d:"Land used for growing crops and animals",h:"Has cows and chickens"},
+  {w:"WOLF",d:"A wild animal related to dogs",h:"It howls at the moon"},
+  {w:"SALT",d:"A white mineral used to flavor food",h:"Opposite of sugar in taste"},
+  {w:"GIFT",d:"Something given to another person",h:"You receive it on your birthday"},
+  {w:"BELL",d:"A metal object that makes a ringing sound",h:"Ring ring!"},
+  {w:"FISH",d:"Animal with gills living underwater",h:"You can catch it with a rod"},
+  {w:"LEAF",d:"A flat green part of a plant",h:"Falls from trees in autumn"},
+  {w:"SHIP",d:"A large vessel for ocean travel",h:"Bigger than a boat"},
+  {w:"NECK",d:"The part connecting head to shoulders",h:"You wear a necklace around it"},
+  {w:"COOK",d:"To prepare food using heat",h:"You do this in the kitchen"},
+  {w:"JUMP",d:"To push yourself off the ground",h:"Frogs do this a lot"},
+  {w:"SING",d:"To make music with your voice",h:"Birds do this every morning"},
+  {w:"SWIM",d:"To move through water",h:"Fish do this naturally"},
+  {w:"DARK",d:"The absence of light",h:"Opposite of bright"},
+  {w:"LOVE",d:"A deep feeling of affection",h:"The heart symbolizes this"},
+  {w:"HOPE",d:"A feeling of wanting something good to happen",h:"Never lose this"},
+  {w:"NINE",d:"The number after eight",h:"A single digit number"},
+  {w:"BIKE",d:"A two-wheeled vehicle you pedal",h:"Has two wheels and handlebars"},
+  {w:"WARM",d:"Slightly hot in a comfortable way",h:"Between hot and cold"},
+  {w:"ROCK",d:"A hard piece of stone",h:"Mountains are made of this"},
+  {w:"PARK",d:"A public green area for recreation",h:"Has trees and benches"},
+  {w:"MATH",d:"The study of numbers and equations",h:"Addition and subtraction"},
+  {w:"WAVE",d:"A moving ridge of water",h:"You see them at the beach"},
+  {w:"SOAP",d:"Used with water to clean your body",h:"Makes bubbles"},
+  {w:"CUTE",d:"Attractive in a pretty way",h:"Puppies and kittens are this"},
+  {w:"HOME",d:"The place where you live",h:"Where the heart is"},
+  {w:"FACE",d:"The front part of your head",h:"Has eyes, nose, and mouth"},
+  {w:"LAKE",d:"A large body of fresh water",h:"Smaller than an ocean"},
+  {w:"FAST",d:"Moving at high speed",h:"Opposite of slow"},
+  {w:"LAMP",d:"A device that gives light",h:"Sits on a table or desk"},
+  {w:"DESK",d:"A table used for working or studying",h:"You sit at one in school"},
+  {w:"TIME",d:"What clocks measure",h:"Hours, minutes, seconds"},
+  {w:"EAST",d:"The direction where the sun rises",h:"Opposite of west"},
+  {w:"CITY",d:"A large town with many buildings",h:"Bigger than a village"},
+],
+medium: [
+  {w:"WATER",d:"A clear liquid essential for all life",h:"H2O"},
+  {w:"HAPPY",d:"Feeling pleasure and joy",h:"Opposite of sad"},
+  {w:"HOUSE",d:"A building where a family lives",h:"Has rooms and a roof"},
+  {w:"MUSIC",d:"Sounds combined in harmony and rhythm",h:"You listen to it with headphones"},
+  {w:"DREAM",d:"Images and stories during sleep",h:"Happens while you sleep"},
+  {w:"HEART",d:"The organ that pumps blood",h:"Symbol of love"},
+  {w:"BEACH",d:"A sandy area next to the ocean",h:"You build sandcastles here"},
+  {w:"BRAIN",d:"The organ inside your head for thinking",h:"Controls your entire body"},
+  {w:"CLOUD",d:"A white mass of water vapor in the sky",h:"Rain comes from these"},
+  {w:"EARTH",d:"The planet we live on",h:"Third planet from the sun"},
+  {w:"OCEAN",d:"A very large body of salt water",h:"The Pacific is the biggest one"},
+  {w:"PLANT",d:"A living thing that grows in soil",h:"Needs sunlight and water"},
+  {w:"QUEEN",d:"A female ruler of a kingdom",h:"The king's wife"},
+  {w:"RIVER",d:"A large stream of flowing water",h:"Flows to the sea"},
+  {w:"SMILE",d:"A happy expression on your face",h:"Shows your teeth when happy"},
+  {w:"TIGER",d:"A large striped wild cat from Asia",h:"Has orange and black stripes"},
+  {w:"WORLD",d:"The earth and all its people",h:"We all live in the same one"},
+  {w:"YOUNG",d:"Not old; in the early years of life",h:"Opposite of old"},
+  {w:"BREAD",d:"A baked food made from flour",h:"Used to make sandwiches"},
+  {w:"CHAIR",d:"Furniture with four legs for sitting",h:"You sit on it at a table"},
+  {w:"CLOCK",d:"A device that shows the time",h:"Has hands that move in circles"},
+  {w:"GREEN",d:"The color of grass and leaves",h:"Traffic light means go"},
+  {w:"KNIFE",d:"A sharp tool for cutting",h:"Used with a fork"},
+  {w:"LIGHT",d:"What allows you to see things",h:"Opposite of darkness"},
+  {w:"MONEY",d:"Used to buy things",h:"Coins and bills"},
+  {w:"NIGHT",d:"The dark hours after sunset",h:"When you see the stars"},
+  {w:"PEACE",d:"Freedom from war and conflict",h:"Symbolized by a white dove"},
+  {w:"POWER",d:"Strength or ability to do something",h:"Electricity is a form of this"},
+  {w:"SLEEP",d:"A state of rest with eyes closed",h:"You do this every night"},
+  {w:"STONE",d:"A small piece of rock",h:"Hard and found on the ground"},
+  {w:"TRAIN",d:"A vehicle that runs on rails",h:"Goes choo-choo"},
+  {w:"BLOOD",d:"The red liquid flowing through your body",h:"Carried by veins and arteries"},
+  {w:"NORTH",d:"The direction of the North Pole",h:"Opposite of south"},
+  {w:"TEETH",d:"Hard white structures in your mouth",h:"You brush them twice a day"},
+  {w:"HORSE",d:"A large animal you can ride",h:"Used in races and cowboys ride them"},
+  {w:"GLASS",d:"A transparent material or drinking container",h:"Windows are made of this"},
+  {w:"FLOOR",d:"The bottom surface of a room",h:"You walk on it"},
+  {w:"PRIZE",d:"A reward for winning",h:"First place gets this"},
+  {w:"STORE",d:"A place where you buy things",h:"Also called a shop"},
+  {w:"CHEST",d:"The front part of your upper body",h:"Between your neck and stomach"},
+  {w:"BLIND",d:"Unable to see",h:"Cannot use the sense of sight"},
+  {w:"BRAVE",d:"Ready to face danger without fear",h:"Opposite of cowardly"},
+  {w:"CLEAN",d:"Free from dirt",h:"Opposite of dirty"},
+  {w:"CRASH",d:"A violent collision",h:"Cars sometimes do this"},
+  {w:"CROWN",d:"A circular ornament worn on the head by royalty",h:"Kings and queens wear it"},
+  {w:"EMPTY",d:"Containing nothing inside",h:"Opposite of full"},
+  {w:"GHOST",d:"The spirit of a dead person",h:"Says BOO on Halloween"},
+  {w:"GRAIN",d:"Seeds of wheat, rice, or corn",h:"Used to make flour"},
+  {w:"HONEY",d:"A sweet golden liquid made by bees",h:"Bears love to eat this"},
+  {w:"JUDGE",d:"A person who decides court cases",h:"Works in a courtroom"},
+  {w:"MAGIC",d:"Supernatural powers or tricks",h:"Wizards and witches use this"},
+  {w:"NURSE",d:"A person who cares for sick people",h:"Works in a hospital"},
+  {w:"PAINT",d:"A colored liquid applied to surfaces",h:"Artists use this on canvas"},
+  {w:"PILOT",d:"A person who flies an airplane",h:"Sits in the cockpit"},
+  {w:"ROBOT",d:"A machine that can perform tasks automatically",h:"Made of metal, not human"},
+  {w:"STORM",d:"Violent weather with wind and rain",h:"Thunder and lightning"},
+  {w:"SUGAR",d:"A sweet white substance for food",h:"Makes things taste sweet"},
+  {w:"VIRUS",d:"A microscopic organism that causes disease",h:"You catch a cold from this"},
+  {w:"WHALE",d:"The largest animal in the ocean",h:"A marine mammal, not a fish"},
+  {w:"PIANO",d:"A large musical instrument with black and white keys",h:"Has 88 keys"},
+  {w:"PARTY",d:"A social gathering for celebration",h:"Balloons and cake"},
+  {w:"THUMB",d:"The short thick finger on your hand",h:"Used to give a thumbs up"},
+  {w:"TOWER",d:"A tall narrow building or structure",h:"Eiffel is a famous one"},
+  {w:"ONION",d:"A round vegetable that makes you cry",h:"Has many layers"},
+  {w:"TEETH",d:"White structures in your mouth for chewing",h:"You brush them morning and night"},
+  {w:"MOUTH",d:"The opening in your face for eating and speaking",h:"Contains tongue and teeth"},
+  {w:"FRUIT",d:"Sweet food from plants like apples and oranges",h:"Apples, bananas, strawberries"},
+  {w:"LUNCH",d:"The midday meal",h:"Between breakfast and dinner"},
+  {w:"NOISE",d:"Loud unwanted sound",h:"The opposite of silence"},
+  {w:"SEVEN",d:"The number after six",h:"Days in a week"},
+  {w:"SPACE",d:"The area beyond Earth's atmosphere",h:"Stars and planets are here"},
+  {w:"EARTH",d:"Our home planet",h:"The blue marble"},
+  {w:"ANGEL",d:"A spiritual being with wings",h:"Messenger of heaven"},
+  {w:"GIANT",d:"Something extremely large",h:"Opposite of tiny"},
+  {w:"LEMON",d:"A sour yellow citrus fruit",h:"Used to make lemonade"},
+  {w:"PIZZA",d:"A flat round food with cheese and toppings",h:"Italian food with tomato sauce"},
+  {w:"SHARK",d:"A large predatory fish with sharp teeth",h:"Famous from the movie Jaws"},
+  {w:"MOUSE",d:"A small rodent or computer device",h:"Jerry from Tom and Jerry"},
+  {w:"RADIO",d:"A device for listening to broadcast programs",h:"FM and AM frequencies"},
+  {w:"TABLE",d:"Furniture with a flat top and legs",h:"You eat dinner at this"},
+  {w:"PUPIL",d:"A student or the dark center of the eye",h:"Goes to school every day"},
+  {w:"JUICE",d:"A drink made from fruit",h:"Orange or apple flavored"},
+  {w:"SHEEP",d:"A woolly farm animal",h:"Gives us wool"},
+  {w:"WITCH",d:"A woman believed to have magical powers",h:"Rides a broomstick on Halloween"},
+],
+hard: [
+  {w:"SCHOOL",d:"An institution for educating children",h:"Where students learn"},
+  {w:"FAMILY",d:"A group of people related by blood or marriage",h:"Parents and children together"},
+  {w:"BRIDGE",d:"A structure built over a river or road",h:"Connects two sides"},
+  {w:"DOCTOR",d:"A medical professional who treats patients",h:"You visit when you're sick"},
+  {w:"GARDEN",d:"An area for growing flowers and vegetables",h:"Has plants and sometimes a fountain"},
+  {w:"ISLAND",d:"Land completely surrounded by water",h:"Hawaii is one"},
+  {w:"JUNGLE",d:"A dense tropical forest with many animals",h:"Tarzan lived here"},
+  {w:"MARKET",d:"A place for buying and selling goods",h:"You buy groceries here"},
+  {w:"NATURE",d:"The physical world and everything in it not made by humans",h:"Trees, rivers, mountains"},
+  {w:"SILVER",d:"A precious grayish-white metal",h:"Second place medal color"},
+  {w:"TRAVEL",d:"To go from one place to another",h:"You need a passport for international ones"},
+  {w:"WINDOW",d:"An opening in a wall with glass",h:"Lets light and air in"},
+  {w:"MIRROR",d:"A reflective surface showing your image",h:"You look at yourself in it"},
+  {w:"BATTLE",d:"A fight between armed forces",h:"A major fight in a war"},
+  {w:"COFFEE",d:"A dark hot beverage made from roasted beans",h:"Many people drink it every morning"},
+  {w:"FOREST",d:"A large area covered with trees",h:"Home to many wild animals"},
+  {w:"HONEST",d:"Always telling the truth",h:"Not a liar"},
+  {w:"DANGER",d:"A situation that could cause harm",h:"Warning signs alert you to this"},
+  {w:"HEALTH",d:"The condition of your body and mind",h:"Wealth can't buy this"},
+  {w:"TEMPLE",d:"A building dedicated to religious worship",h:"A sacred place"},
+  {w:"FLOWER",d:"The colorful reproductive part of a plant",h:"Roses and sunflowers"},
+  {w:"WINTER",d:"The coldest season of the year",h:"Snow falls during this season"},
+  {w:"SUMMER",d:"The warmest season of the year",h:"School vacation season"},
+  {w:"SPRING",d:"The season when flowers bloom after winter",h:"Season of new beginnings"},
+  {w:"DESERT",d:"A dry barren area of land with little rainfall",h:"Sahara is the biggest"},
+  {w:"BUTTER",d:"A yellow fatty food made from cream",h:"Spread on bread or toast"},
+  {w:"BASKET",d:"A container made of woven material",h:"Used for carrying things"},
+  {w:"CAMERA",d:"A device for taking photographs",h:"Say cheese!"},
+  {w:"CANDLE",d:"A cylinder of wax with a wick that gives light",h:"You blow them out on a birthday cake"},
+  {w:"CHEESE",d:"A food made from milk",h:"Mice supposedly love it"},
+  {w:"KITCHEN",d:"A room where food is prepared",h:"Has a stove and refrigerator"},
+  {w:"FREEDOM",d:"The state of being free from restrictions",h:"Liberty and independence"},
+  {w:"HISTORY",d:"The study of past events",h:"Those who don't learn from it are doomed to repeat it"},
+  {w:"COUNTRY",d:"A nation with its own government",h:"Mexico, France, Japan"},
+  {w:"TEACHER",d:"A person who educates others",h:"Works in a school"},
+  {w:"WEATHER",d:"The state of the atmosphere at a given time",h:"Sunny, rainy, or cloudy"},
+  {w:"MORNING",d:"The early part of the day before noon",h:"When you wake up"},
+  {w:"CHICKEN",d:"A bird raised for eggs and meat",h:"Crossed the road in a famous joke"},
+  {w:"DIAMOND",d:"The hardest natural substance, a precious gem",h:"A girl's best friend, they say"},
+  {w:"LIBRARY",d:"A building full of books to borrow",h:"You must be quiet here"},
+  {w:"VILLAGE",d:"A small settlement in the countryside",h:"Smaller than a town"},
+  {w:"SCIENCE",d:"The study of the natural world through experiments",h:"Biology, chemistry, physics"},
+  {w:"SILENCE",d:"Complete absence of sound",h:"The opposite of noise"},
+  {w:"STUDENT",d:"A person who studies at a school or university",h:"Goes to class and takes exams"},
+  {w:"BICYCLE",d:"A two-wheeled human-powered vehicle",h:"You pedal to move it"},
+  {w:"FACTORY",d:"A building where goods are manufactured",h:"Assembly lines and machines"},
+  {w:"MILLION",d:"The number one thousand thousand",h:"1,000,000"},
+  {w:"MISTAKE",d:"An action that is wrong or incorrect",h:"Everyone makes them"},
+  {w:"VOLCANO",d:"A mountain that erupts lava",h:"Has hot magma inside"},
+  {w:"AIRPORT",d:"Where planes take off and land",h:"You go through security here"},
+  {w:"MACHINE",d:"A mechanical device that performs tasks",h:"Uses gears and motors"},
+  {w:"BALANCE",d:"An even distribution of weight or stability",h:"Acrobats need this skill"},
+  {w:"BLANKET",d:"A warm covering used on a bed",h:"Keeps you warm at night"},
+  {w:"CAPTAIN",d:"The leader of a team or a ship",h:"The person in charge"},
+  {w:"CULTURE",d:"The customs and beliefs of a group of people",h:"Language, food, and traditions"},
+  {w:"MONSTER",d:"A frightening imaginary creature",h:"Hides under beds in children's stories"},
+  {w:"TRUMPET",d:"A brass musical instrument",h:"Louis Armstrong played this"},
+  {w:"PENGUIN",d:"A black and white bird that cannot fly",h:"Lives in Antarctica"},
+  {w:"GIRAFFE",d:"The tallest living animal with a very long neck",h:"Can eat leaves from tall trees"},
+  {w:"DOLPHIN",d:"An intelligent marine mammal",h:"Known for being playful and smart"},
+  {w:"RAINBOW",d:"An arc of colors in the sky after rain",h:"Has seven colors"},
+  {w:"MYSTERY",d:"Something that is difficult to understand or explain",h:"Sherlock Holmes solved these"},
+  {w:"JEWELRY",d:"Decorative items worn on the body",h:"Necklaces, rings, bracelets"},
+  {w:"HOLIDAY",d:"A day of celebration or time off work",h:"Christmas is one"},
+  {w:"PROBLEM",d:"A difficult situation that needs a solution",h:"Math class is full of these"},
+  {w:"COMFORT",d:"A state of physical ease",h:"A cozy bed provides this"},
+  {w:"PLASTIC",d:"A synthetic material used for many products",h:"Bottles are often made of this"},
+  {w:"HUSBAND",d:"A married man",h:"A wife's partner"},
+  {w:"GENERAL",d:"A high-ranking military officer",h:"Commands an army"},
+  {w:"SHALLOW",d:"Not deep",h:"The opposite of deep"},
+  {w:"PROMISE",d:"A declaration that you will do something",h:"A commitment you should keep"},
+  {w:"STRANGE",d:"Unusual or surprising",h:"Synonym of weird"},
+  {w:"SHELTER",d:"A place giving protection from weather or danger",h:"Keeps you safe from a storm"},
+  {w:"KINGDOM",d:"A country ruled by a king or queen",h:"The United Kingdom is one"},
+  {w:"MOUNTAIN",d:"A very high natural elevation of land",h:"Everest is the tallest"},
+  {w:"LANGUAGE",d:"A system of communication used by people",h:"English, Spanish, French"},
+  {w:"BIRTHDAY",d:"The anniversary of the day you were born",h:"You get cake and presents"},
+  {w:"ELEPHANT",d:"The largest land animal with a long trunk",h:"Never forgets, they say"},
+  {w:"TREASURE",d:"A collection of valuable things",h:"Pirates searched for this"},
+  {w:"UMBRELLA",d:"A device used for protection from rain",h:"You open it when it rains"},
+  {w:"SANDWICH",d:"Food with filling between two slices of bread",h:"Named after an English earl"},
+  {w:"ALPHABET",d:"The set of letters used in a language",h:"A B C D E F G..."},
+  {w:"DAUGHTER",d:"A female child in relation to her parents",h:"The opposite of son"},
+  {w:"BUILDING",d:"A structure with walls and a roof",h:"Skyscrapers are very tall ones"},
+  {w:"STRENGTH",d:"The quality of being physically strong",h:"Hercules had great physical power"},
+  {w:"THOUSAND",d:"The number equal to ten hundreds",h:"1,000"},
+  {w:"PATIENCE",d:"The ability to wait calmly",h:"Good things come to those who have this"},
+]
+};
+
+const ALL_WORDS=[...WORDS.easy,...WORDS.medium,...WORDS.hard];
+const LVLS=['easy','medium','hard'];
+const LVL_META={
+  easy:{label:'🟢 Easy',color:'var(--easy)',bg:'var(--easy-bg)',bd:'var(--easy-bd)',errors:8},
+  medium:{label:'🟡 Normal',color:'var(--med)',bg:'var(--med-bg)',bd:'var(--med-bd)',errors:7},
+  hard:{label:'🔴 Hard',color:'var(--hard)',bg:'var(--hard-bg)',bd:'var(--hard-bd)',errors:6}
+};
+
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+let S={
+  lvl:'easy', word:null, def:'', hint:'',
+  guessed:new Set(), errors:0, maxErrors:8,
+  won:false, lost:false,
+  stats:{played:0,won:0,streak:0,best:0}
+};
+
+const shuffle=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]]}return b};
+
+// ═══════════════════════════════════════════════════════════
+// GAME
+// ═══════════════════════════════════════════════════════════
+function newGame(){
+  const pool=WORDS[S.lvl];
+  const pick=pool[Math.floor(Math.random()*pool.length)];
+  S.word=pick.w.toUpperCase();
+  S.def=pick.d;S.hint=pick.h;
+  S.guessed=new Set();S.errors=0;
+  S.maxErrors=LVL_META[S.lvl].errors;
+  S.won=false;S.lost=false;
+  render();
+}
+
+function guessLetter(ch){
+  if(S.won||S.lost||S.guessed.has(ch))return;
+  S.guessed.add(ch);
+
+  if(S.word.includes(ch)){
+    // Check win
+    if([...S.word].every(c=>c===' '||S.guessed.has(c))){
+      S.won=true;S.stats.played++;S.stats.won++;S.stats.streak++;
+      S.stats.best=Math.max(S.stats.best,S.stats.streak);
+    }
+  }else{
+    S.errors++;
+    if(S.errors>=S.maxErrors){
+      S.lost=true;S.stats.played++;S.stats.streak=0;
+    }
+  }
+  render();
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════
+function render(){renderStats();renderDiff();renderMain()}
+
+function renderStats(){
+  const pct=S.stats.played?Math.round(S.stats.won/S.stats.played*100):0;
+  const counts={easy:WORDS.easy.length,medium:WORDS.medium.length,hard:WORDS.hard.length};
+  document.getElementById('statsBar').innerHTML=`
+    <div class="st"><div class="st-n">${S.stats.played}</div><div class="st-l">Jugadas</div></div>
+    <div class="st"><div class="st-n" style="color:var(--ok)">${S.stats.won}</div><div class="st-l">Ganadas</div></div>
+    <div class="st"><div class="st-n" style="color:var(--accent)">${S.stats.streak}🔥</div><div class="st-l">Racha</div></div>
+    <div class="st"><div class="st-n" style="color:var(--med)">${pct}%</div><div class="st-l">Win Rate</div></div>
+    <div class="st"><div class="st-n">${counts[S.lvl]}</div><div class="st-l">Palabras</div></div>`;
+}
+
+function renderDiff(){
+  document.getElementById('diffRow').innerHTML=LVLS.map(l=>{
+    const m=LVL_META[l];const on=S.lvl===l;
+    return`<button class="diff" style="${on?`border-color:${m.bd};background:${m.bg};color:${m.color}`:''}" onclick="setLvl('${l}')">${m.label} (${m.errors} vidas)</button>`;
+  }).join('');
+}
+
+function renderMain(){
+  const el=document.getElementById('main');
+  if(!S.word){newGame();return}
+
+  if(S.won||S.lost){renderEnd(el);return}
+
+  const m=LVL_META[S.lvl];
+  const remaining=S.maxErrors-S.errors;
+
+  el.innerHTML=`
+    <div class="card">
+      <div class="card-h">
+        <div class="card-t">
+          <span class="pill" style="background:${m.bg};color:${m.color}">${m.label}</span>
+          <span style="color:${remaining<=2?'var(--err)':'var(--tx2)'}">${remaining} ${remaining===1?'vida':'vidas'}</span>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-sm" onclick="showHint()">💡 Pista</button>
+          <button class="btn btn-sm" onclick="newGame()">🔄 Nueva</button>
+        </div>
+      </div>
+      <div class="card-b">
+        <!-- Hangman SVG -->
+        <div class="hang-zone">
+          ${renderHangman()}
+        </div>
+
+        <!-- Word -->
+        <div class="word-zone" id="wordZone">
+          ${renderWord()}
+        </div>
+
+        <!-- Definition -->
+        <div class="hint-box">
+          <div class="hint-label">📖 Definition</div>
+          ${S.def}
+        </div>
+
+        <!-- Hint -->
+        <div class="hint-box ${S.showHint?'':'hidden'}" id="hintBox" style="border-color:var(--med-bd);background:var(--med-bg)">
+          <div class="hint-label" style="color:var(--med)">💡 Hint</div>
+          <span style="color:var(--med)">${S.hint}</span>
+        </div>
+
+        <!-- Keyboard -->
+        <div class="keyboard">
+          ${renderKeyboard()}
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderWord(){
+  return[...S.word].map(ch=>{
+    if(ch===' ')return`<div class="letter-slot space"></div>`;
+    const show=S.guessed.has(ch);
+    return`<div class="letter-slot ${show?'filled':''}">${show?ch:''}</div>`;
+  }).join('');
+}
+
+function renderKeyboard(){
+  const rows=['QWERTYUIOP','ASDFGHJKL','ZXCVBNM'];
+  return rows.map(row=>`<div class="kb-row">${[...row].map(ch=>{
+    const used=S.guessed.has(ch);
+    const hit=used&&S.word.includes(ch);
+    const miss=used&&!S.word.includes(ch);
+    const cls=['key'];
+    if(hit)cls.push('hit','used');
+    if(miss)cls.push('miss','used');
+    return`<button class="${cls.join(' ')}" onclick="guessLetter('${ch}')">${ch}</button>`;
+  }).join('')}</div>`).join('');
+}
+
+function renderHangman(){
+  const e=S.errors;
+  const dead=S.lost;const won=S.won;
+  return`<svg class="hang-svg ${dead?'dead':''} ${won?'won':''}" width="160" height="180" viewBox="0 0 160 180">
+    <!-- Gallows -->
+    <line class="base" x1="20" y1="170" x2="140" y2="170"/>
+    <line class="base" x1="40" y1="170" x2="40" y2="20"/>
+    <line class="base" x1="40" y1="20" x2="100" y2="20"/>
+    <line class="base" x1="100" y1="20" x2="100" y2="40"/>
+    <!-- Rope -->
+    <line class="base" x1="38" y1="20" x2="60" y2="42" style="stroke-width:2"/>
+    <!-- Body parts -->
+    <circle class="head ${e>=1?'show':'hidden'}" cx="100" cy="52" r="14"/>
+    ${dead?`<text class="face ${e>=1?'show':''}" x="94" y="50">x</text><text class="face ${e>=1?'show':''}" x="106" y="50">x</text><text class="face ${e>=1?'show':''}" x="100" y="60" font-size="8">―</text>`
+         :won?`<text class="face show" x="94" y="50">^</text><text class="face show" x="106" y="50">^</text><text class="face show" x="100" y="60" font-size="8">◡</text>`
+         :`<text class="face ${e>=1?'show':''}" x="94" y="52">•</text><text class="face ${e>=1?'show':''}" x="106" y="52">•</text>`}
+    <line class="body ${e>=2?'show':'hidden'}" x1="100" y1="66" x2="100" y2="110"/>
+    <line class="body ${e>=3?'show':'hidden'}" x1="100" y1="78" x2="75" y2="95"/>
+    <line class="body ${e>=4?'show':'hidden'}" x1="100" y1="78" x2="125" y2="95"/>
+    <line class="body ${e>=5?'show':'hidden'}" x1="100" y1="110" x2="78" y2="140"/>
+    <line class="body ${e>=6?'show':'hidden'}" x1="100" y1="110" x2="122" y2="140"/>
+    ${S.maxErrors>=7?`<line class="body ${e>=7?'show':'hidden'}" x1="78" y1="140" x2="70" y2="148"/>`:''}
+    ${S.maxErrors>=8?`<line class="body ${e>=8?'show':'hidden'}" x1="122" y1="140" x2="130" y2="148"/>`:''}
+  </svg>`;
+}
+
+function showHint(){
+  S.showHint=true;
+  const box=document.getElementById('hintBox');
+  if(box)box.classList.remove('hidden');
+}
+
+function renderEnd(el){
+  const m=LVL_META[S.lvl];
+  if(S.won){
+    el.innerHTML=`<div class="card"><div class="card-b">
+      <div class="result">
+        <div class="result-emoji">🎉</div>
+        <div class="result-title" style="color:var(--ok)">¡Ganaste!</div>
+        <div class="result-word" style="border:1px solid var(--ok-bd);color:var(--ok)">${S.word}</div>
+        <div class="result-def">${S.def}</div>
+        <div style="margin-bottom:10px">
+          ${renderHangman()}
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-accent" onclick="newGame()" style="background:var(--ok-bg);border-color:var(--ok-bd);color:var(--ok)">🔄 Jugar Otra Vez</button>
+        </div>
+      </div>
+    </div></div>`;
+  } else {
+    // Reveal word
+    const revealedWord=[...S.word].map(ch=>{
+      if(ch===' ')return`<div class="letter-slot space"></div>`;
+      const guessed=S.guessed.has(ch);
+      return`<div class="letter-slot ${guessed?'correct':'wrong-reveal'}" style="animation:letterReveal .3s ease">${ch}</div>`;
+    }).join('');
+
+    el.innerHTML=`<div class="card"><div class="card-b">
+      <div class="result">
+        <div class="result-emoji">💀</div>
+        <div class="result-title" style="color:var(--err)">¡Perdiste!</div>
+        <div style="margin-bottom:14px">
+          ${renderHangman()}
+        </div>
+        <div style="font-size:.88rem;color:var(--tx3);margin-bottom:8px">La palabra era:</div>
+        <div class="word-zone" style="margin:8px 0 14px">${revealedWord}</div>
+        <div class="result-def">${S.def}</div>
+        <div class="btn-row">
+          <button class="btn btn-accent" onclick="newGame()" style="background:var(--err-bg);border-color:var(--err-bd);color:var(--err)">🔄 Intentar de Nuevo</button>
+        </div>
+      </div>
+    </div></div>`;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// ACTIONS
+// ═══════════════════════════════════════════════════════════
+function setLvl(l){S.lvl=l;newGame()}
+
+// Keyboard input
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
+  const ch=e.key.toUpperCase();
+  if(/^[A-Z]$/.test(ch)){e.preventDefault();guessLetter(ch)}
+});
+
+// Init
+newGame();
+</script>
+</body>
+</html>

@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shadow Lab — YouTube Shadowing Practice</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#06080f;--s1:#0c1019;--s2:#121825;--s3:#1a2235;--s4:#232e44;
+  --accent:#6366f1;--accent-bg:rgba(99,102,241,.08);--accent-bd:rgba(99,102,241,.25);--accent-glow:rgba(99,102,241,.12);
+  --cyan:#22d3ee;--cyan-bg:rgba(34,211,238,.08);--cyan-bd:rgba(34,211,238,.2);
+  --amber:#f59e0b;--amber-bg:rgba(245,158,11,.07);--amber-bd:rgba(245,158,11,.2);
+  --rose:#f43f5e;--rose-bg:rgba(244,63,94,.08);--rose-bd:rgba(244,63,94,.2);
+  --ok:#22c55e;--ok-bg:rgba(34,197,94,.08);--ok-bd:rgba(34,197,94,.2);
+  --err:#ef4444;--err-bg:rgba(239,68,68,.08);
+  --tx:#e4e8f1;--tx2:#8c97af;--tx3:#55627a;--bd:rgba(255,255,255,.05);--r:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 0%,rgba(99,102,241,.03),transparent 50%),radial-gradient(ellipse at 80% 100%,rgba(34,211,238,.02),transparent 50%);pointer-events:none}
+
+@keyframes fadeD{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeU{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pop{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(244,63,94,.3)}50%{box-shadow:0 0 0 14px rgba(244,63,94,0)}}
+@keyframes wave{0%{height:6px}50%{height:24px}100%{height:6px}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+
+.app{max-width:1200px;margin:0 auto;padding:20px 16px 60px;position:relative;z-index:1}
+
+/* Header */
+.hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;animation:fadeD .5s ease;flex-wrap:wrap;gap:12px}
+.hdr-left{display:flex;align-items:center;gap:12px}
+.hdr-logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--cyan));display:flex;align-items:center;justify-content:center}
+.hdr-logo svg{width:20px;height:20px;color:#fff}
+.hdr-title{font-size:1.2rem;font-weight:700;letter-spacing:-.3px}
+.hdr-title span{color:var(--accent)}
+.hdr-sub{font-size:.75rem;color:var(--tx3);font-weight:400}
+
+/* Stats Bar */
+.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;animation:fadeU .4s ease .1s both}
+@media(max-width:700px){.stats-bar{grid-template-columns:repeat(2,1fr)}}
+.stat{padding:14px 16px;background:var(--s1);border:1px solid var(--bd);border-radius:12px;display:flex;align-items:center;gap:12px}
+.stat-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.stat-icon svg{width:18px;height:18px}
+.stat-val{font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;line-height:1}
+.stat-lbl{font-size:.7rem;color:var(--tx3);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+
+/* URL Input */
+.url-section{animation:fadeU .4s ease .15s both;margin-bottom:20px}
+.url-row{display:flex;gap:8px}
+.url-input{flex:1;padding:12px 16px;border:1.5px solid var(--bd);border-radius:12px;background:var(--s1);color:var(--tx);font-family:'Manrope',sans-serif;font-size:14px;outline:none;transition:border-color .25s}
+.url-input:focus{border-color:var(--accent-bd)}
+.url-input::placeholder{color:var(--tx3)}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border:1px solid var(--bd);border-radius:12px;background:var(--s2);color:var(--tx2);font-family:'Manrope',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
+.btn:hover{background:var(--s3);color:var(--tx);border-color:rgba(255,255,255,.1)}
+.btn svg{width:15px;height:15px}
+.btn-accent{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-accent:hover{background:#5558e6;border-color:#5558e6;color:#fff}
+.btn-sm{padding:7px 14px;font-size:12px;border-radius:10px}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap}
+
+/* Main Layout */
+.main-grid{display:grid;grid-template-columns:1fr 360px;gap:16px;animation:fadeU .4s ease .2s both}
+@media(max-width:900px){.main-grid{grid-template-columns:1fr}}
+
+/* Card */
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden}
+.card-header{padding:16px 20px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.card-title{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--tx3);display:flex;align-items:center;gap:8px}
+.card-body{padding:20px}
+.pill{padding:2px 8px;border-radius:6px;font-size:9px;font-weight:700;letter-spacing:.5px}
+
+/* Video */
+.video-wrap{position:relative;width:100%;padding-top:56.25%;background:#000;border-radius:12px;overflow:hidden;margin-bottom:16px}
+.video-wrap iframe,.video-wrap .placeholder{position:absolute;inset:0;width:100%;height:100%;border:none}
+.placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--tx3);gap:12px;background:var(--s2)}
+.placeholder svg{width:48px;height:48px;opacity:.3}
+.placeholder p{font-size:13px}
+
+/* Speed Controls */
+.speed-row{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.speed-chip{padding:5px 10px;border-radius:8px;border:1px solid var(--bd);background:transparent;color:var(--tx3);font-family:'JetBrains Mono',monospace;font-size:11px;cursor:pointer;transition:all .2s}
+.speed-chip:hover{color:var(--tx2)}.speed-chip.on{background:var(--accent-bg);border-color:var(--accent-bd);color:var(--accent)}
+
+/* Fragment Display */
+.fragment-zone{margin:16px 0}
+.fragment-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.fragment-text{font-size:1.15rem;font-weight:600;line-height:1.7;color:var(--tx);padding:16px;background:var(--s2);border-radius:12px;border:1px solid var(--bd);min-height:60px;position:relative}
+.fragment-text .time-badge{position:absolute;top:8px;right:10px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--tx3);padding:2px 8px;background:var(--s3);border-radius:6px}
+
+/* Mic Button */
+.mic-area{display:flex;flex-direction:column;align-items:center;gap:12px;margin:20px 0}
+.mic-btn{width:72px;height:72px;border-radius:50%;border:2px solid var(--accent-bd);background:var(--s1);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s;position:relative}
+.mic-btn::after{content:'';position:absolute;inset:-5px;border-radius:50%;border:1px solid transparent;transition:all .3s}
+.mic-btn:hover{background:var(--accent-bg);border-color:var(--accent);transform:scale(1.05)}
+.mic-btn:hover::after{border-color:rgba(99,102,241,.1)}
+.mic-btn.recording{background:var(--rose-bg);border-color:var(--rose);animation:pulse 1.5s infinite}
+.mic-btn svg{width:26px;height:26px;color:var(--accent)}
+.mic-btn.recording svg{color:var(--rose)}
+.mic-hint{font-size:12px;color:var(--tx3)}.mic-hint b{color:var(--tx2)}
+
+/* Waves */
+.waves{display:flex;align-items:center;gap:3px;height:28px;opacity:0;transition:opacity .3s}
+.waves.on{opacity:1}
+.waves span{width:3px;border-radius:3px;background:var(--rose);animation:wave .5s ease-in-out infinite alternate}
+.waves span:nth-child(1){animation-delay:0s;height:10px}
+.waves span:nth-child(2){animation-delay:.1s;height:16px}
+.waves span:nth-child(3){animation-delay:.2s;height:12px}
+.waves span:nth-child(4){animation-delay:.15s;height:20px}
+.waves span:nth-child(5){animation-delay:.05s;height:14px}
+
+/* Fragment Nav */
+.frag-nav{display:flex;gap:8px;justify-content:center;align-items:center;margin:14px 0}
+.frag-nav-btn{width:40px;height:40px;border-radius:10px;border:1px solid var(--bd);background:var(--s1);color:var(--tx3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.frag-nav-btn:hover{background:var(--s2);color:var(--tx)}
+.frag-nav-btn svg{width:16px;height:16px}
+.frag-counter{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--tx3);min-width:70px;text-align:center}
+
+/* Sidebar — Comparison & History */
+.comparison-card{margin-bottom:16px}
+.compare-row{padding:14px 16px;border-bottom:1px solid var(--bd)}
+.compare-row:last-child{border-bottom:none}
+.compare-label{font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.compare-text{font-size:.95rem;line-height:1.6}
+
+.score-display{text-align:center;padding:16px}
+.score-num{font-family:'JetBrains Mono',monospace;font-size:2.5rem;font-weight:700}
+.score-msg{font-size:.8rem;color:var(--tx2);margin-top:4px}
+
+/* History List */
+.history-list{max-height:340px;overflow-y:auto}
+.history-item{padding:12px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px;transition:background .15s;cursor:pointer}
+.history-item:hover{background:var(--s2)}
+.history-item:last-child{border-bottom:none}
+.hi-idx{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--tx3);width:36px;flex-shrink:0}
+.hi-text{flex:1;font-size:.82rem;color:var(--tx2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hi-score{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;flex-shrink:0}
+.hi-bar{width:40px;height:4px;border-radius:4px;background:var(--s3);flex-shrink:0;overflow:hidden}
+.hi-bar-fill{height:100%;border-radius:4px;transition:width .5s ease}
+
+/* Toggle */
+.toggle-row{display:flex;align-items:center;gap:10px}
+.toggle{width:42px;height:24px;border-radius:12px;background:var(--s3);cursor:pointer;position:relative;transition:background .25s;border:none;padding:0}
+.toggle::after{content:'';width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:3px;left:3px;transition:transform .25s}
+.toggle.on{background:var(--accent)}
+.toggle.on::after{transform:translateX(18px)}
+.toggle-label{font-size:13px;color:var(--tx2)}
+
+/* Subtitles input */
+.subs-area{margin-top:12px}
+.subs-textarea{width:100%;padding:12px;border:1px solid var(--bd);border-radius:10px;background:var(--s2);color:var(--tx);font-family:'Manrope',sans-serif;font-size:13px;line-height:1.6;resize:vertical;min-height:80px;outline:none}
+.subs-textarea:focus{border-color:var(--accent-bd)}
+.subs-textarea::placeholder{color:var(--tx3)}
+
+/* Diff */
+.diff-ok{color:var(--ok);font-weight:500}
+.diff-err{color:var(--err);text-decoration:line-through;text-decoration-thickness:2px}
+.diff-miss{color:var(--err);opacity:.5;font-style:italic;text-decoration:underline wavy}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--s3);border-radius:5px}
+
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- Header -->
+  <div class="hdr">
+    <div class="hdr-left">
+      <div class="hdr-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg>
+      </div>
+      <div>
+        <div class="hdr-title"><span>Shadow</span> Lab</div>
+        <div class="hdr-sub">YouTube Shadowing Practice</div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-sm" onclick="showHelp()">❓ Cómo usar</button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-bar">
+    <div class="stat">
+      <div class="stat-icon" style="background:var(--accent-bg)"><svg style="color:var(--accent)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+      <div><div class="stat-val" id="statPracticed">0</div><div class="stat-lbl">Practicados</div></div>
+    </div>
+    <div class="stat">
+      <div class="stat-icon" style="background:var(--ok-bg)"><svg style="color:var(--ok)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg></div>
+      <div><div class="stat-val" id="statAvg">—</div><div class="stat-lbl">Precisión</div></div>
+    </div>
+    <div class="stat">
+      <div class="stat-icon" style="background:var(--cyan-bg)"><svg style="color:var(--cyan)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+      <div><div class="stat-val" id="statFragment">0 / 0</div><div class="stat-lbl">Fragmento</div></div>
+    </div>
+    <div class="stat">
+      <div class="stat-icon" style="background:var(--amber-bg)"><svg style="color:var(--amber)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+      <div><div class="stat-val" id="statStreak">0 🔥</div><div class="stat-lbl">Racha</div></div>
+    </div>
+  </div>
+
+  <!-- URL Input -->
+  <div class="url-section">
+    <div class="url-row">
+      <input class="url-input" id="urlInput" placeholder="Pega aquí la URL de YouTube (ej: https://www.youtube.com/watch?v=...)" 
+        onkeydown="if(event.key==='Enter')loadVideo()">
+      <button class="btn btn-accent" onclick="loadVideo()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Cargar
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Grid -->
+  <div class="main-grid">
+    <!-- LEFT: Video + Controls -->
+    <div>
+      <!-- Video Player -->
+      <div class="card" style="margin-bottom:16px">
+        <div class="video-wrap" id="videoWrap">
+          <div class="placeholder" id="videoPlaceholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+            <p>Pega una URL de YouTube para comenzar</p>
+          </div>
+        </div>
+
+        <div class="card-body" style="padding:14px 20px">
+          <!-- Speed -->
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+            <div class="speed-row">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--tx3);letter-spacing:1px">SPEED</span>
+              <button class="speed-chip" onclick="setRate(0.5,this)">0.5x</button>
+              <button class="speed-chip" onclick="setRate(0.75,this)">0.75x</button>
+              <button class="speed-chip on" onclick="setRate(1,this)">1x</button>
+              <button class="speed-chip" onclick="setRate(1.25,this)">1.25x</button>
+              <button class="speed-chip" onclick="setRate(1.5,this)">1.5x</button>
+            </div>
+            <div class="toggle-row">
+              <button class="toggle" id="guidedToggle" onclick="toggleGuided()"></button>
+              <span class="toggle-label">Práctica Guiada</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fragment Practice -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Fragmento Actual
+            <span class="pill" style="background:var(--accent-bg);color:var(--accent)" id="fragPill">—</span>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-sm" onclick="playFragment()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Escuchar
+            </button>
+            <button class="btn btn-sm" onclick="repeatFragment()">🔄 Repetir</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="fragment-text" id="fragmentText">
+            <span style="color:var(--tx3)">Carga un video y añade subtítulos para comenzar...</span>
+          </div>
+
+          <!-- Mic -->
+          <div class="mic-area">
+            <div class="waves" id="waves">
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+            <button class="mic-btn" id="micBtn" onclick="toggleRec()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+            </button>
+            <div class="mic-hint" id="micHint"><b>Toca</b> para grabar tu pronunciación</div>
+          </div>
+
+          <!-- Navigation -->
+          <div class="frag-nav">
+            <button class="frag-nav-btn" onclick="prevFrag()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
+            <span class="frag-counter" id="fragCounter">0 / 0</span>
+            <button class="frag-nav-btn" onclick="nextFrag()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subtitles Input -->
+      <div class="card" style="margin-top:16px">
+        <div class="card-header">
+          <div class="card-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Subtítulos / Fragmentos
+          </div>
+          <button class="btn btn-sm" onclick="parseSubs()">📋 Procesar</button>
+        </div>
+        <div class="card-body">
+          <p style="font-size:.82rem;color:var(--tx3);margin-bottom:10px;line-height:1.5">
+            Pega los subtítulos del video. Un fragmento por línea, o usa formato <code style="background:var(--s3);padding:1px 6px;border-radius:4px;font-size:11px">0:10 Texto aquí</code> para tiempos.
+          </p>
+          <textarea class="subs-textarea" id="subsInput" rows="5" placeholder="0:06 Hello and welcome to 6 Minute English.&#10;0:10 I'm Pippa. And I'm Beth.&#10;0:13 Have you ever been scared of speaking in English?&#10;&#10;O simplemente pega texto sin tiempos, un fragmento por línea."></textarea>
+          <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
+            <button class="btn btn-sm" onclick="loadExample()">📺 Ejemplo BBC</button>
+            <button class="btn btn-sm" onclick="clearSubs()">🗑 Limpiar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Comparison & History -->
+    <div>
+      <!-- Comparison -->
+      <div class="card comparison-card">
+        <div class="card-header">
+          <div class="card-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            Comparación
+          </div>
+        </div>
+        <div id="compareArea">
+          <div class="compare-row">
+            <div class="compare-label" style="color:var(--cyan)">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+              Original
+            </div>
+            <div class="compare-text" id="compareOriginal" style="color:var(--tx2);font-style:italic">—</div>
+          </div>
+          <div class="compare-row">
+            <div class="compare-label" style="color:var(--accent)">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg>
+              Tu pronunciación
+            </div>
+            <div class="compare-text" id="compareYours" style="color:var(--tx3)">—</div>
+          </div>
+          <div class="compare-row">
+            <div class="compare-label" style="color:var(--ok)">📊 Análisis</div>
+            <div class="compare-text" id="compareDiff" style="font-size:.88rem">—</div>
+          </div>
+          <div class="score-display" id="scoreDisplay" style="display:none">
+            <div class="score-num" id="scoreNum">—</div>
+            <div class="score-msg" id="scoreMsg">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- History -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Historial
+            <span class="pill" style="background:var(--s3);color:var(--tx3)" id="histCount">0</span>
+          </div>
+          <button class="btn btn-sm" onclick="clearHistory()">🗑</button>
+        </div>
+        <div class="history-list" id="historyList">
+          <div style="padding:24px;text-align:center;color:var(--tx3);font-size:.85rem">
+            Practica fragmentos para ver tu historial aquí
+          </div>
+        </div>
+      </div>
+
+      <!-- Help -->
+      <div class="card hidden" id="helpCard" style="margin-top:16px">
+        <div class="card-header">
+          <div class="card-title">❓ Cómo usar Shadow Lab</div>
+          <button class="btn btn-sm" onclick="document.getElementById('helpCard').classList.add('hidden')">✕</button>
+        </div>
+        <div class="card-body" style="font-size:.85rem;color:var(--tx2);line-height:1.7">
+          <p><b style="color:var(--tx)">1.</b> Pega una URL de YouTube y haz clic en "Cargar"</p>
+          <p><b style="color:var(--tx)">2.</b> Añade los subtítulos en el área de texto (con o sin timestamps)</p>
+          <p><b style="color:var(--tx)">3.</b> Haz clic en "Procesar" para dividir en fragmentos</p>
+          <p><b style="color:var(--tx)">4.</b> Escucha cada fragmento con "Escuchar"</p>
+          <p><b style="color:var(--tx)">5.</b> Graba tu voz con el botón de micrófono</p>
+          <p><b style="color:var(--tx)">6.</b> Compara tu pronunciación con el original</p>
+          <p style="margin-top:8px"><b style="color:var(--accent)">Tip:</b> Activa "Práctica Guiada" para que avance automáticamente.</p>
+          <p><b style="color:var(--amber)">Tip:</b> Puedes obtener subtítulos de YouTube dando clic en "..." → "Abrir transcripción".</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- YouTube IFrame API -->
+<script>
+// ═══════════════════════════════════════════════
+// YouTube API
+// ═══════════════════════════════════════════════
+let player = null;
+let ytReady = false;
+
+const tag = document.createElement('script');
+tag.src = "https://www.youtube.com/iframe_api";
+document.head.appendChild(tag);
+
+function onYouTubeIframeAPIReady() { ytReady = true; }
+
+function extractVideoId(url) {
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
+    /^([a-zA-Z0-9_-]{11})$/
+  ];
+  for (const p of patterns) { const m = url.match(p); if (m) return m[1]; }
+  return null;
+}
+
+function loadVideo() {
+  const url = document.getElementById('urlInput').value.trim();
+  const id = extractVideoId(url);
+  if (!id) { alert('URL de YouTube no válida'); return; }
+
+  document.getElementById('videoPlaceholder')?.remove();
+  const wrap = document.getElementById('videoWrap');
+
+  if (player) {
+    player.loadVideoById(id);
+  } else {
+    const div = document.createElement('div');
+    div.id = 'ytPlayer';
+    wrap.appendChild(div);
+    player = new YT.Player('ytPlayer', {
+      videoId: id,
+      playerVars: { autoplay: 0, modestbranding: 1, rel: 0 },
+      events: { onReady: () => console.log('Player ready') }
+    });
+  }
+}
+
+function setRate(rate, btn) {
+  if (player && player.setPlaybackRate) player.setPlaybackRate(rate);
+  document.querySelectorAll('.speed-chip').forEach(c => c.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+let S = {
+  fragments: [],   // {text, time}
+  idx: 0,
+  guided: false,
+  recording: false,
+  history: [],     // {idx, original, spoken, score}
+  stats: { practiced: 0, total: 0, streak: 0, best: 0 }
+};
+
+// ═══════════════════════════════════════════════
+// SUBTITLES PARSING
+// ═══════════════════════════════════════════════
+function parseSubs() {
+  const raw = document.getElementById('subsInput').value.trim();
+  if (!raw) return;
+
+  const lines = raw.split('\n').filter(l => l.trim());
+  S.fragments = [];
+
+  // Detect format: YouTube puts timestamp on one line, text on next
+  // Format A: "0:10 Text here" (same line)
+  // Format B: "0:10\nText here" (two lines — YouTube transcript)
+  
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i].trim();
+    
+    // Check if this line is ONLY a timestamp (YouTube format)
+    const pureTime = line.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?$/);
+    if (pureTime) {
+      let seconds;
+      if (pureTime[3]) {
+        seconds = parseInt(pureTime[1]) * 3600 + parseInt(pureTime[2]) * 60 + parseInt(pureTime[3]);
+      } else {
+        seconds = parseInt(pureTime[1]) * 60 + parseInt(pureTime[2]);
+      }
+      // Next line(s) are the text — collect until next timestamp
+      let text = '';
+      while (i + 1 < lines.length && !lines[i + 1].trim().match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?$/)) {
+        i++;
+        text += (text ? ' ' : '') + lines[i].trim();
+      }
+      if (text) S.fragments.push({ text, time: seconds });
+      i++;
+      continue;
+    }
+
+    // Check if timestamp + text on same line
+    const inlineTime = line.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?\s+(.+)/);
+    if (inlineTime) {
+      let seconds;
+      if (inlineTime[3]) {
+        seconds = parseInt(inlineTime[1]) * 3600 + parseInt(inlineTime[2]) * 60 + parseInt(inlineTime[3]);
+      } else {
+        seconds = parseInt(inlineTime[1]) * 60 + parseInt(inlineTime[2]);
+      }
+      S.fragments.push({ text: inlineTime[4].trim(), time: seconds });
+      i++;
+      continue;
+    }
+
+    // Plain text line (no timestamp)
+    S.fragments.push({ text: line, time: null });
+    i++;
+  }
+
+  S.idx = 0;
+  updateUI();
+}
+
+function loadExample() {
+  document.getElementById('subsInput').value =
+`0:06 Hello and welcome to 6 Minute English from BBC Learning English.
+0:10 I'm Pippa. And I'm Beth.
+0:13 Have you ever been scared of speaking in English?
+0:16 Yeah, I've always felt like that with Spanish.
+0:20 But today we're going to discuss ways to overcome that fear.
+0:25 Speaking a foreign language can make you feel vulnerable.
+0:29 It's natural to worry about making mistakes in front of other people.
+0:34 But the key is to keep practising and not give up.
+0:38 Many language learners experience something called foreign language anxiety.
+0:43 This is a feeling of nervousness when using a second language.
+0:48 Research shows that it can significantly affect your performance.
+0:52 The good news is that regular practice helps reduce this anxiety over time.
+0:58 So the more you speak, the more confident you become.
+1:02 That's absolutely right. Let's start with today's quiz question.
+1:07 According to research, what percentage of language learners experience speaking anxiety?
+1:13 Is it A: about thirty percent, B: about fifty percent, or C: about seventy percent?`;
+  parseSubs();
+}
+
+function clearSubs() {
+  document.getElementById('subsInput').value = '';
+  S.fragments = [];
+  S.idx = 0;
+  S.history = [];
+  updateUI();
+}
+
+// ═══════════════════════════════════════════════
+// FRAGMENT PLAYBACK
+// ═══════════════════════════════════════════════
+function playFragment() {
+  if (!S.fragments.length) return;
+  const frag = S.fragments[S.idx];
+
+  if (frag.time !== null && player && player.seekTo) {
+    player.seekTo(frag.time, true);
+    player.playVideo();
+    // Stop after approximate fragment duration
+    const nextFrag = S.fragments[S.idx + 1];
+    const duration = nextFrag && nextFrag.time !== null ? (nextFrag.time - frag.time) : 5;
+    setTimeout(() => { if (player && player.pauseVideo) player.pauseVideo(); }, duration * 1000);
+  } else {
+    // Use TTS fallback
+    speakText(frag.text);
+  }
+}
+
+function repeatFragment() {
+  if (!S.fragments.length) return;
+  speakText(S.fragments[S.idx].text);
+}
+
+function speakText(text) {
+  if (!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-US'; u.rate = 0.85;
+  const voices = speechSynthesis.getVoices();
+  const v = voices.find(v => v.lang.startsWith('en') && v.name.includes('Google')) || voices.find(v => v.lang.startsWith('en-US'));
+  if (v) u.voice = v;
+  speechSynthesis.speak(u);
+}
+
+// ═══════════════════════════════════════════════
+// SPEECH RECOGNITION
+// ═══════════════════════════════════════════════
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition = null;
+
+if (SpeechRecognition) {
+  recognition = new SpeechRecognition();
+  recognition.lang = 'en-US';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 3;
+
+  recognition.onresult = (e) => {
+    const spoken = e.results[0][0].transcript;
+    const confidence = e.results[0][0].confidence;
+    stopRec();
+    analyzeResult(spoken, confidence);
+  };
+
+  recognition.onerror = (e) => {
+    stopRec();
+    document.getElementById('micHint').innerHTML = e.error === 'no-speech'
+      ? 'No se detectó voz. <b>Intenta de nuevo</b>'
+      : `Error: ${e.error}`;
+  };
+
+  recognition.onend = () => { if (S.recording) stopRec(); };
+}
+
+function toggleRec() {
+  if (S.recording) { recognition.stop(); stopRec(); }
+  else startRec();
+}
+
+function startRec() {
+  if (!recognition || !S.fragments.length) return;
+  S.recording = true;
+  document.getElementById('micBtn').classList.add('recording');
+  document.getElementById('waves').classList.add('on');
+  document.getElementById('micHint').innerHTML = '<b>Escuchando...</b> Toca para detener';
+  recognition.start();
+}
+
+function stopRec() {
+  S.recording = false;
+  document.getElementById('micBtn').classList.remove('recording');
+  document.getElementById('waves').classList.remove('on');
+  document.getElementById('micHint').innerHTML = '<b>Toca</b> para grabar tu pronunciación';
+}
+
+// ═══════════════════════════════════════════════
+// ANALYSIS
+// ═══════════════════════════════════════════════
+function normalize(t) {
+  return t.toLowerCase().replace(/[^a-z0-9'\s]/g, '').replace(/\s+/g, ' ').trim();
+}
+
+function levenshtein(a, b) {
+  const m = a.length, n = b.length;
+  const dp = Array.from({ length: m + 1 }, () => Array(n + 1).fill(0));
+  for (let i = 0; i <= m; i++) dp[i][0] = i;
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+  for (let i = 1; i <= m; i++)
+    for (let j = 1; j <= n; j++)
+      dp[i][j] = a[i-1] === b[j-1] ? dp[i-1][j-1] : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+  return dp[m][n];
+}
+
+function wordSim(a, b) {
+  if (a === b) return 1;
+  return Math.max(0, 1 - levenshtein(a, b) / Math.max(a.length, b.length));
+}
+
+function analyzeResult(spoken, confidence) {
+  if (!S.fragments.length) return;
+  const original = S.fragments[S.idx].text;
+  const tw = normalize(original).split(' ');
+  const sw = normalize(spoken).split(' ');
+
+  // Word alignment
+  let matched = 0;
+  let diffHTML = '';
+  let ti = 0, si = 0;
+
+  while (ti < tw.length) {
+    if (si >= sw.length) {
+      diffHTML += `<span class="diff-miss">${tw[ti]}</span> `;
+      ti++;
+      continue;
+    }
+    const sim = wordSim(tw[ti], sw[si]);
+    if (sim >= 0.8) {
+      matched++;
+      diffHTML += `<span class="diff-ok">${tw[ti]}</span> `;
+      ti++; si++;
+    } else if (si + 1 < sw.length && wordSim(tw[ti], sw[si + 1]) > 0.7) {
+      si++;
+    } else if (ti + 1 < tw.length && wordSim(tw[ti + 1], sw[si]) > 0.7) {
+      diffHTML += `<span class="diff-miss">${tw[ti]}</span> `;
+      ti++;
+    } else {
+      diffHTML += `<span class="diff-err">${tw[ti]}</span> `;
+      ti++; si++;
+    }
+  }
+
+  const score = Math.round(Math.min(100, (matched / tw.length) * 100 * (0.5 + confidence * 0.5)));
+
+  // Update comparison
+  document.getElementById('compareOriginal').textContent = original;
+  document.getElementById('compareYours').textContent = spoken;
+  document.getElementById('compareDiff').innerHTML = diffHTML;
+
+  const sd = document.getElementById('scoreDisplay');
+  sd.style.display = 'block';
+  const sn = document.getElementById('scoreNum');
+  const sm = document.getElementById('scoreMsg');
+  sn.textContent = score + '%';
+  sn.style.color = score >= 80 ? 'var(--ok)' : score >= 50 ? 'var(--amber)' : 'var(--err)';
+  sm.textContent = score >= 90 ? '🌟 ¡Excelente pronunciación!' : score >= 70 ? '👍 ¡Muy bien! Sigue así' : score >= 50 ? '💪 Vas mejorando, repite el fragmento' : '🔄 Escucha de nuevo e intenta otra vez';
+
+  // Stats
+  S.stats.practiced++;
+  S.stats.total += score;
+  if (score >= 70) { S.stats.streak++; S.stats.best = Math.max(S.stats.best, S.stats.streak); }
+  else S.stats.streak = 0;
+
+  // History
+  S.history.push({ idx: S.idx, original, spoken, score });
+  updateUI();
+
+  // Auto-advance in guided mode
+  if (S.guided && score >= 70) {
+    setTimeout(() => { nextFrag(); }, 2000);
+  }
+}
+
+// ═══════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════
+function prevFrag() {
+  if (S.idx > 0) { S.idx--; resetComparison(); updateUI(); }
+}
+
+function nextFrag() {
+  if (S.idx < S.fragments.length - 1) { S.idx++; resetComparison(); updateUI(); }
+}
+
+function goToFrag(i) {
+  S.idx = i;
+  resetComparison();
+  updateUI();
+  playFragment();
+}
+
+function resetComparison() {
+  document.getElementById('compareOriginal').textContent = '—';
+  document.getElementById('compareYours').textContent = '—';
+  document.getElementById('compareDiff').innerHTML = '—';
+  document.getElementById('scoreDisplay').style.display = 'none';
+}
+
+function toggleGuided() {
+  S.guided = !S.guided;
+  document.getElementById('guidedToggle').classList.toggle('on', S.guided);
+}
+
+// ═══════════════════════════════════════════════
+// UI UPDATE
+// ═══════════════════════════════════════════════
+function updateUI() {
+  const n = S.fragments.length;
+
+  // Stats
+  document.getElementById('statPracticed').textContent = S.stats.practiced;
+  document.getElementById('statAvg').textContent = S.stats.practiced
+    ? Math.round(S.stats.total / S.stats.practiced) + '%' : '—';
+  document.getElementById('statFragment').textContent = n ? `${S.idx + 1} / ${n}` : '0 / 0';
+  document.getElementById('statStreak').textContent = S.stats.streak + ' 🔥';
+
+  // Fragment
+  if (n) {
+    const frag = S.fragments[S.idx];
+    const timeStr = frag.time !== null ? formatTime(frag.time) : '';
+    document.getElementById('fragmentText').innerHTML =
+      `${frag.text}${timeStr ? `<span class="time-badge">${timeStr}</span>` : ''}`;
+    document.getElementById('fragPill').textContent = `${S.idx + 1} / ${n}`;
+    document.getElementById('fragCounter').textContent = `${S.idx + 1} / ${n}`;
+  }
+
+  // History
+  renderHistory();
+}
+
+function renderHistory() {
+  const el = document.getElementById('historyList');
+  document.getElementById('histCount').textContent = S.history.length;
+
+  if (!S.history.length) {
+    el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--tx3);font-size:.85rem">Practica fragmentos para ver tu historial aquí</div>';
+    return;
+  }
+
+  el.innerHTML = S.history.slice().reverse().map((h, ri) => {
+    const color = h.score >= 80 ? 'var(--ok)' : h.score >= 50 ? 'var(--amber)' : 'var(--err)';
+    return `
+      <div class="history-item" onclick="goToFrag(${h.idx})">
+        <div class="hi-idx">#${h.idx + 1}</div>
+        <div class="hi-text">${h.original}</div>
+        <div class="hi-bar"><div class="hi-bar-fill" style="width:${h.score}%;background:${color}"></div></div>
+        <div class="hi-score" style="color:${color}">${h.score}%</div>
+      </div>`;
+  }).join('');
+}
+
+function formatTime(s) {
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${m}:${String(sec).padStart(2, '0')}`;
+}
+
+function showHelp() {
+  document.getElementById('helpCard').classList.toggle('hidden');
+}
+
+function clearHistory() {
+  S.history = [];
+  S.stats = { practiced: 0, total: 0, streak: 0, best: 0 };
+  resetComparison();
+  updateUI();
+}
+
+// Init voices
+if ('speechSynthesis' in window) speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+updateUI();
+</script>
+</body>
+</html>

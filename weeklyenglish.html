@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WeeklyEnglish — 13 Semanas de Inglés</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+--bg:#03060e;--s1:#0a0f1c;--s2:#101729;--s3:#17203a;--s4:#1e2a4a;
+--w1:#22d3ee;--w1B:rgba(34,211,238,.06);--w1D:rgba(34,211,238,.25);
+--w2:#a78bfa;--w2B:rgba(167,139,250,.06);--w2D:rgba(167,139,250,.25);
+--w3:#f472b6;--w3B:rgba(244,114,182,.06);--w3D:rgba(244,114,182,.25);
+--w4:#fbbf24;--w4B:rgba(251,191,36,.06);--w4D:rgba(251,191,36,.25);
+--w5:#34d399;--w5B:rgba(52,211,153,.06);--w5D:rgba(52,211,153,.25);
+--w6:#fb923c;--w6B:rgba(251,146,60,.06);--w6D:rgba(251,146,60,.25);
+--ok:#22c55e;--okB:rgba(34,197,94,.08);--okD:rgba(34,197,94,.25);
+--er:#ef4444;--erB:rgba(239,68,68,.06);--erD:rgba(239,68,68,.25);
+--tx:#e2e8f2;--tx2:#8b97b0;--tx3:#55637b;--bd:rgba(255,255,255,.05);--r:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 0%,rgba(34,211,238,.012),transparent 50%),radial-gradient(ellipse at 80% 100%,rgba(167,139,250,.012),transparent 50%);pointer-events:none}
+.app{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:14px 12px 70px}
+@keyframes fadeU{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pop{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+.hdr{text-align:center;margin-bottom:16px;animation:fadeU .4s ease}
+.hdr h1{font-size:1.9rem;font-weight:700;letter-spacing:-.3px}
+.hdr p{color:var(--tx2);font-size:.82rem;margin-top:2px}
+
+.sts{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:12px}
+@media(max-width:480px){.sts{grid-template-columns:repeat(2,1fr)}}
+.st{padding:9px;background:var(--s1);border:1px solid var(--bd);border-radius:10px;text-align:center}
+.st b{font-family:'JetBrains Mono',monospace;font-size:1rem;display:block}
+.st small{font-size:7px;color:var(--tx3);text-transform:uppercase;letter-spacing:.6px}
+
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:10px;animation:fadeU .3s ease}
+.card-h{padding:10px 14px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:5px;flex-wrap:wrap}
+.card-t{font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:1.4px;color:var(--tx3);display:flex;align-items:center;gap:6px}
+.card-b{padding:14px}
+.pill{padding:2px 8px;border-radius:5px;font-size:8px;font-weight:700}
+
+.btn{display:inline-flex;align-items:center;gap:4px;padding:7px 14px;border:1px solid var(--bd);border-radius:9px;background:var(--s2);color:var(--tx2);font-family:inherit;font-size:11px;font-weight:600;cursor:pointer;transition:all .18s;white-space:nowrap}
+.btn:hover{background:var(--s3);color:var(--tx)}
+.btn-sm{padding:5px 10px;font-size:10px}
+.btn-ok{background:var(--okB);border-color:var(--okD);color:var(--ok)}
+.btn-ok:hover{background:rgba(34,197,94,.15)}
+.btn-row{display:flex;gap:5px;justify-content:center;flex-wrap:wrap}
+
+.spk{border:none;background:none;cursor:pointer;color:var(--tx3);transition:all .12s;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;padding:3px}
+.spk:hover{color:var(--tx);transform:scale(1.1)}
+.spk svg{width:15px;height:15px}
+
+/* Week selector */
+.weeks{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:5px;margin-bottom:12px}
+.wk{padding:10px 8px;background:var(--s1);border:1.5px solid var(--bd);border-radius:11px;cursor:pointer;transition:all .18s;text-align:center}
+.wk:hover{border-color:rgba(255,255,255,.1);background:var(--s2)}
+.wk.active{border-width:2px}
+.wk.locked{opacity:.4;pointer-events:none}
+.wk .wn{font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700}
+.wk .wt{font-size:9px;color:var(--tx2);margin-top:2px;line-height:1.3}
+.wk .wp{height:3px;background:var(--s3);border-radius:3px;margin-top:5px;overflow:hidden}
+.wk .wp i{display:block;height:100%;border-radius:3px;transition:width .3s}
+
+/* Tabs inside week */
+.wtabs{display:flex;gap:3px;justify-content:center;flex-wrap:wrap;margin-bottom:12px}
+.wtab{padding:6px 12px;border-radius:100px;border:1.5px solid var(--bd);background:var(--s1);color:var(--tx3);font-size:10.5px;font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit}
+.wtab.on{background:var(--s3);color:var(--tx);border-color:rgba(255,255,255,.1)}
+
+/* Vocab grid */
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:5px}
+.vcard{padding:10px;background:var(--s2);border-radius:10px;border:1px solid var(--bd);cursor:pointer;transition:all .15s;text-align:center}
+.vcard:hover{border-color:rgba(255,255,255,.08);background:var(--s3)}
+.vcard .ven{font-size:.9rem;font-weight:700}
+.vcard .ves{font-size:.78rem;color:var(--tx2);margin-top:2px}
+.vcard .vem{font-size:1.1rem;margin-bottom:3px}
+
+/* Exercise styles */
+.ex-q{font-size:1.05rem;font-weight:700;text-align:center;line-height:1.5;padding:14px;background:var(--s2);border-radius:11px;border:1px solid var(--bd);margin-bottom:10px}
+.ex-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+@media(max-width:480px){.ex-grid{grid-template-columns:1fr}}
+.ex-opt{padding:10px 12px;border:1.5px solid var(--bd);border-radius:10px;background:var(--s2);color:var(--tx2);font-size:12px;font-weight:500;cursor:pointer;transition:all .18s;text-align:center;font-family:inherit}
+.ex-opt:hover:not(.dis){border-color:rgba(255,255,255,.08);color:var(--tx);background:var(--s3)}
+.ex-opt.right{border-color:var(--okD);background:var(--okB);color:var(--ok)}
+.ex-opt.wrong{border-color:var(--erD);background:var(--erB);color:var(--er)}
+.ex-opt.dis{pointer-events:none}
+
+.ex-input{width:100%;padding:10px 14px;border:2px solid var(--bd);border-radius:10px;background:var(--s2);color:var(--tx);font-family:inherit;font-size:14px;outline:none;transition:border-color .2s;text-align:center}
+.ex-input:focus{border-color:var(--w1D)}
+.ex-input.ok{border-color:var(--ok)}.ex-input.bad{border-color:var(--er);animation:shake .3s}
+
+.fb{padding:9px 12px;border-radius:9px;font-size:12px;line-height:1.4;margin:8px 0;display:none;animation:pop .25s ease}
+.fb.show{display:block}
+
+.prog{display:flex;gap:2px;margin-bottom:10px}
+.prog-d{height:3px;flex:1;border-radius:3px;background:var(--s3)}.prog-d.ok{background:var(--ok)}.prog-d.er{background:var(--er)}.prog-d.cur{background:var(--tx3)}
+
+/* Match exercise */
+.match-col{display:flex;flex-direction:column;gap:5px}
+.match-item{padding:9px 12px;border:1.5px solid var(--bd);border-radius:9px;background:var(--s2);font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;text-align:center}
+.match-item:hover{border-color:rgba(255,255,255,.1)}
+.match-item.sel{border-color:var(--w1D);background:var(--w1B);color:var(--w1)}
+.match-item.matched{border-color:var(--okD);background:var(--okB);color:var(--ok);pointer-events:none;opacity:.6}
+.match-item.wrong-flash{border-color:var(--erD);background:var(--erB)}
+
+.score-big{font-family:'JetBrains Mono',monospace;font-size:2.5rem;font-weight:700;text-align:center}
+.hidden{display:none!important}.tc{text-align:center}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:var(--s3);border-radius:3px}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="hdr">
+  <h1>📚 <span style="color:var(--w1)">Weekly</span>English</h1>
+  <p>13 semanas · 30 min diarios · Del vocabulario a la conversación</p>
+</div>
+<div class="sts" id="stats"></div>
+<div id="main"></div>
+</div>
+
+<script>
+const SPK=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>`;
+function speak(t,r=.82){if(!('speechSynthesis' in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=r;const v=speechSynthesis.getVoices();const p=v.find(x=>x.lang.startsWith('en')&&x.name.includes('Google'))||v.find(x=>x.lang.startsWith('en-US'))||v.find(x=>x.lang.startsWith('en'));if(p)u.voice=p;speechSynthesis.speak(u)}
+if('speechSynthesis' in window)speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices();
+const esc=s=>s.replace(/'/g,"\\'");
+const shuffle=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]]}return b};
+
+// ═══════════════════════════════════════════════════════════
+// 13-WEEK DATABASE
+// ═══════════════════════════════════════════════════════════
+const WEEKS=[
+{id:0,title:"Colores y objetos del día a día",icon:"🎨",desc:"Vocabulario visual: casa, calle y entorno",color:"var(--w1)",bg:"var(--w1B)",bd:"var(--w1D)",
+vocab:[
+{en:"red",es:"rojo"},{en:"blue",es:"azul"},{en:"green",es:"verde"},{en:"yellow",es:"amarillo"},{en:"black",es:"negro"},{en:"white",es:"blanco"},{en:"orange",es:"naranja"},{en:"purple",es:"morado"},{en:"pink",es:"rosa"},{en:"brown",es:"café"},
+{en:"table",es:"mesa"},{en:"chair",es:"silla"},{en:"door",es:"puerta"},{en:"window",es:"ventana"},{en:"phone",es:"teléfono"},{en:"book",es:"libro"},{en:"pen",es:"pluma"},{en:"bag",es:"bolsa"},{en:"key",es:"llave"},{en:"car",es:"carro"},
+{en:"clock",es:"reloj"},{en:"lamp",es:"lámpara"},{en:"cup",es:"taza"},{en:"bottle",es:"botella"},{en:"umbrella",es:"paraguas"},{en:"wallet",es:"cartera"},{en:"glasses",es:"lentes"},{en:"box",es:"caja"},{en:"paper",es:"papel"},{en:"light",es:"luz"},
+],
+phrases:[
+{en:"The car is red.",es:"El carro es rojo."},{en:"I have a blue pen.",es:"Tengo una pluma azul."},{en:"The door is open.",es:"La puerta está abierta."},
+{en:"Where are my keys?",es:"¿Dónde están mis llaves?"},{en:"The book is on the table.",es:"El libro está en la mesa."},{en:"I need my glasses.",es:"Necesito mis lentes."},
+{en:"The light is off.",es:"La luz está apagada."},{en:"This cup is green.",es:"Esta taza es verde."},{en:"I lost my wallet.",es:"Perdí mi cartera."},{en:"The clock is broken.",es:"El reloj está roto."},
+]},
+
+{id:1,title:"Mi cuerpo y objetos personales",icon:"🧍",desc:"Hablar de ti mismo y lo que usas",color:"var(--w2)",bg:"var(--w2B)",bd:"var(--w2D)",
+vocab:[
+{en:"head",es:"cabeza"},{en:"hair",es:"cabello"},{en:"eyes",es:"ojos"},{en:"nose",es:"nariz"},{en:"mouth",es:"boca"},{en:"ears",es:"orejas"},{en:"teeth",es:"dientes"},{en:"neck",es:"cuello"},{en:"shoulder",es:"hombro"},{en:"arm",es:"brazo"},
+{en:"hand",es:"mano"},{en:"finger",es:"dedo"},{en:"leg",es:"pierna"},{en:"knee",es:"rodilla"},{en:"foot",es:"pie"},{en:"back",es:"espalda"},{en:"chest",es:"pecho"},{en:"stomach",es:"estómago"},{en:"face",es:"cara"},{en:"skin",es:"piel"},
+{en:"watch",es:"reloj de mano"},{en:"ring",es:"anillo"},{en:"necklace",es:"collar"},{en:"backpack",es:"mochila"},{en:"toothbrush",es:"cepillo de dientes"},{en:"soap",es:"jabón"},{en:"towel",es:"toalla"},{en:"comb",es:"peine"},{en:"mirror",es:"espejo"},{en:"perfume",es:"perfume"},
+],
+phrases:[
+{en:"My head hurts.",es:"Me duele la cabeza."},{en:"I have brown eyes.",es:"Tengo ojos cafés."},{en:"She has long hair.",es:"Ella tiene cabello largo."},
+{en:"I wash my hands.",es:"Me lavo las manos."},{en:"My back hurts.",es:"Me duele la espalda."},{en:"Where is my watch?",es:"¿Dónde está mi reloj?"},
+{en:"I brush my teeth every day.",es:"Me lavo los dientes todos los días."},{en:"He has strong arms.",es:"Él tiene brazos fuertes."},{en:"I need a towel.",es:"Necesito una toalla."},{en:"My feet are cold.",es:"Mis pies están fríos."},
+]},
+
+{id:2,title:"Ropa y comida",icon:"👗🍎",desc:"Describir lo que llevas y lo que comes",color:"var(--w3)",bg:"var(--w3B)",bd:"var(--w3D)",
+vocab:[
+{en:"shirt",es:"camisa"},{en:"pants",es:"pantalones"},{en:"shoes",es:"zapatos"},{en:"dress",es:"vestido"},{en:"jacket",es:"chaqueta"},{en:"hat",es:"sombrero"},{en:"socks",es:"calcetines"},{en:"skirt",es:"falda"},{en:"tie",es:"corbata"},{en:"boots",es:"botas"},
+{en:"apple",es:"manzana"},{en:"bread",es:"pan"},{en:"chicken",es:"pollo"},{en:"rice",es:"arroz"},{en:"egg",es:"huevo"},{en:"milk",es:"leche"},{en:"cheese",es:"queso"},{en:"water",es:"agua"},{en:"salad",es:"ensalada"},{en:"soup",es:"sopa"},
+{en:"banana",es:"plátano"},{en:"orange",es:"naranja"},{en:"coffee",es:"café"},{en:"sugar",es:"azúcar"},{en:"salt",es:"sal"},{en:"fish",es:"pescado"},{en:"meat",es:"carne"},{en:"tomato",es:"tomate"},{en:"potato",es:"papa"},{en:"juice",es:"jugo"},
+],
+phrases:[
+{en:"I'm wearing a blue shirt.",es:"Traigo una camisa azul."},{en:"These shoes are comfortable.",es:"Estos zapatos son cómodos."},{en:"I want chicken and rice.",es:"Quiero pollo y arroz."},
+{en:"Do you like coffee?",es:"¿Te gusta el café?"},{en:"She is wearing a red dress.",es:"Ella trae un vestido rojo."},{en:"I need more salt.",es:"Necesito más sal."},
+{en:"The soup is hot.",es:"La sopa está caliente."},{en:"I eat eggs for breakfast.",es:"Desayuno huevos."},{en:"Put on your jacket.",es:"Ponte la chaqueta."},{en:"I drink juice every morning.",es:"Tomo jugo cada mañana."},
+]},
+
+{id:3,title:"La casa y lo que hay en ella",icon:"🏠",desc:"Explica cómo es tu hogar y qué hay",color:"var(--w4)",bg:"var(--w4B)",bd:"var(--w4D)",
+vocab:[
+{en:"kitchen",es:"cocina"},{en:"bedroom",es:"recámara"},{en:"bathroom",es:"baño"},{en:"living room",es:"sala"},{en:"garden",es:"jardín"},{en:"stairs",es:"escaleras"},{en:"roof",es:"techo"},{en:"floor",es:"piso"},{en:"wall",es:"pared"},{en:"garage",es:"garaje"},
+{en:"bed",es:"cama"},{en:"sofa",es:"sofá"},{en:"stove",es:"estufa"},{en:"fridge",es:"refrigerador"},{en:"oven",es:"horno"},{en:"sink",es:"lavabo"},{en:"shower",es:"regadera"},{en:"toilet",es:"inodoro"},{en:"closet",es:"clóset"},{en:"drawer",es:"cajón"},
+{en:"pillow",es:"almohada"},{en:"blanket",es:"cobija"},{en:"curtain",es:"cortina"},{en:"carpet",es:"alfombra"},{en:"shelf",es:"repisa"},{en:"painting",es:"cuadro"},{en:"fan",es:"ventilador"},{en:"microwave",es:"microondas"},{en:"trash can",es:"bote de basura"},{en:"doorbell",es:"timbre"},
+],
+phrases:[
+{en:"The kitchen is big.",es:"La cocina es grande."},{en:"I sleep in my bedroom.",es:"Duermo en mi recámara."},{en:"There is a sofa in the living room.",es:"Hay un sofá en la sala."},
+{en:"The fridge is empty.",es:"El refrigerador está vacío."},{en:"I take a shower every morning.",es:"Me ducho todas las mañanas."},{en:"The stairs are dangerous.",es:"Las escaleras son peligrosas."},
+{en:"Close the curtains, please.",es:"Cierra las cortinas, por favor."},{en:"The bed is very comfortable.",es:"La cama es muy cómoda."},{en:"Someone rang the doorbell.",es:"Alguien tocó el timbre."},{en:"The garden has flowers.",es:"El jardín tiene flores."},
+]},
+
+{id:4,title:"Lugares de la ciudad y animales",icon:"🏙️🐕",desc:"Moverse por la ciudad y hablar de animales",color:"var(--w5)",bg:"var(--w5B)",bd:"var(--w5D)",
+vocab:[
+{en:"school",es:"escuela"},{en:"hospital",es:"hospital"},{en:"park",es:"parque"},{en:"store",es:"tienda"},{en:"bank",es:"banco"},{en:"church",es:"iglesia"},{en:"airport",es:"aeropuerto"},{en:"station",es:"estación"},{en:"library",es:"biblioteca"},{en:"museum",es:"museo"},
+{en:"street",es:"calle"},{en:"bridge",es:"puente"},{en:"market",es:"mercado"},{en:"restaurant",es:"restaurante"},{en:"pharmacy",es:"farmacia"},{en:"office",es:"oficina"},{en:"gym",es:"gimnasio"},{en:"theater",es:"teatro"},{en:"hotel",es:"hotel"},{en:"bakery",es:"panadería"},
+{en:"dog",es:"perro"},{en:"cat",es:"gato"},{en:"bird",es:"pájaro"},{en:"fish",es:"pez"},{en:"horse",es:"caballo"},{en:"cow",es:"vaca"},{en:"chicken",es:"gallina"},{en:"rabbit",es:"conejo"},{en:"turtle",es:"tortuga"},{en:"butterfly",es:"mariposa"},
+],
+phrases:[
+{en:"The school is near the park.",es:"La escuela está cerca del parque."},{en:"I go to the gym every day.",es:"Voy al gimnasio todos los días."},{en:"My dog is very friendly.",es:"Mi perro es muy amigable."},
+{en:"Where is the nearest bank?",es:"¿Dónde está el banco más cercano?"},{en:"The library has many books.",es:"La biblioteca tiene muchos libros."},{en:"I saw a butterfly in the garden.",es:"Vi una mariposa en el jardín."},
+{en:"The hospital is on Main Street.",es:"El hospital está en la calle principal."},{en:"She has two cats.",es:"Ella tiene dos gatos."},{en:"The market closes at nine.",es:"El mercado cierra a las nueve."},{en:"Birds sing in the morning.",es:"Los pájaros cantan en la mañana."},
+]},
+
+{id:5,title:"Emociones y cómo me siento",icon:"😊😢",desc:"Expresar cómo estás emocional y físicamente",color:"var(--w6)",bg:"var(--w6B)",bd:"var(--w6D)",
+vocab:[
+{en:"happy",es:"feliz"},{en:"sad",es:"triste"},{en:"angry",es:"enojado"},{en:"tired",es:"cansado"},{en:"scared",es:"asustado"},{en:"excited",es:"emocionado"},{en:"nervous",es:"nervioso"},{en:"bored",es:"aburrido"},{en:"surprised",es:"sorprendido"},{en:"confused",es:"confundido"},
+{en:"hungry",es:"hambriento"},{en:"thirsty",es:"sediento"},{en:"sick",es:"enfermo"},{en:"cold",es:"frío"},{en:"hot",es:"caliente/acalorado"},{en:"worried",es:"preocupado"},{en:"lonely",es:"solo"},{en:"proud",es:"orgulloso"},{en:"grateful",es:"agradecido"},{en:"jealous",es:"celoso"},
+{en:"embarrassed",es:"avergonzado"},{en:"frustrated",es:"frustrado"},{en:"relaxed",es:"relajado"},{en:"confident",es:"seguro"},{en:"disappointed",es:"decepcionado"},{en:"curious",es:"curioso"},{en:"shy",es:"tímido"},{en:"brave",es:"valiente"},{en:"calm",es:"tranquilo"},{en:"anxious",es:"ansioso"},
+],
+phrases:[
+{en:"I'm really happy today!",es:"¡Estoy muy feliz hoy!"},{en:"She looks sad.",es:"Ella se ve triste."},{en:"I feel tired after work.",es:"Me siento cansado después del trabajo."},
+{en:"Don't be scared.",es:"No tengas miedo."},{en:"I'm so excited about the trip!",es:"¡Estoy muy emocionado por el viaje!"},{en:"He feels nervous before exams.",es:"Él se siente nervioso antes de los exámenes."},
+{en:"I'm hungry. Let's eat.",es:"Tengo hambre. Vamos a comer."},{en:"Are you feeling sick?",es:"¿Te sientes enfermo?"},{en:"I'm proud of you!",es:"¡Estoy orgulloso de ti!"},{en:"Stay calm and relax.",es:"Quédate tranquilo y relájate."},
+]},
+
+{id:6,title:"Preguntas básicas con WH",icon:"❓",desc:"Formar preguntas útiles con What, Where, Why...",color:"var(--w1)",bg:"var(--w1B)",bd:"var(--w1D)",
+vocab:[
+{en:"what",es:"qué"},{en:"where",es:"dónde"},{en:"when",es:"cuándo"},{en:"who",es:"quién"},{en:"why",es:"por qué"},{en:"how",es:"cómo"},{en:"how much",es:"cuánto (precio)"},{en:"how many",es:"cuántos"},{en:"how often",es:"qué tan seguido"},{en:"how long",es:"cuánto tiempo"},
+{en:"which",es:"cuál"},{en:"whose",es:"de quién"},{en:"how old",es:"cuántos años"},{en:"how far",es:"qué tan lejos"},{en:"what time",es:"a qué hora"},{en:"what kind",es:"qué tipo"},{en:"how tall",es:"qué tan alto"},{en:"how fast",es:"qué tan rápido"},{en:"what color",es:"de qué color"},{en:"how come",es:"cómo es que"},
+{en:"question",es:"pregunta"},{en:"answer",es:"respuesta"},{en:"because",es:"porque"},{en:"always",es:"siempre"},{en:"never",es:"nunca"},{en:"sometimes",es:"a veces"},{en:"usually",es:"usualmente"},{en:"often",es:"seguido"},{en:"every day",es:"todos los días"},{en:"right now",es:"ahora mismo"},
+],
+phrases:[
+{en:"What is your name?",es:"¿Cuál es tu nombre?"},{en:"Where do you live?",es:"¿Dónde vives?"},{en:"When is your birthday?",es:"¿Cuándo es tu cumpleaños?"},
+{en:"Who is your best friend?",es:"¿Quién es tu mejor amigo?"},{en:"Why are you late?",es:"¿Por qué llegas tarde?"},{en:"How are you doing?",es:"¿Cómo estás?"},
+{en:"How much does it cost?",es:"¿Cuánto cuesta?"},{en:"How many brothers do you have?",es:"¿Cuántos hermanos tienes?"},{en:"How often do you exercise?",es:"¿Qué tan seguido haces ejercicio?"},{en:"What time is it?",es:"¿Qué hora es?"},
+]},
+
+{id:7,title:"Saludos y frases comunes",icon:"👋",desc:"Saludar, despedirse y hablar cordialmente",color:"var(--w2)",bg:"var(--w2B)",bd:"var(--w2D)",
+vocab:[
+{en:"hello",es:"hola"},{en:"goodbye",es:"adiós"},{en:"please",es:"por favor"},{en:"thank you",es:"gracias"},{en:"sorry",es:"lo siento"},{en:"excuse me",es:"disculpe"},{en:"welcome",es:"bienvenido"},{en:"congratulations",es:"felicidades"},{en:"cheers",es:"salud"},{en:"good luck",es:"buena suerte"},
+{en:"good morning",es:"buenos días"},{en:"good afternoon",es:"buenas tardes"},{en:"good night",es:"buenas noches"},{en:"see you later",es:"nos vemos"},{en:"take care",es:"cuídate"},{en:"nice to meet you",es:"mucho gusto"},{en:"how's it going",es:"¿cómo te va?"},{en:"what's up",es:"¿qué onda?"},{en:"no problem",es:"no hay problema"},{en:"you're welcome",es:"de nada"},
+{en:"I'm fine",es:"estoy bien"},{en:"of course",es:"por supuesto"},{en:"I don't know",es:"no sé"},{en:"I think so",es:"creo que sí"},{en:"maybe",es:"tal vez"},{en:"sure",es:"seguro"},{en:"really",es:"de verdad"},{en:"let's go",es:"vámonos"},{en:"come in",es:"pasa/entra"},{en:"have a nice day",es:"que tengas un buen día"},
+],
+phrases:[
+{en:"Good morning! How are you?",es:"¡Buenos días! ¿Cómo estás?"},{en:"Nice to meet you. I'm Ricardo.",es:"Mucho gusto. Soy Ricardo."},{en:"See you tomorrow! Take care.",es:"¡Nos vemos mañana! Cuídate."},
+{en:"Thank you so much for your help.",es:"Muchas gracias por tu ayuda."},{en:"Excuse me, where is the bathroom?",es:"Disculpe, ¿dónde está el baño?"},{en:"Congratulations on your new job!",es:"¡Felicidades por tu nuevo trabajo!"},
+{en:"I'm sorry, I didn't understand.",es:"Lo siento, no entendí."},{en:"Of course! No problem at all.",es:"¡Por supuesto! No hay ningún problema."},{en:"Good luck with your exam!",es:"¡Buena suerte en tu examen!"},{en:"Please come in and sit down.",es:"Por favor pasa y siéntate."},
+]},
+
+{id:8,title:"En restaurantes y cafeterías",icon:"🍽️☕",desc:"Pide, responde y conversa como si estuvieras allí",color:"var(--w3)",bg:"var(--w3B)",bd:"var(--w3D)",
+vocab:[
+{en:"menu",es:"menú"},{en:"bill",es:"cuenta"},{en:"tip",es:"propina"},{en:"waiter",es:"mesero"},{en:"order",es:"orden/pedir"},{en:"table",es:"mesa"},{en:"plate",es:"plato"},{en:"glass",es:"vaso"},{en:"fork",es:"tenedor"},{en:"knife",es:"cuchillo"},
+{en:"spoon",es:"cuchara"},{en:"napkin",es:"servilleta"},{en:"appetizer",es:"entrada"},{en:"main course",es:"plato fuerte"},{en:"dessert",es:"postre"},{en:"drink",es:"bebida"},{en:"ice",es:"hielo"},{en:"straw",es:"popote"},{en:"receipt",es:"recibo"},{en:"reservation",es:"reservación"},
+{en:"delicious",es:"delicioso"},{en:"spicy",es:"picante"},{en:"sweet",es:"dulce"},{en:"sour",es:"agrio"},{en:"bitter",es:"amargo"},{en:"salty",es:"salado"},{en:"fresh",es:"fresco"},{en:"hot",es:"caliente"},{en:"cold",es:"frío"},{en:"raw",es:"crudo"},
+],
+phrases:[
+{en:"Can I see the menu, please?",es:"¿Me puede dar el menú, por favor?"},{en:"I'd like to order the chicken.",es:"Me gustaría pedir el pollo."},{en:"Can I have the bill, please?",es:"¿Me trae la cuenta, por favor?"},
+{en:"This food is delicious!",es:"¡Esta comida está deliciosa!"},{en:"Is there a table for two?",es:"¿Hay mesa para dos?"},{en:"The soup is too salty.",es:"La sopa está muy salada."},
+{en:"I'd like a glass of water.",es:"Me gustaría un vaso de agua."},{en:"Do you have any desserts?",es:"¿Tienen postres?"},{en:"Keep the change.",es:"Quédese con el cambio."},{en:"We have a reservation.",es:"Tenemos una reservación."},
+]},
+
+{id:9,title:"Viajes y el aeropuerto",icon:"✈️",desc:"Comunicarte en viajes internacionales",color:"var(--w4)",bg:"var(--w4B)",bd:"var(--w4D)",
+vocab:[
+{en:"passport",es:"pasaporte"},{en:"ticket",es:"boleto"},{en:"luggage",es:"equipaje"},{en:"suitcase",es:"maleta"},{en:"boarding pass",es:"pase de abordar"},{en:"gate",es:"puerta"},{en:"flight",es:"vuelo"},{en:"seat",es:"asiento"},{en:"aisle",es:"pasillo"},{en:"window",es:"ventana"},
+{en:"departure",es:"salida"},{en:"arrival",es:"llegada"},{en:"delay",es:"retraso"},{en:"customs",es:"aduana"},{en:"security",es:"seguridad"},{en:"check-in",es:"registro"},{en:"baggage claim",es:"reclamo de equipaje"},{en:"terminal",es:"terminal"},{en:"layover",es:"escala"},{en:"direct flight",es:"vuelo directo"},
+{en:"map",es:"mapa"},{en:"taxi",es:"taxi"},{en:"bus",es:"autobús"},{en:"train",es:"tren"},{en:"subway",es:"metro"},{en:"hotel",es:"hotel"},{en:"room",es:"habitación"},{en:"reservation",es:"reservación"},{en:"round trip",es:"viaje redondo"},{en:"one way",es:"solo ida"},
+],
+phrases:[
+{en:"Where is my gate?",es:"¿Dónde está mi puerta?"},{en:"My flight is delayed.",es:"Mi vuelo está retrasado."},{en:"I'd like a window seat.",es:"Me gustaría un asiento de ventana."},
+{en:"Do I need to go through customs?",es:"¿Necesito pasar por la aduana?"},{en:"Where is the baggage claim?",es:"¿Dónde es el reclamo de equipaje?"},{en:"I have a reservation at the hotel.",es:"Tengo una reservación en el hotel."},
+{en:"How long is the layover?",es:"¿Cuánto dura la escala?"},{en:"I need a taxi to downtown.",es:"Necesito un taxi al centro."},{en:"Is this a direct flight?",es:"¿Este es un vuelo directo?"},{en:"I lost my suitcase.",es:"Perdí mi maleta."},
+]},
+
+{id:10,title:"Llamadas y mensajes",icon:"📱💬",desc:"Vocabulario para teléfono y mensajes de texto",color:"var(--w5)",bg:"var(--w5B)",bd:"var(--w5D)",
+vocab:[
+{en:"call",es:"llamada"},{en:"text",es:"mensaje de texto"},{en:"voicemail",es:"buzón de voz"},{en:"ringtone",es:"tono de llamada"},{en:"screen",es:"pantalla"},{en:"battery",es:"batería"},{en:"charger",es:"cargador"},{en:"signal",es:"señal"},{en:"app",es:"aplicación"},{en:"password",es:"contraseña"},
+{en:"email",es:"correo"},{en:"contact",es:"contacto"},{en:"number",es:"número"},{en:"hang up",es:"colgar"},{en:"pick up",es:"contestar"},{en:"dial",es:"marcar"},{en:"busy",es:"ocupado"},{en:"hold on",es:"espera"},{en:"speaker",es:"altavoz"},{en:"mute",es:"silenciar"},
+{en:"send",es:"enviar"},{en:"receive",es:"recibir"},{en:"reply",es:"responder"},{en:"forward",es:"reenviar"},{en:"delete",es:"borrar"},{en:"download",es:"descargar"},{en:"upload",es:"subir"},{en:"update",es:"actualizar"},{en:"notification",es:"notificación"},{en:"Wi-Fi",es:"Wi-Fi"},
+],
+phrases:[
+{en:"Can you call me back later?",es:"¿Me puedes llamar después?"},{en:"I'll send you a text.",es:"Te mando un mensaje."},{en:"My phone is dead.",es:"Se me murió el teléfono."},
+{en:"I left a voicemail.",es:"Dejé un mensaje de voz."},{en:"Hold on, let me check.",es:"Espera, déjame revisar."},{en:"Can you hear me now?",es:"¿Me escuchas ahora?"},
+{en:"I'll reply to your email tonight.",es:"Respondo tu correo en la noche."},{en:"My battery is low.",es:"Tengo poca batería."},{en:"What's the Wi-Fi password?",es:"¿Cuál es la contraseña del Wi-Fi?"},{en:"I need to charge my phone.",es:"Necesito cargar mi teléfono."},
+]},
+
+{id:11,title:"Mi rutina de ayer (pasado)",icon:"⏪",desc:"Hablar en pasado sin complicaciones",color:"var(--w6)",bg:"var(--w6B)",bd:"var(--w6D)",
+vocab:[
+{en:"went",es:"fui/fue"},{en:"ate",es:"comí/comió"},{en:"drank",es:"bebí/bebió"},{en:"saw",es:"vi/vio"},{en:"bought",es:"compré/compró"},{en:"made",es:"hice/hizo"},{en:"said",es:"dije/dijo"},{en:"came",es:"vine/vino"},{en:"took",es:"tomé/tomó"},{en:"gave",es:"di/dio"},
+{en:"had",es:"tuve/tuvo"},{en:"got",es:"obtuve/obtuvo"},{en:"did",es:"hice/hizo"},{en:"was",es:"fui/estuve"},{en:"were",es:"fueron/estuvieron"},{en:"woke up",es:"me desperté"},{en:"slept",es:"dormí"},{en:"left",es:"salí/me fui"},{en:"arrived",es:"llegué"},{en:"finished",es:"terminé"},
+{en:"yesterday",es:"ayer"},{en:"last night",es:"anoche"},{en:"last week",es:"la semana pasada"},{en:"this morning",es:"esta mañana"},{en:"two days ago",es:"hace dos días"},{en:"last month",es:"el mes pasado"},{en:"already",es:"ya"},{en:"just",es:"apenas/justo"},{en:"then",es:"entonces"},{en:"after that",es:"después de eso"},
+],
+phrases:[
+{en:"I went to the store yesterday.",es:"Fui a la tienda ayer."},{en:"She ate breakfast at seven.",es:"Ella desayunó a las siete."},{en:"We saw a movie last night.",es:"Vimos una película anoche."},
+{en:"I woke up early this morning.",es:"Me desperté temprano esta mañana."},{en:"He bought a new car last week.",es:"Él compró un carro nuevo la semana pasada."},{en:"They came to my house yesterday.",es:"Ellos vinieron a mi casa ayer."},
+{en:"I already finished my homework.",es:"Ya terminé mi tarea."},{en:"She left the office at five.",es:"Ella salió de la oficina a las cinco."},{en:"We had a great time!",es:"¡La pasamos muy bien!"},{en:"I took the bus to work.",es:"Tomé el camión al trabajo."},
+]},
+
+{id:12,title:"Planes y futuro",icon:"🚀",desc:"Hablar de metas, sueños y lo que harás",color:"var(--w1)",bg:"var(--w1B)",bd:"var(--w1D)",
+vocab:[
+{en:"will",es:"(auxiliar futuro)"},{en:"going to",es:"ir a"},{en:"plan",es:"plan"},{en:"goal",es:"meta"},{en:"dream",es:"sueño"},{en:"hope",es:"esperanza"},{en:"wish",es:"deseo"},{en:"promise",es:"promesa"},{en:"future",es:"futuro"},{en:"next year",es:"el próximo año"},
+{en:"tomorrow",es:"mañana"},{en:"next week",es:"la próxima semana"},{en:"someday",es:"algún día"},{en:"soon",es:"pronto"},{en:"later",es:"después"},{en:"tonight",es:"esta noche"},{en:"next month",es:"el próximo mes"},{en:"in the future",es:"en el futuro"},{en:"one day",es:"un día"},{en:"this weekend",es:"este fin de semana"},
+{en:"travel",es:"viajar"},{en:"study",es:"estudiar"},{en:"work",es:"trabajar"},{en:"save",es:"ahorrar"},{en:"improve",es:"mejorar"},{en:"learn",es:"aprender"},{en:"achieve",es:"lograr"},{en:"graduate",es:"graduarse"},{en:"move",es:"mudarse"},{en:"start",es:"empezar"},
+],
+phrases:[
+{en:"I will study English every day.",es:"Voy a estudiar inglés todos los días."},{en:"She is going to travel next month.",es:"Ella va a viajar el próximo mes."},{en:"I plan to save more money.",es:"Planeo ahorrar más dinero."},
+{en:"We're going to move next year.",es:"Nos vamos a mudar el próximo año."},{en:"I hope to learn a lot.",es:"Espero aprender mucho."},{en:"He will start a new job soon.",es:"Él va a empezar un nuevo trabajo pronto."},
+{en:"I'm going to improve my English.",es:"Voy a mejorar mi inglés."},{en:"Someday I will visit Japan.",es:"Algún día visitaré Japón."},{en:"What will you do this weekend?",es:"¿Qué vas a hacer este fin de semana?"},{en:"I promise I'll be there.",es:"Prometo que estaré ahí."},
+]},
+];
+
+// ═══════════════════════════════════════════════════════════
+// STATE & STORAGE
+// ═══════════════════════════════════════════════════════════
+let progress=JSON.parse(localStorage.getItem('we_prog')||'{}');
+// progress = { weekId: { vocab:%, ex1:%, ex2:%, ex3:%, ex4:% } }
+function saveP(){localStorage.setItem('we_prog',JSON.stringify(progress))}
+function getWP(wid){return progress[wid]||{vocab:0,ex1:0,ex2:0,ex3:0,ex4:0}}
+function setWP(wid,key,val){if(!progress[wid])progress[wid]={vocab:0,ex1:0,ex2:0,ex3:0,ex4:0};progress[wid][key]=Math.max(progress[wid][key]||0,val);saveP()}
+function weekPct(wid){const p=getWP(wid);return Math.round((p.vocab+p.ex1+p.ex2+p.ex3+p.ex4)/5)}
+function isUnlocked(wid){if(wid===0)return true;return weekPct(wid-1)>=60}
+
+let S={view:'weeks',week:null,tab:'vocab',exItems:[],exIdx:0,exAns:[],exAnswered:false,exFlipped:false,
+  matchSel:null,matchPairs:[],matchMatched:new Set()};
+
+// ═══════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════
+function R(){rStats();document.getElementById('main').innerHTML='';S.view==='weeks'?rWeeks():rWeek()}
+
+function rStats(){
+  const total=WEEKS.length;const done=WEEKS.filter((_,i)=>weekPct(i)>=80).length;
+  const totalPct=Math.round(WEEKS.reduce((s,_,i)=>s+weekPct(i),0)/total);
+  const wk=S.week!==null?S.week+1:'-';
+  document.getElementById('stats').innerHTML=`
+    <div class="st"><b style="color:var(--w1)">${wk}</b><small>Semana</small></div>
+    <div class="st"><b>${totalPct}%</b><small>Progreso</small></div>
+    <div class="st"><b style="color:var(--ok)">${done}/${total}</b><small>Completadas</small></div>
+    <div class="st"><b style="color:var(--w4)">${WEEKS.reduce((s,w)=>s+w.vocab.length,0)}</b><small>Palabras</small></div>`;
+}
+
+// ═══ WEEKS MAP ═══
+function rWeeks(){
+  const el=document.getElementById('main');
+  el.innerHTML=`<div class="weeks">${WEEKS.map((w,i)=>{
+    const pct=weekPct(i);const unlocked=isUnlocked(i);
+    const col=pct>=80?'var(--ok)':w.color;
+    return`<div class="wk ${!unlocked?'locked':''} ${S.week===i?'active':''}" style="${unlocked?`border-color:${w.bd}`:''}${S.week===i?`;border-color:${col}`:''}" onclick="openWeek(${i})">
+      <div style="font-size:1rem">${w.icon}</div>
+      <div class="wn" style="color:${unlocked?col:'var(--tx3)'}">S${i+1}</div>
+      <div class="wt">${w.title}</div>
+      <div class="wp"><i style="width:${pct}%;background:${col}"></i></div>
+      ${!unlocked?'<div style="font-size:8px;color:var(--tx3);margin-top:3px">🔒 Completa S${i}</div>':''}
+    </div>`}).join('')}</div>
+    <div class="card"><div class="card-b" style="text-align:center;color:var(--tx2);font-size:.84rem;line-height:1.6">
+      <b>📅 Plan diario (30 min):</b><br>
+      🔹 5 min — Revisar vocabulario nuevo (escuchar y repetir)<br>
+      🔹 5 min — Ejercicio 1: Matching (unir palabra con traducción)<br>
+      🔹 5 min — Ejercicio 2: Traducción (español → inglés)<br>
+      🔹 5 min — Ejercicio 3: Escuchar y escribir (dictado)<br>
+      🔹 5 min — Ejercicio 4: Completar frases<br>
+      🔹 5 min — Repasar frases de la semana con audio
+    </div></div>`;
+}
+
+function openWeek(i){if(!isUnlocked(i))return;S.view='week';S.week=i;S.tab='vocab';S.exItems=[];R()}
+
+// ═══ WEEK VIEW ═══
+function rWeek(){
+  const w=WEEKS[S.week];const el=document.getElementById('main');
+  const pct=weekPct(S.week);const wp=getWP(S.week);
+  const tabs=[
+    {id:'vocab',l:`📖 Vocabulario`,p:wp.vocab},{id:'ex1',l:`🔗 Matching`,p:wp.ex1},
+    {id:'ex2',l:`✍️ Traducir`,p:wp.ex2},{id:'ex3',l:`👂 Dictado`,p:wp.ex3},
+    {id:'ex4',l:`📝 Completar`,p:wp.ex4},{id:'phrases',l:`💬 Frases`,p:0},
+  ];
+
+  let content='';
+  el.innerHTML=`
+    <button class="btn btn-sm" onclick="S.view='weeks';S.week=null;R()" style="margin-bottom:8px">← Semanas</button>
+    <div class="card"><div class="card-h">
+      <div class="card-t"><span style="font-size:1.1rem">${w.icon}</span> Semana ${S.week+1}: ${w.title}
+        <span class="pill" style="background:${pct>=80?'var(--okB)':w.bg};color:${pct>=80?'var(--ok)':w.color};border:1px solid ${pct>=80?'var(--okD)':w.bd}">${pct}%</span>
+      </div>
+    </div><div class="card-b" style="padding:8px 14px">
+      <div style="font-size:.82rem;color:var(--tx2);margin-bottom:8px">${w.desc}</div>
+      <div style="display:flex;gap:4px;flex-wrap:wrap">${tabs.map(t=>`<div style="flex:1;min-width:70px;text-align:center;padding:6px 4px;background:var(--s2);border-radius:8px;border:1px solid var(--bd)">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:${t.p>=80?'var(--ok)':t.p>0?w.color:'var(--tx3)'}">${t.p}%</div>
+        <div style="font-size:8px;color:var(--tx3)">${t.l.split(' ')[1]||t.l.split(' ')[0]}</div>
+      </div>`).join('')}</div>
+    </div></div>
+    <div class="wtabs">${tabs.map(t=>`<button class="wtab ${S.tab===t.id?'on':''}" onclick="S.tab='${t.id}';S.exItems=[];R()">${t.l}</button>`).join('')}</div>
+    <div id="tabContent"></div>`;
+
+  const tc=document.getElementById('tabContent');
+  ({vocab:rVocab,ex1:rEx1,ex2:rEx2,ex3:rEx3,ex4:rEx4,phrases:rPhrases})[S.tab](tc,w);
+}
+
+// ═══ VOCAB ═══
+function rVocab(el,w){
+  el.innerHTML=`<div class="card"><div class="card-h"><div class="card-t">Vocabulario <span class="pill" style="background:var(--s3);color:var(--tx3)">${w.vocab.length} palabras</span></div>
+    <button class="btn btn-sm" onclick="playAllVocab(${S.week})">▶ Todas</button>
+  </div><div class="card-b">
+    <div class="vgrid">${w.vocab.map((v,i)=>`<div class="vcard" onclick="speak('${esc(v.en)}')">
+      <button class="spk">${SPK}</button>
+      <div class="ven" style="color:${w.color}">${v.en}</div>
+      <div class="ves">${v.es}</div>
+    </div>`).join('')}</div>
+    <div class="btn-row" style="margin-top:12px">
+      <button class="btn btn-ok" onclick="setWP(${S.week},'vocab',100);R()">✓ Ya las estudié</button>
+    </div>
+  </div></div>`;
+}
+function playAllVocab(wid){const w=WEEKS[wid];let i=0;function n(){if(i>=w.vocab.length)return;speak(w.vocab[i].en,.75);i++;setTimeout(n,1500)}n()}
+
+// ═══ EX1: MATCHING ═══
+function rEx1(el,w){
+  if(!S.exItems.length){
+    const items=shuffle(w.vocab).slice(0,8);
+    S.matchPairs=items;S.matchSel=null;S.matchMatched=new Set();S.exItems=items;
+  }
+  const left=S.matchPairs.map((p,i)=>({text:p.en,idx:i,side:'en'}));
+  const right=shuffle(S.matchPairs.map((p,i)=>({text:p.es,idx:i,side:'es'})));
+
+  el.innerHTML=`<div class="card"><div class="card-h"><div class="card-t">🔗 Matching — Une inglés con español</div></div><div class="card-b">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div class="match-col">${left.map(l=>`<div class="match-item ${S.matchMatched.has(l.idx)?'matched':''} ${S.matchSel&&S.matchSel.idx===l.idx&&S.matchSel.side==='en'?'sel':''}"
+        onclick="matchClick('en',${l.idx},'${esc(l.text)}')">${l.text}</div>`).join('')}</div>
+      <div class="match-col">${right.map(r=>`<div class="match-item ${S.matchMatched.has(r.idx)?'matched':''} ${S.matchSel&&S.matchSel.idx===r.idx&&S.matchSel.side==='es'?'sel':''}"
+        onclick="matchClick('es',${r.idx},'${esc(r.text)}')">${r.text}</div>`).join('')}</div>
+    </div>
+    <div class="tc" style="margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--tx3)">${S.matchMatched.size}/${S.matchPairs.length} parejas</div>
+  </div></div>`;
+
+  if(S.matchMatched.size===S.matchPairs.length){
+    setWP(S.week,'ex1',100);
+    el.innerHTML+=`<div class="card"><div class="card-b tc"><div style="color:var(--ok);font-weight:700;margin-bottom:8px">🎉 ¡Completado!</div>
+      <div class="btn-row"><button class="btn btn-ok" onclick="S.exItems=[];R()">🔄 Otra vez</button><button class="btn" onclick="S.tab='ex2';S.exItems=[];R()">Siguiente →</button></div></div></div>`;
+  }
+}
+function matchClick(side,idx){
+  if(S.matchMatched.has(idx)&&side===(S.matchSel?.side))return;
+  if(!S.matchSel){S.matchSel={side,idx};R();return}
+  if(S.matchSel.side===side){S.matchSel={side,idx};R();return}
+  if(S.matchSel.idx===idx){S.matchMatched.add(idx);S.matchSel=null;speak(S.matchPairs[idx].en,.8);R()}
+  else{S.matchSel=null;R()}
+}
+
+// ═══ EX2: TRANSLATE (es→en) ═══
+function initEx(w,n){S.exItems=shuffle(w.vocab).slice(0,n);S.exIdx=0;S.exAns=[];S.exAnswered=false}
+function rEx2(el,w){
+  if(!S.exItems.length)initEx(w,10);
+  if(S.exIdx>=S.exItems.length){endEx(el,w,'ex2','ex3');return}
+  const p=S.exItems[S.exIdx];
+  const prog=S.exItems.map((_,i)=>i<S.exAns.length?(S.exAns[i]?'ok':'er'):i===S.exIdx?'cur':'');
+  el.innerHTML=`<div class="card"><div class="card-h"><div class="card-t">✍️ Traducir ${S.exIdx+1}/${S.exItems.length}</div></div><div class="card-b">
+    <div class="prog">${prog.map(x=>`<div class="prog-d ${x}"></div>`).join('')}</div>
+    <div class="ex-q">🇲🇽 ${p.es}</div>
+    <input class="ex-input" id="exIn" placeholder="Escribe en inglés..." autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter'&&!S.exAnswered)chkEx2()">
+    <div class="fb" id="exFb"></div>
+    <div class="btn-row" style="margin-top:8px">
+      <button class="btn btn-ok" id="chkB" onclick="chkEx2()">✓ Verificar</button>
+      <button class="btn hidden" id="nxB" onclick="S.exIdx++;S.exAnswered=false;R()">→</button>
+      <button class="btn btn-sm" onclick="speak('${esc(p.en)}',.6)">🐢 Pista</button>
+    </div>
+  </div></div>`;
+  setTimeout(()=>document.getElementById('exIn')?.focus(),80);
+}
+function chkEx2(){
+  if(S.exAnswered)return;S.exAnswered=true;
+  const p=S.exItems[S.exIdx];const inp=document.getElementById('exIn');
+  const n=s=>s.toLowerCase().replace(/[^\w\s]/g,'').replace(/\s+/g,' ').trim();
+  const ok=n(inp.value)===n(p.en);S.exAns.push(ok);
+  const fb=document.getElementById('exFb');fb.classList.add('show');
+  if(ok){inp.classList.add('ok');fb.style.cssText='background:var(--okB);border:1px solid var(--okD);color:#86efac';fb.textContent='✅ ¡Correcto!';speak(p.en,.85)}
+  else{inp.classList.add('bad');fb.style.cssText='background:var(--erB);border:1px solid var(--erD);color:#fca5a5';fb.innerHTML='❌ <b>'+p.en+'</b>'}
+  document.getElementById('chkB').classList.add('hidden');document.getElementById('nxB').classList.remove('hidden');
+}
+
+// ═══ EX3: LISTENING/DICTATION ═══
+function rEx3(el,w){
+  if(!S.exItems.length)initEx(w,8);
+  if(S.exIdx>=S.exItems.length){endEx(el,w,'ex3','ex4');return}
+  const p=S.exItems[S.exIdx];
+  const prog=S.exItems.map((_,i)=>i<S.exAns.length?(S.exAns[i]?'ok':'er'):i===S.exIdx?'cur':'');
+  el.innerHTML=`<div class="card"><div class="card-h"><div class="card-t">👂 Dictado ${S.exIdx+1}/${S.exItems.length}</div></div><div class="card-b">
+    <div class="prog">${prog.map(x=>`<div class="prog-d ${x}"></div>`).join('')}</div>
+    <div class="tc" style="margin:12px 0">
+      <button style="width:56px;height:56px;border-radius:50%;border:2px solid ${w.bd};background:${w.bg};cursor:pointer;font-size:1.3rem;color:${w.color}" onclick="speak('${esc(p.en)}',.75)">🔊</button>
+      <div style="font-size:9px;color:var(--tx3);margin-top:4px">Escucha y escribe</div>
+    </div>
+    <div class="btn-row" style="margin-bottom:10px">
+      <button class="btn btn-sm" onclick="speak('${esc(p.en)}',.5)">🐢 Lento</button>
+      <button class="btn btn-sm" onclick="speak('${esc(p.en)}',.8)">🔊 Normal</button>
+    </div>
+    <input class="ex-input" id="exIn" placeholder="Escribe lo que escuchas..." autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter'&&!S.exAnswered)chkEx3()">
+    <div class="fb" id="exFb"></div>
+    <div class="btn-row" style="margin-top:8px">
+      <button class="btn btn-ok" id="chkB" onclick="chkEx3()">✓ Verificar</button>
+      <button class="btn hidden" id="nxB" onclick="S.exIdx++;S.exAnswered=false;R()">→</button>
+    </div>
+  </div></div>`;
+  setTimeout(()=>{speak(p.en,.75);document.getElementById('exIn')?.focus()},200);
+}
+function chkEx3(){
+  if(S.exAnswered)return;S.exAnswered=true;
+  const p=S.exItems[S.exIdx];const inp=document.getElementById('exIn');
+  const n=s=>s.toLowerCase().replace(/[^\w\s]/g,'').replace(/\s+/g,' ').trim();
+  const ok=n(inp.value)===n(p.en);S.exAns.push(ok);
+  const fb=document.getElementById('exFb');fb.classList.add('show');
+  if(ok){inp.classList.add('ok');fb.style.cssText='background:var(--okB);border:1px solid var(--okD);color:#86efac';fb.innerHTML='✅ <b>'+p.en+'</b> — '+p.es}
+  else{inp.classList.add('bad');fb.style.cssText='background:var(--erB);border:1px solid var(--erD);color:#fca5a5';fb.innerHTML='❌ <b>'+p.en+'</b> — '+p.es}
+  document.getElementById('chkB').classList.add('hidden');document.getElementById('nxB').classList.remove('hidden');
+}
+
+// ═══ EX4: COMPLETE PHRASES (quiz) ═══
+function rEx4(el,w){
+  if(!S.exItems.length){S.exItems=shuffle(w.phrases).slice(0,8);S.exIdx=0;S.exAns=[];S.exAnswered=false}
+  if(S.exIdx>=S.exItems.length){endEx(el,w,'ex4',null);return}
+  const p=S.exItems[S.exIdx];
+  const prog=S.exItems.map((_,i)=>i<S.exAns.length?(S.exAns[i]?'ok':'er'):i===S.exIdx?'cur':'');
+  let opts=[p.en];const pool=shuffle(w.phrases.filter(x=>x.en!==p.en));
+  for(const o of pool){if(opts.length>=4)break;if(!opts.includes(o.en))opts.push(o.en)}
+  opts=shuffle(opts);
+
+  el.innerHTML=`<div class="card"><div class="card-h"><div class="card-t">📝 Frases ${S.exIdx+1}/${S.exItems.length}</div>
+    <button class="spk" onclick="speak('${esc(p.en)}')">${SPK}</button></div><div class="card-b">
+    <div class="prog">${prog.map(x=>`<div class="prog-d ${x}"></div>`).join('')}</div>
+    <div class="ex-q">${p.es}</div>
+    <div class="ex-grid" id="qO">${opts.map(o=>`<button class="ex-opt" onclick="aEx4(this,${o===p.en},'${esc(p.en)}')">${o}</button>`).join('')}</div>
+    <div class="fb" id="exFb"></div>
+    <div class="btn-row"><button class="btn hidden" id="nxB" onclick="S.exIdx++;S.exAnswered=false;R()">→</button></div>
+  </div></div>`;
+}
+function aEx4(btn,ok,correct){
+  if(S.exAnswered)return;S.exAnswered=true;S.exAns.push(ok);
+  document.querySelectorAll('#qO .ex-opt').forEach(o=>{o.classList.add('dis');if(o.textContent===correct)o.classList.add('right')});
+  btn.classList.add(ok?'right':'wrong');
+  const fb=document.getElementById('exFb');fb.classList.add('show');
+  fb.style.cssText=ok?'background:var(--okB);border:1px solid var(--okD);color:#86efac':'background:var(--erB);border:1px solid var(--erD);color:#fca5a5';
+  if(ok){fb.textContent='✅ ¡Correcto!';speak(correct,.85)}else fb.innerHTML='❌ '+correct;
+  document.getElementById('nxB').classList.remove('hidden');
+}
+
+// ═══ END EXERCISE ═══
+function endEx(el,w,key,nextTab){
+  const ok=S.exAns.filter(Boolean).length;const pct=Math.round(ok/S.exAns.length*100);
+  setWP(S.week,key,pct);
+  el.innerHTML=`<div class="card"><div class="card-b tc">
+    <div class="score-big" style="color:${pct>=80?'var(--ok)':pct>=50?'var(--w4)':'var(--er)'}">${pct}%</div>
+    <div style="color:var(--tx2);margin:4px 0 14px;font-size:.85rem">${ok}/${S.exAns.length} correctas</div>
+    <div class="btn-row">
+      <button class="btn" onclick="S.exItems=[];R()">🔄 Repetir</button>
+      ${nextTab?`<button class="btn btn-ok" onclick="S.tab='${nextTab}';S.exItems=[];R()">Siguiente →</button>`
+        :`<button class="btn btn-ok" onclick="S.view='weeks';S.week=null;R()">📚 Semanas</button>`}
+    </div>
+  </div></div>`;
+  R();
+}
+
+// ═══ PHRASES ═══
+function rPhrases(el,w){
+  el.innerHTML=`<div class="card"><div class="card-h"><div class="card-t">💬 Frases de la semana <span class="pill" style="background:var(--s3);color:var(--tx3)">${w.phrases.length}</span></div>
+    <button class="btn btn-sm" onclick="playPhrases(${S.week})">▶ Todas</button>
+  </div><div class="card-b">
+    ${w.phrases.map(p=>`<div style="display:flex;align-items:center;gap:8px;padding:9px 10px;background:var(--s2);border-radius:9px;border:1px solid var(--bd);margin-bottom:4px;cursor:pointer" onclick="speak('${esc(p.en)}',.8)">
+      <button class="spk">${SPK}</button>
+      <div style="flex:1"><div style="font-size:.84rem;font-weight:600;color:${w.color}">${p.en}</div><div style="font-size:.78rem;color:var(--tx2)">${p.es}</div></div>
+      <button class="btn btn-sm" onclick="event.stopPropagation();speak('${esc(p.en)}',.55)">🐢</button>
+    </div>`).join('')}
+  </div></div>`;
+}
+function playPhrases(wid){const w=WEEKS[wid];let i=0;function n(){if(i>=w.phrases.length)return;speak(w.phrases[i].en,.75);i++;setTimeout(n,3000)}n()}
+
+R();
+</script>
+</body>
+</html>

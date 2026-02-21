@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connected Speech Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&family=Fira+Code:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07090e;--s1:#0d1018;--s2:#131924;--s3:#1a2233;--s4:#222d42;
+  --link:#38bdf8;--link-bg:rgba(56,189,248,.07);--link-bd:rgba(56,189,248,.22);
+  --elision:#f472b6;--elision-bg:rgba(244,114,182,.07);--elision-bd:rgba(244,114,182,.22);
+  --assim:#a78bfa;--assim-bg:rgba(167,139,250,.07);--assim-bd:rgba(167,139,250,.22);
+  --weak:#34d399;--weak-bg:rgba(52,211,153,.07);--weak-bd:rgba(52,211,153,.22);
+  --contraction:#fb923c;--contr-bg:rgba(251,146,60,.07);--contr-bd:rgba(251,146,60,.22);
+  --intrusive:#e879f9;--intr-bg:rgba(232,121,249,.07);--intr-bd:rgba(232,121,249,.22);
+  --ok:#22c55e;--ok-bg:rgba(34,197,94,.09);--ok-bd:rgba(34,197,94,.22);
+  --err:#ef4444;--err-bg:rgba(239,68,68,.09);--err-bd:rgba(239,68,68,.22);
+  --warn:#eab308;
+  --tx:#e2e7f0;--tx2:#8b96ad;--tx3:#56637a;--bd:rgba(255,255,255,.05);--r:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Bricolage Grotesque',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 10% 0%,rgba(56,189,248,.025),transparent 50%),radial-gradient(ellipse at 90% 50%,rgba(167,139,250,.02),transparent 50%),radial-gradient(ellipse at 40% 100%,rgba(244,114,182,.02),transparent 50%);pointer-events:none}
+.app{position:relative;z-index:1;max-width:940px;margin:0 auto;padding:24px 16px 80px}
+
+@keyframes fadeD{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeU{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pop{from{transform:scale(.88);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+.hdr{text-align:center;margin-bottom:28px;animation:fadeD .5s ease}
+.hdr-tag{display:inline-flex;align-items:center;gap:7px;padding:5px 14px;border-radius:100px;font-family:'Fira Code',monospace;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--tx3);border:1px solid var(--bd);background:var(--s1);margin-bottom:12px}
+.hdr-dots{display:flex;gap:4px}.hdr-dots span{width:7px;height:7px;border-radius:50%}
+.hdr h1{font-size:2.2rem;font-weight:800;letter-spacing:-.5px;margin-bottom:5px;line-height:1.2}
+.hdr p{color:var(--tx2);font-size:.9rem;font-weight:400}
+
+/* Tabs */
+.tabs{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;animation:fadeU .4s ease .1s both}
+.tab{padding:8px 16px;border-radius:100px;border:1.5px solid var(--bd);background:var(--s1);color:var(--tx3);font-size:12.5px;font-weight:600;cursor:pointer;transition:all .25s;display:flex;align-items:center;gap:6px;font-family:inherit}
+.tab:hover{border-color:rgba(255,255,255,.1);color:var(--tx2)}
+.tab.active{background:var(--s3);color:var(--tx);border-color:rgba(255,255,255,.12)}
+
+/* Category pills */
+.cats{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;margin-bottom:22px;animation:fadeU .4s ease .15s both}
+.cat{padding:6px 14px;border-radius:100px;border:1.5px solid var(--bd);background:var(--s1);font-size:12px;font-weight:600;cursor:pointer;transition:all .25s;display:flex;align-items:center;gap:6px;font-family:inherit}
+.cat:hover{border-color:rgba(255,255,255,.1)}
+.cat .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.cat.on{color:var(--tx)}
+
+/* Card */
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);margin-bottom:16px;animation:fadeU .4s ease;overflow:hidden}
+.card-h{padding:16px 20px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.card-t{font-family:'Fira Code',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.8px;color:var(--tx3);display:flex;align-items:center;gap:8px}
+.card-b{padding:20px}
+.pill{padding:2px 8px;border-radius:6px;font-size:9px;font-weight:700;letter-spacing:.5px}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border:1px solid var(--bd);border-radius:12px;background:var(--s2);color:var(--tx2);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
+.btn:hover{background:var(--s3);color:var(--tx);border-color:rgba(255,255,255,.1)}
+.btn svg{width:15px;height:15px}
+.btn-sm{padding:7px 14px;font-size:12px;border-radius:10px}
+.btn-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+
+/* Phenomenon Cards in Learn mode */
+.phenom-card{padding:20px;background:var(--s2);border-radius:12px;border:1px solid var(--bd);margin-bottom:14px;transition:all .2s}
+.phenom-card:hover{border-color:rgba(255,255,255,.08)}
+.ph-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.ph-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.ph-name{font-size:1.05rem;font-weight:700}
+.ph-desc{font-size:.85rem;color:var(--tx2);line-height:1.6;margin-bottom:12px}
+.ph-rule{font-family:'Fira Code',monospace;font-size:12px;padding:8px 14px;background:var(--s3);border-radius:8px;color:var(--tx2);margin-bottom:12px;line-height:1.6}
+.ph-examples{display:flex;flex-direction:column;gap:8px}
+.ph-ex{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--s1);border-radius:10px;border:1px solid var(--bd);cursor:pointer;transition:all .2s}
+.ph-ex:hover{background:var(--s3);border-color:rgba(255,255,255,.08)}
+.ph-ex-formal{font-size:.9rem;color:var(--tx2);min-width:140px;flex-shrink:0}
+.ph-ex-arrow{color:var(--tx3);flex-shrink:0}
+.ph-ex-natural{font-size:.95rem;font-weight:600;flex:1}
+.ph-ex-ipa{font-family:'Fira Code',monospace;font-size:11px;color:var(--tx3);flex-shrink:0}
+.speak-btn{width:30px;height:30px;border-radius:8px;border:1px solid var(--bd);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--tx3);transition:all .15s;flex-shrink:0}
+.speak-btn:hover{color:var(--tx);background:var(--s3)}
+.speak-btn svg{width:14px;height:14px}
+
+/* Quiz / Identify */
+.quiz-progress{display:flex;gap:3px;margin-bottom:16px}
+.qp{height:4px;flex:1;border-radius:4px;background:var(--s3);transition:background .3s}
+.qp.ok{background:var(--ok)}.qp.err{background:var(--err)}.qp.cur{background:var(--tx3)}
+
+.play-big{width:80px;height:80px;border-radius:50%;border:2px solid var(--link-bd);background:var(--s1);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s;margin:0 auto 14px}
+.play-big:hover{background:var(--link-bg);border-color:var(--link);transform:scale(1.06)}
+.play-big svg{width:30px;height:30px;color:var(--link)}
+
+.q-text{font-size:1.15rem;font-weight:600;text-align:center;margin-bottom:6px;line-height:1.5}
+.q-sub{font-size:.85rem;color:var(--tx2);text-align:center;margin-bottom:20px}
+.q-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+@media(max-width:500px){.q-grid{grid-template-columns:1fr}}
+.q-opt{padding:12px 16px;border:1.5px solid var(--bd);border-radius:12px;background:var(--s2);color:var(--tx2);font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;text-align:left;font-family:inherit}
+.q-opt:hover:not(.dis){border-color:rgba(255,255,255,.12);color:var(--tx);background:var(--s3)}
+.q-opt.right{border-color:var(--ok);background:var(--ok-bg);color:var(--ok)}
+.q-opt.wrong{border-color:var(--err);background:var(--err-bg);color:var(--err)}
+.q-opt.reveal{border-color:var(--ok-bd);color:var(--ok)}
+.q-opt.dis{pointer-events:none}
+
+.fb{padding:12px 16px;border-radius:12px;font-size:13px;line-height:1.6;margin-bottom:14px;display:none}
+.fb.show{display:block;animation:fadeU .3s ease}
+.fb.ok{background:var(--ok-bg);border:1px solid var(--ok-bd);color:#86efac}
+.fb.no{background:var(--err-bg);border:1px solid var(--err-bd);color:#fca5a5}
+.fb.info{background:var(--link-bg);border:1px solid var(--link-bd);color:#7dd3fc}
+
+/* Transcribe */
+.t-input{width:100%;padding:14px 18px;border:2px solid var(--bd);border-radius:12px;background:var(--s2);color:var(--tx);font-family:inherit;font-size:16px;outline:none;transition:border-color .25s}
+.t-input:focus{border-color:var(--link-bd)}
+.t-input::placeholder{color:var(--tx3)}
+.t-input.ok-b{border-color:var(--ok)}
+.t-input.err-b{border-color:var(--err);animation:shake .35s ease}
+
+/* Slow-to-fast */
+.speed-steps{display:flex;gap:8px;justify-content:center;margin:16px 0;flex-wrap:wrap}
+.speed-step{padding:10px 20px;border-radius:12px;border:1.5px solid var(--bd);background:var(--s2);cursor:pointer;text-align:center;transition:all .25s;min-width:90px;font-family:inherit}
+.speed-step:hover{border-color:rgba(255,255,255,.1);background:var(--s3)}
+.speed-step .ss-label{font-family:'Fira Code',monospace;font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.speed-step .ss-rate{font-size:1.1rem;font-weight:700}
+
+/* Sentence display */
+.sent-box{padding:18px;background:var(--s2);border-radius:12px;border:1px solid var(--bd);margin:14px 0}
+.sent-formal{font-size:1rem;color:var(--tx2);margin-bottom:8px;line-height:1.6}
+.sent-natural{font-size:1.1rem;font-weight:700;line-height:1.6}
+.sent-ipa{font-family:'Fira Code',monospace;font-size:12px;color:var(--tx3);margin-top:6px}
+.highlight{padding:1px 6px;border-radius:4px;font-weight:600}
+
+/* Stats */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:500px){.stats-row{grid-template-columns:repeat(2,1fr)}}
+.stat{text-align:center;padding:14px 8px;background:var(--s2);border-radius:12px;border:1px solid var(--bd)}
+.stat-n{font-family:'Fira Code',monospace;font-size:1.3rem;font-weight:700}
+.stat-l{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:1px;margin-top:3px}
+
+/* Score */
+.score-big{font-family:'Fira Code',monospace;font-size:3.5rem;font-weight:700;text-align:center}
+.score-sub{color:var(--tx2);text-align:center;margin-bottom:20px}
+
+.hidden{display:none!important}
+.tc{text-align:center}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hdr">
+    <div class="hdr-tag">
+      <div class="hdr-dots">
+        <span style="background:var(--link)"></span>
+        <span style="background:var(--elision)"></span>
+        <span style="background:var(--assim)"></span>
+        <span style="background:var(--weak)"></span>
+        <span style="background:var(--contraction)"></span>
+        <span style="background:var(--intrusive)"></span>
+      </div>
+      Connected Speech
+    </div>
+    <h1>Connected Speech Lab</h1>
+    <p>Master how English really sounds in natural conversation</p>
+  </div>
+
+  <div class="tabs" id="modeTabs"></div>
+  <div class="cats" id="catTabs"></div>
+  <div id="main"></div>
+
+  <div class="card" style="margin-top:8px">
+    <div class="card-h"><div class="card-t">Session</div></div>
+    <div class="card-b"><div class="stats-row" id="statsRow"></div></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// DATABASE
+// ═══════════════════════════════════════════════════════════
+const PHENOMENA = {
+  linking: {
+    name:"Linking", icon:"🔗", color:"var(--link)", bg:"var(--link-bg)", bd:"var(--link-bd)",
+    desc:"When a word ending in a consonant is followed by a word starting with a vowel, the sounds connect smoothly — as if they were one word.",
+    rule:"Consonant + Vowel → Sounds merge: \"turn off\" → \"tur-noff\"",
+    examples:[
+      {formal:"turn off",natural:"tur·noff",ipa:"/tɜːr.nɒf/",slow:"turn off",fast:"turnoff",sentence:"Can you turn off the lights?",level:"A1"},
+      {formal:"pick it up",natural:"pi·ki·tup",ipa:"/pɪ.kɪ.tʌp/",slow:"pick it up",fast:"pickitup",sentence:"Please pick it up from the floor.",level:"A1"},
+      {formal:"an apple",natural:"a·napple",ipa:"/ə.næp.əl/",slow:"an apple",fast:"anapple",sentence:"I'd like an apple, please.",level:"A1"},
+      {formal:"not at all",natural:"no·ta·tall",ipa:"/nɒ.tə.tɔːl/",slow:"not at all",fast:"notatall",sentence:"I don't mind — not at all.",level:"A2"},
+      {formal:"check it out",natural:"che·ki·tout",ipa:"/tʃe.kɪ.taʊt/",slow:"check it out",fast:"checkitout",sentence:"You should check it out!",level:"A2"},
+      {formal:"come on in",natural:"co·mo·nin",ipa:"/kʌ.mɒ.nɪn/",slow:"come on in",fast:"comonin",sentence:"Hey, come on in and sit down.",level:"A2"},
+      {formal:"run out of",natural:"ru·nou·tof",ipa:"/rʌ.naʊ.tɒv/",slow:"run out of",fast:"runoutof",sentence:"We've run out of milk.",level:"B1"},
+      {formal:"look at it",natural:"loo·ka·tit",ipa:"/lʊ.kæ.tɪt/",slow:"look at it",fast:"lookatit",sentence:"Just look at it — it's beautiful!",level:"A1"},
+      {formal:"hold on",natural:"hol·don",ipa:"/həʊl.dɒn/",slow:"hold on",fast:"holdon",sentence:"Hold on a second, please.",level:"A2"},
+      {formal:"think about it",natural:"thin·ka·bou·tit",ipa:"/θɪŋ.kə.baʊ.tɪt/",slow:"think about it",fast:"thinkaboutit",sentence:"Let me think about it.",level:"B1"},
+    ]
+  },
+  elision: {
+    name:"Elision", icon:"✂️", color:"var(--elision)", bg:"var(--elision-bg)", bd:"var(--elision-bd)",
+    desc:"Sounds (usually consonants) are dropped in fast speech to make pronunciation easier and more fluid. This is very common and completely normal.",
+    rule:"Consonant clusters get simplified: \"next day\" → \"nex day\" (the /t/ disappears)",
+    examples:[
+      {formal:"next day",natural:"nex' day",ipa:"/neks deɪ/",slow:"next day",fast:"nexday",sentence:"I'll see you the next day.",level:"A2"},
+      {formal:"last night",natural:"las' night",ipa:"/lɑːs naɪt/",slow:"last night",fast:"lasnight",sentence:"I went to bed early last night.",level:"A1"},
+      {formal:"most people",natural:"mos' people",ipa:"/məʊs piːpəl/",slow:"most people",fast:"mospeople",sentence:"Most people prefer coffee.",level:"A2"},
+      {formal:"facts and figures",natural:"facs an' figures",ipa:"/fæks ən fɪɡəz/",slow:"facts and figures",fast:"facsanfigures",sentence:"Let me check the facts and figures.",level:"B1"},
+      {formal:"must be",natural:"mus' be",ipa:"/mʌs biː/",slow:"must be",fast:"musbe",sentence:"It must be around here somewhere.",level:"A2"},
+      {formal:"hand bag",natural:"han' bag",ipa:"/hæn bæɡ/",slow:"hand bag",fast:"hanbag",sentence:"She left her handbag on the chair.",level:"A2"},
+      {formal:"sandwich",natural:"samwich",ipa:"/sæm.wɪtʃ/",slow:"sandwich",fast:"samwich",sentence:"Would you like a sandwich?",level:"A1"},
+      {formal:"probably",natural:"probly",ipa:"/prɒb.li/",slow:"probably",fast:"probly",sentence:"I'll probably be late.",level:"A2"},
+      {formal:"comfortable",natural:"comftable",ipa:"/kʌmf.tə.bəl/",slow:"comfortable",fast:"comftable",sentence:"Make yourself comfortable.",level:"A2"},
+      {formal:"different",natural:"diffrent",ipa:"/dɪf.rənt/",slow:"different",fast:"diffrent",sentence:"That's a completely different thing.",level:"A2"},
+    ]
+  },
+  assimilation: {
+    name:"Assimilation", icon:"🔄", color:"var(--assim)", bg:"var(--assim-bg)", bd:"var(--assim-bd)",
+    desc:"A sound changes to become more similar to a neighboring sound. The end of one word 'absorbs' the beginning of the next.",
+    rule:"Sounds adapt to their neighbors: \"don't you\" → \"donchu\" (/t/ + /j/ → /tʃ/)",
+    examples:[
+      {formal:"don't you",natural:"donchu",ipa:"/dəʊn.tʃuː/",slow:"don't you",fast:"donchu",sentence:"Don't you think that's a good idea?",level:"A2"},
+      {formal:"did you",natural:"didju",ipa:"/dɪ.dʒuː/",slow:"did you",fast:"didju",sentence:"Did you see the news today?",level:"A2"},
+      {formal:"got you",natural:"gotcha",ipa:"/ɡɒ.tʃə/",slow:"got you",fast:"gotcha",sentence:"I've got you — don't worry.",level:"A2"},
+      {formal:"would you",natural:"woudju",ipa:"/wʊ.dʒuː/",slow:"would you",fast:"woodju",sentence:"Would you like some tea?",level:"A2"},
+      {formal:"miss you",natural:"mishu",ipa:"/mɪ.ʃuː/",slow:"miss you",fast:"mishu",sentence:"I really miss you.",level:"A2"},
+      {formal:"ten bags",natural:"tem bags",ipa:"/tem bæɡz/",slow:"ten bags",fast:"tembags",sentence:"I bought ten bags of rice.",level:"B1"},
+      {formal:"in Paris",natural:"im Paris",ipa:"/ɪm pær.ɪs/",slow:"in Paris",fast:"imParis",sentence:"She's been living in Paris.",level:"B1"},
+      {formal:"good boy",natural:"goob boy",ipa:"/ɡʊb bɔɪ/",slow:"good boy",fast:"goobboy",sentence:"He's been a good boy today.",level:"A1"},
+      {formal:"what's your",natural:"whatcher",ipa:"/wɒ.tʃər/",slow:"what's your",fast:"whatcher",sentence:"What's your name?",level:"A1"},
+      {formal:"could you",natural:"coudju",ipa:"/kʊ.dʒuː/",slow:"could you",fast:"coodju",sentence:"Could you pass me the salt?",level:"A2"},
+    ]
+  },
+  weak_forms: {
+    name:"Weak Forms", icon:"🔅", color:"var(--weak)", bg:"var(--weak-bg)", bd:"var(--weak-bd)",
+    desc:"Function words (articles, prepositions, pronouns, auxiliaries) are pronounced with reduced vowel sounds (schwa /ə/) when unstressed. This is the KEY to natural rhythm.",
+    rule:"Strong: \"I can DO it\" → Weak: \"I /kən/ DO it\" — the meaning word is stressed, function words shrink",
+    examples:[
+      {formal:"I can do it",natural:"I /kən/ do it",ipa:"/aɪ kən duː ɪt/",slow:"I can do it",fast:"I cn do it",sentence:"I can do it by myself.",level:"A1"},
+      {formal:"a cup of tea",natural:"a cup /əv/ tea",ipa:"/ə kʌp əv tiː/",slow:"a cup of tea",fast:"a cuppa tea",sentence:"Would you like a cup of tea?",level:"A1"},
+      {formal:"I have to go",natural:"I /həf/ to go",ipa:"/aɪ hæf tə ɡəʊ/",slow:"I have to go",fast:"I hafta go",sentence:"Sorry, I have to go now.",level:"A1"},
+      {formal:"going to",natural:"gonna",ipa:"/ɡʌ.nə/",slow:"going to",fast:"gonna",sentence:"I'm gonna be late.",level:"A1"},
+      {formal:"want to",natural:"wanna",ipa:"/wɒ.nə/",slow:"want to",fast:"wanna",sentence:"Do you wanna come with us?",level:"A1"},
+      {formal:"give me",natural:"gimme",ipa:"/ɡɪ.mi/",slow:"give me",fast:"gimme",sentence:"Gimme a break!",level:"A2"},
+      {formal:"let me",natural:"lemme",ipa:"/le.mi/",slow:"let me",fast:"lemme",sentence:"Lemme think about it.",level:"A2"},
+      {formal:"got to",natural:"gotta",ipa:"/ɡɒ.tə/",slow:"got to",fast:"gotta",sentence:"I've gotta leave early.",level:"A2"},
+      {formal:"kind of",natural:"kinda",ipa:"/kaɪn.də/",slow:"kind of",fast:"kinda",sentence:"It's kinda cold today.",level:"A2"},
+      {formal:"out of",natural:"outta",ipa:"/aʊ.tə/",slow:"out of",fast:"outta",sentence:"Get outta here!",level:"B1"},
+      {formal:"do you know",natural:"d'ya know",ipa:"/djə nəʊ/",slow:"do you know",fast:"dya know",sentence:"Do you know what time it is?",level:"A2"},
+      {formal:"what are you",natural:"whatcha",ipa:"/wɒ.tʃə/",slow:"what are you",fast:"whatcha",sentence:"What are you doing tonight?",level:"A2"},
+    ]
+  },
+  contractions: {
+    name:"Contractions", icon:"📎", color:"var(--contraction)", bg:"var(--contr-bg)", bd:"var(--contr-bd)",
+    desc:"Two words merge into one shorter form. These are essential in spoken English — using full forms sounds overly formal or robotic.",
+    rule:"Subject + auxiliary merge: \"I would have\" → \"I'd've\" — multiple levels of contraction!",
+    examples:[
+      {formal:"I would have",natural:"I'd've",ipa:"/aɪdəv/",slow:"I would have",fast:"I'dve",sentence:"I'd've gone if I had known.",level:"B1"},
+      {formal:"she would not have",natural:"she wouldn't've",ipa:"/ʃiː wʊd.ənt.əv/",slow:"she would not have",fast:"she wouldntve",sentence:"She wouldn't've said that.",level:"B2"},
+      {formal:"you should not have",natural:"you shouldn't've",ipa:"/juː ʃʊd.ənt.əv/",slow:"you should not have",fast:"you shouldntve",sentence:"You shouldn't've told him.",level:"B2"},
+      {formal:"they are not",natural:"they aren't",ipa:"/ðeɪ ɑːnt/",slow:"they are not",fast:"they aren't",sentence:"They aren't coming tonight.",level:"A1"},
+      {formal:"he has been",natural:"he's been",ipa:"/hiːz biːn/",slow:"he has been",fast:"he's been",sentence:"He's been working all day.",level:"A2"},
+      {formal:"we will not",natural:"we won't",ipa:"/wiː wəʊnt/",slow:"we will not",fast:"we won't",sentence:"We won't be late, I promise.",level:"A1"},
+      {formal:"that is",natural:"that's",ipa:"/ðæts/",slow:"that is",fast:"that's",sentence:"That's exactly what I mean.",level:"A1"},
+      {formal:"it will",natural:"it'll",ipa:"/ɪt.əl/",slow:"it will",fast:"it'll",sentence:"It'll be ready in five minutes.",level:"A2"},
+      {formal:"who would have",natural:"who'd've",ipa:"/huːdəv/",slow:"who would have",fast:"who'dve",sentence:"Who'd've thought it was possible?",level:"B2"},
+      {formal:"I am going to",natural:"I'm gonna",ipa:"/aɪm ɡʌnə/",slow:"I am going to",fast:"I'm gonna",sentence:"I'm gonna start right now.",level:"A2"},
+    ]
+  },
+  intrusive: {
+    name:"Intrusive Sounds", icon:"👻", color:"var(--intrusive)", bg:"var(--intr-bg)", bd:"var(--intr-bd)",
+    desc:"Extra sounds appear BETWEEN words to make the transition smoother. Speakers insert /r/, /w/, or /j/ unconsciously at vowel-vowel boundaries.",
+    rule:"Vowel + Vowel → insert /r/, /w/, or /j/: \"law and order\" → \"law-r-and order\"",
+    examples:[
+      {formal:"law and order",natural:"law /r/ and order",ipa:"/lɔːr ənd ɔːdər/",slow:"law and order",fast:"law rand order",sentence:"We need law and order.",level:"B1"},
+      {formal:"I am",natural:"I /j/ am",ipa:"/aɪ jæm/",slow:"I am",fast:"I yam",sentence:"I am ready to go.",level:"B1"},
+      {formal:"go away",natural:"go /w/ away",ipa:"/ɡəʊ wə.weɪ/",slow:"go away",fast:"go waway",sentence:"Please go away!",level:"A2"},
+      {formal:"the idea is",natural:"the idea /r/ is",ipa:"/ðiː aɪ.dɪər ɪz/",slow:"the idea is",fast:"the idea ris",sentence:"The idea is quite simple.",level:"B1"},
+      {formal:"do it",natural:"do /w/ it",ipa:"/duː wɪt/",slow:"do it",fast:"do wit",sentence:"Just do it!",level:"A1"},
+      {formal:"she asked",natural:"she /j/ asked",ipa:"/ʃiː jɑːskt/",slow:"she asked",fast:"she yasked",sentence:"She asked me to come.",level:"B1"},
+      {formal:"India and China",natural:"India /r/ and China",ipa:"/ɪn.dɪər ənd tʃaɪ.nə/",slow:"India and China",fast:"India rand China",sentence:"India and China are growing fast.",level:"B2"},
+      {formal:"too often",natural:"too /w/ often",ipa:"/tuː wɒf.ən/",slow:"too often",fast:"too woften",sentence:"This happens too often.",level:"B1"},
+    ]
+  }
+};
+
+const CATS = Object.keys(PHENOMENA);
+const CAT_META = {};
+CATS.forEach(k => { const p = PHENOMENA[k]; CAT_META[k] = { name:p.name, icon:p.icon, color:p.color, bg:p.bg, bd:p.bd }; });
+
+const MODES = [
+  {id:'learn',label:'📚 Learn'},
+  {id:'identify',label:'👂 Identify'},
+  {id:'transcribe',label:'✍️ Transcribe'},
+  {id:'slowfast',label:'🎚️ Slow → Fast'},
+  {id:'quiz',label:'🧠 Quiz'},
+];
+
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+let S = {
+  mode:'learn', cat:'all',
+  qItems:[], qIdx:0, qAnswers:[], qAnswered:false,
+  tItems:[], tIdx:0, tAnswers:[], tAnswered:false,
+  sfItems:[], sfIdx:0,
+  idItems:[], idIdx:0, idAnswers:[], idAnswered:false,
+  stats:{attempts:0,correct:0,streak:0,best:0}
+};
+
+// ═══════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════
+const shuffle=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]]}return b};
+const getAllExamples=(cat)=>{
+  if(cat==='all') return CATS.flatMap(k=>PHENOMENA[k].examples.map(e=>({...e,cat:k})));
+  return PHENOMENA[cat].examples.map(e=>({...e,cat:cat}));
+};
+
+function speak(text,rate=0.85){
+  if(!('speechSynthesis' in window))return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=rate;
+  const voices=speechSynthesis.getVoices();
+  const v=voices.find(v=>v.lang.startsWith('en')&&v.name.includes('Google'))||voices.find(v=>v.lang.startsWith('en-US'))||voices.find(v=>v.lang.startsWith('en'));
+  if(v)u.voice=v;
+  speechSynthesis.speak(u);
+}
+
+const spkSVG=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>`;
+const arrowR=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>`;
+
+// ═══════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════
+function render(){
+  renderTabs();renderCats();renderMain();renderStats();
+}
+
+function renderTabs(){
+  document.getElementById('modeTabs').innerHTML=MODES.map(m=>
+    `<button class="tab ${S.mode===m.id?'active':''}" onclick="setMode('${m.id}')">${m.label}</button>`
+  ).join('');
+}
+
+function renderCats(){
+  const el=document.getElementById('catTabs');
+  if(S.mode==='learn'){
+    el.innerHTML=`<button class="cat ${S.cat==='all'?'on':''}" style="${S.cat==='all'?'border-color:rgba(255,255,255,.15);background:var(--s3)':''}" onclick="setCat('all')">All</button>`+
+      CATS.map(k=>{const m=CAT_META[k];return`<button class="cat ${S.cat===k?'on':''}" style="${S.cat===k?`border-color:${m.bd};background:${m.bg};color:${m.color}`:''}" onclick="setCat('${k}')"><span class="dot" style="background:${m.color}"></span>${m.name}</button>`}).join('');
+  } else {
+    el.innerHTML=`<button class="cat ${S.cat==='all'?'on':''}" style="${S.cat==='all'?'border-color:rgba(255,255,255,.15);background:var(--s3)':''}" onclick="setCat('all')">All Types</button>`+
+      CATS.map(k=>{const m=CAT_META[k];return`<button class="cat ${S.cat===k?'on':''}" style="${S.cat===k?`border-color:${m.bd};background:${m.bg};color:${m.color}`:''}" onclick="setCat('${k}')"><span class="dot" style="background:${m.color}"></span>${m.name}</button>`}).join('');
+  }
+}
+
+function renderMain(){
+  const el=document.getElementById('main');
+  switch(S.mode){
+    case 'learn': renderLearn(el);break;
+    case 'identify': renderIdentify(el);break;
+    case 'transcribe': renderTranscribe(el);break;
+    case 'slowfast': renderSlowFast(el);break;
+    case 'quiz': renderQuiz(el);break;
+  }
+}
+
+function renderStats(){
+  const pct=S.stats.attempts?Math.round(S.stats.correct/S.stats.attempts*100):0;
+  document.getElementById('statsRow').innerHTML=`
+    <div class="stat"><div class="stat-n">${S.stats.attempts}</div><div class="stat-l">Attempts</div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--ok)">${S.stats.correct}</div><div class="stat-l">Correct</div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--link)">${S.stats.streak}</div><div class="stat-l">Streak</div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--contraction)">${pct}%</div><div class="stat-l">Accuracy</div></div>`;
+}
+
+// ══ LEARN MODE ══
+function renderLearn(el){
+  const cats = S.cat==='all' ? CATS : [S.cat];
+  el.innerHTML = cats.map(k=>{
+    const p=PHENOMENA[k]; const m=CAT_META[k];
+    return `<div class="phenom-card">
+      <div class="ph-header">
+        <div class="ph-icon" style="background:${m.bg};border:1px solid ${m.bd}">${p.icon}</div>
+        <div class="ph-name" style="color:${m.color}">${p.name}</div>
+      </div>
+      <div class="ph-desc">${p.desc}</div>
+      <div class="ph-rule">${p.rule}</div>
+      <div class="ph-examples">
+        ${p.examples.slice(0,6).map(ex=>`
+          <div class="ph-ex" onclick="speak('${ex.sentence}',0.82)">
+            <button class="speak-btn" onclick="event.stopPropagation();speak('${ex.sentence}',0.82)">${spkSVG}</button>
+            <span class="ph-ex-formal">${ex.formal}</span>
+            <span class="ph-ex-arrow">→</span>
+            <span class="ph-ex-natural" style="color:${m.color}">${ex.natural}</span>
+            <span class="ph-ex-ipa">${ex.ipa}</span>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ══ IDENTIFY MODE ══
+function initIdentify(){
+  const pool=getAllExamples(S.cat);
+  S.idItems=shuffle(pool).slice(0,10);
+  S.idIdx=0;S.idAnswers=[];S.idAnswered=false;
+}
+
+function renderIdentify(el){
+  if(!S.idItems.length)initIdentify();
+  if(S.idIdx>=S.idItems.length){renderEnd(el,'Identify',S.idAnswers);return}
+
+  const ex=S.idItems[S.idIdx];
+  const m=CAT_META[ex.cat];
+  const progress=S.idItems.map((_,i)=>{if(i<S.idAnswers.length)return S.idAnswers[i]?'ok':'err';if(i===S.idIdx)return'cur';return''});
+
+  // Options: the correct category + 3 random
+  let opts=[ex.cat];
+  const others=shuffle(CATS.filter(c=>c!==ex.cat));
+  for(const o of others){if(opts.length>=4)break;opts.push(o)}
+  opts=shuffle(opts);
+
+  el.innerHTML=`<div class="card">
+    <div class="card-h"><div class="card-t">Identify the Phenomenon <span class="pill" style="background:var(--s3);color:var(--tx3)">${S.idIdx+1}/${S.idItems.length}</span></div></div>
+    <div class="card-b">
+      <div class="quiz-progress">${progress.map(p=>`<div class="qp ${p}"></div>`).join('')}</div>
+      <div class="tc">
+        <button class="play-big" onclick="speak('${ex.sentence}',0.8)">
+          <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </button>
+      </div>
+      <div class="sent-box">
+        <div class="sent-formal">${ex.formal}</div>
+        <div class="sent-natural">→ ${ex.natural}</div>
+        <div class="sent-ipa">${ex.ipa}</div>
+      </div>
+      <div class="q-text">What type of connected speech is this?</div>
+      <div class="q-grid" id="idOpts">
+        ${opts.map(o=>{const om=CAT_META[o];return`<button class="q-opt" data-cat="${o}" data-correct="${o===ex.cat}" onclick="answerIdentify(this,'${o}','${ex.cat}')">
+          ${om.icon} ${om.name}
+        </button>`}).join('')}
+      </div>
+      <div class="fb" id="idFb"></div>
+      <div class="btn-row">
+        <button class="btn hidden" id="idNext" onclick="S.idIdx++;S.idAnswered=false;renderMain()">Next ${arrowR}</button>
+      </div>
+    </div></div>`;
+}
+
+function answerIdentify(btn,picked,correct){
+  if(S.idAnswered)return;
+  S.idAnswered=true;S.stats.attempts++;
+  const ok=picked===correct;S.idAnswers.push(ok);
+  document.querySelectorAll('#idOpts .q-opt').forEach(o=>{o.classList.add('dis');if(o.dataset.cat===correct)o.classList.add('reveal')});
+  btn.classList.add(ok?'right':'wrong');
+  const fb=document.getElementById('idFb');fb.classList.add('show');
+  if(ok){S.stats.correct++;S.stats.streak++;S.stats.best=Math.max(S.stats.best,S.stats.streak);fb.className='fb show ok';fb.textContent='✅ Correct!'}
+  else{S.stats.streak=0;fb.className='fb show no';fb.innerHTML=`❌ It's <strong>${CAT_META[correct].name}</strong>`}
+  document.getElementById('idNext').classList.remove('hidden');renderStats();
+}
+
+// ══ TRANSCRIBE MODE ══
+function initTranscribe(){
+  const pool=getAllExamples(S.cat);
+  S.tItems=shuffle(pool).slice(0,10);
+  S.tIdx=0;S.tAnswers=[];S.tAnswered=false;
+}
+
+function renderTranscribe(el){
+  if(!S.tItems.length)initTranscribe();
+  if(S.tIdx>=S.tItems.length){renderEnd(el,'Transcribe',S.tAnswers);return}
+
+  const ex=S.tItems[S.tIdx];
+  const m=CAT_META[ex.cat];
+  const progress=S.tItems.map((_,i)=>{if(i<S.tAnswers.length)return S.tAnswers[i]?'ok':'err';if(i===S.tIdx)return'cur';return''});
+
+  el.innerHTML=`<div class="card">
+    <div class="card-h"><div class="card-t">Transcribe What You Hear <span class="pill" style="background:${m.bg};color:${m.color}">${m.icon} ${m.name}</span></div></div>
+    <div class="card-b">
+      <div class="quiz-progress">${progress.map(p=>`<div class="qp ${p}"></div>`).join('')}</div>
+      <div class="tc" style="margin-bottom:8px">
+        <button class="play-big" onclick="speak('${ex.sentence}',1)">
+          <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </button>
+        <div class="btn-row" style="margin-bottom:10px">
+          <button class="btn btn-sm" onclick="speak('${ex.sentence}',0.6)">🐢 Slow</button>
+          <button class="btn btn-sm" onclick="speak('${ex.sentence}',1)">🔊 Normal</button>
+          <button class="btn btn-sm" onclick="speak('${ex.sentence}',1.2)">⚡ Fast</button>
+        </div>
+      </div>
+      <p style="font-size:.85rem;color:var(--tx2);text-align:center;margin-bottom:12px">Listen and write the FULL sentence — including natural reductions</p>
+      <input class="t-input" id="tInput" placeholder="Type what you hear..." autocomplete="off" spellcheck="false"
+        onkeydown="if(event.key==='Enter'&&!S.tAnswered)checkTranscribe()">
+      <div class="fb" id="tFb" style="margin-top:12px"></div>
+      <div class="btn-row" style="margin-top:12px">
+        <button class="btn" id="tCheck" onclick="checkTranscribe()">✓ Check</button>
+        <button class="btn hidden" id="tNext" onclick="S.tIdx++;S.tAnswered=false;renderMain()">Next ${arrowR}</button>
+      </div>
+    </div></div>`;
+  setTimeout(()=>document.getElementById('tInput')?.focus(),100);
+}
+
+function checkTranscribe(){
+  if(S.tAnswered)return;
+  S.tAnswered=true;S.stats.attempts++;
+  const ex=S.tItems[S.tIdx];
+  const input=document.getElementById('tInput');
+  const val=input.value.trim().toLowerCase().replace(/[^a-z0-9'\s]/g,'');
+  const target=ex.sentence.toLowerCase().replace(/[^a-z0-9'\s]/g,'');
+  // Score by word overlap
+  const tw=target.split(/\s+/), sw=val.split(/\s+/).filter(Boolean);
+  let match=0;
+  tw.forEach((w,i)=>{if(sw[i]&&sw[i]===w)match++});
+  const score=Math.round(match/tw.length*100);
+  const ok=score>=70;
+  S.tAnswers.push(ok);
+
+  input.classList.add(ok?'ok-b':'err-b');
+  const fb=document.getElementById('tFb');fb.classList.add('show');
+  if(ok){S.stats.correct++;S.stats.streak++;S.stats.best=Math.max(S.stats.best,S.stats.streak);
+    fb.className='fb show ok';fb.innerHTML=`✅ ${score}%! — "${ex.sentence}"`}
+  else{S.stats.streak=0;fb.className='fb show no';fb.innerHTML=`❌ ${score}% — Correct: <strong>"${ex.sentence}"</strong>`}
+  document.getElementById('tCheck').classList.add('hidden');
+  document.getElementById('tNext').classList.remove('hidden');renderStats();
+}
+
+// ══ SLOW→FAST MODE ══
+function initSlowFast(){
+  const pool=getAllExamples(S.cat);
+  S.sfItems=shuffle(pool).slice(0,10);
+  S.sfIdx=0;
+}
+
+function renderSlowFast(el){
+  if(!S.sfItems.length)initSlowFast();
+  if(S.sfIdx>=S.sfItems.length){
+    el.innerHTML=`<div class="card"><div class="card-b tc">
+      <div style="font-size:2rem;margin-bottom:8px">🎉</div>
+      <div style="font-size:1.1rem;font-weight:600;margin-bottom:16px">Practice Complete!</div>
+      <div class="btn-row"><button class="btn" onclick="S.sfItems=[];setMode('slowfast')">🔄 Again</button></div>
+    </div></div>`;return;
+  }
+
+  const ex=S.sfItems[S.sfIdx];
+  const m=CAT_META[ex.cat];
+
+  el.innerHTML=`<div class="card">
+    <div class="card-h"><div class="card-t">Slow → Fast Practice <span class="pill" style="background:${m.bg};color:${m.color}">${S.sfIdx+1}/${S.sfItems.length}</span></div></div>
+    <div class="card-b">
+      <div class="sent-box">
+        <div class="sent-formal">Formal: ${ex.formal}</div>
+        <div class="sent-natural" style="color:${m.color}">Natural: ${ex.natural}</div>
+        <div class="sent-ipa">${ex.ipa}</div>
+      </div>
+      <p style="text-align:center;color:var(--tx2);font-size:.88rem;margin:12px 0">Listen at each speed, then repeat aloud. Go from slow to fast.</p>
+      <div class="speed-steps">
+        <div class="speed-step" onclick="speak('${ex.sentence}',0.5)">
+          <div class="ss-label">Very Slow</div>
+          <div class="ss-rate" style="color:var(--weak)">0.5×</div>
+        </div>
+        <div class="speed-step" onclick="speak('${ex.sentence}',0.7)">
+          <div class="ss-label">Slow</div>
+          <div class="ss-rate" style="color:var(--link)">0.7×</div>
+        </div>
+        <div class="speed-step" onclick="speak('${ex.sentence}',0.85)">
+          <div class="ss-label">Normal</div>
+          <div class="ss-rate" style="color:var(--contraction)">0.85×</div>
+        </div>
+        <div class="speed-step" onclick="speak('${ex.sentence}',1.1)">
+          <div class="ss-label">Fast</div>
+          <div class="ss-rate" style="color:var(--elision)">1.1×</div>
+        </div>
+        <div class="speed-step" onclick="speak('${ex.sentence}',1.3)">
+          <div class="ss-label">Native</div>
+          <div class="ss-rate" style="color:var(--intrusive)">1.3×</div>
+        </div>
+      </div>
+      <div style="background:var(--s2);border-radius:12px;padding:14px;margin:12px 0;border:1px solid var(--bd)">
+        <div style="font-family:'Fira Code',monospace;font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px">${m.icon} ${m.name}</div>
+        <div style="font-size:.9rem;color:var(--tx2);line-height:1.6">"${ex.sentence}"</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn" onclick="S.sfIdx++;renderMain()">Next ${arrowR}</button>
+      </div>
+    </div></div>`;
+}
+
+// ══ QUIZ MODE ══
+function initQuiz(){
+  const pool=getAllExamples(S.cat);
+  S.qItems=shuffle(pool).slice(0,10);
+  S.qIdx=0;S.qAnswers=[];S.qAnswered=false;
+}
+
+function renderQuiz(el){
+  if(!S.qItems.length)initQuiz();
+  if(S.qIdx>=S.qItems.length){renderEnd(el,'Quiz',S.qAnswers);return}
+
+  const ex=S.qItems[S.qIdx];
+  const m=CAT_META[ex.cat];
+  const progress=S.qItems.map((_,i)=>{if(i<S.qAnswers.length)return S.qAnswers[i]?'ok':'err';if(i===S.qIdx)return'cur';return''});
+
+  // Question: what does the formal form become?
+  const allEx=getAllExamples('all');
+  let opts=[ex.natural];
+  const pool=shuffle(allEx.filter(e=>e.natural!==ex.natural));
+  for(const p of pool){if(opts.length>=4)break;if(!opts.includes(p.natural))opts.push(p.natural)}
+  opts=shuffle(opts);
+
+  el.innerHTML=`<div class="card">
+    <div class="card-h"><div class="card-t">Quiz <span class="pill" style="background:${m.bg};color:${m.color}">${S.qIdx+1}/${S.qItems.length}</span></div></div>
+    <div class="card-b">
+      <div class="quiz-progress">${progress.map(p=>`<div class="qp ${p}"></div>`).join('')}</div>
+      <div class="tc">
+        <button class="play-big" onclick="speak('${ex.sentence}',0.85)">
+          <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </button>
+      </div>
+      <div class="q-text">In natural speech, <span style="color:${m.color}">"${ex.formal}"</span> becomes:</div>
+      <div class="q-sub">${m.icon} ${m.name}</div>
+      <div class="q-grid" id="qOpts">
+        ${opts.map(o=>`<button class="q-opt" data-val="${o}" data-correct="${o===ex.natural}" onclick="answerQuiz(this,'${o.replace(/'/g,"\\'")}','${ex.natural.replace(/'/g,"\\'")}')">${o}</button>`).join('')}
+      </div>
+      <div class="fb" id="qFb"></div>
+      <div class="btn-row">
+        <button class="btn hidden" id="qNext" onclick="S.qIdx++;S.qAnswered=false;renderMain()">Next ${arrowR}</button>
+        <button class="btn" onclick="speak('${ex.sentence}',0.85)">${spkSVG} Listen</button>
+      </div>
+    </div></div>`;
+}
+
+function answerQuiz(btn,picked,correct){
+  if(S.qAnswered)return;
+  S.qAnswered=true;S.stats.attempts++;
+  const ok=picked===correct;S.qAnswers.push(ok);
+  document.querySelectorAll('#qOpts .q-opt').forEach(o=>{o.classList.add('dis');if(o.dataset.correct==='true')o.classList.add('reveal')});
+  btn.classList.add(ok?'right':'wrong');
+  const fb=document.getElementById('qFb');fb.classList.add('show');
+  const ex=S.qItems[S.qIdx];
+  if(ok){S.stats.correct++;S.stats.streak++;S.stats.best=Math.max(S.stats.best,S.stats.streak);
+    fb.className='fb show ok';fb.innerHTML=`✅ Correct! "${ex.formal}" → <strong>"${ex.natural}"</strong>`}
+  else{S.stats.streak=0;fb.className='fb show no';fb.innerHTML=`❌ Answer: <strong>"${correct}"</strong>`}
+  document.getElementById('qNext').classList.remove('hidden');renderStats();
+}
+
+// ══ END SCREEN ══
+function renderEnd(el,title,answers){
+  const ok=answers.filter(Boolean).length;
+  const pct=Math.round(ok/answers.length*100);
+  const color=pct>=80?'var(--ok)':pct>=50?'var(--warn)':'var(--err)';
+  el.innerHTML=`<div class="card"><div class="card-b tc">
+    <div class="score-big" style="color:${color}">${pct}%</div>
+    <div class="score-sub">${title} Complete — ${ok}/${answers.length} correct</div>
+    <div class="btn-row">
+      <button class="btn" onclick="resetMode()">🔄 Try Again</button>
+      <button class="btn" onclick="setMode('learn')">📚 Review</button>
+    </div>
+  </div></div>`;
+}
+
+// ══ ACTIONS ══
+function setMode(m){
+  S.mode=m;
+  S.qItems=[];S.idItems=[];S.tItems=[];S.sfItems=[];
+  render();
+}
+function setCat(c){
+  S.cat=c;
+  S.qItems=[];S.idItems=[];S.tItems=[];S.sfItems=[];
+  render();
+}
+function resetMode(){
+  S.qItems=[];S.idItems=[];S.tItems=[];S.sfItems=[];
+  renderMain();
+}
+
+if('speechSynthesis' in window)speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices();
+render();
+</script>
+</body>
+</html>
