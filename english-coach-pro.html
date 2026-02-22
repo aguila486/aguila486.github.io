@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>English Coach Pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg:        #0d0e0f;
+      --surface:   #161718;
+      --surface2:  #1e2022;
+      --surface3:  #252729;
+      --border:    rgba(255,255,255,0.07);
+      --text:      #e8e9ea;
+      --muted:     #6b7280;
+      --blue:      #60a5fa;
+      --blue-glow: rgba(96,165,250,0.15);
+      --green:     #34d399;
+      --green-dim: rgba(52,211,153,0.12);
+      --red:       #f87171;
+      --red-dim:   rgba(248,113,113,0.12);
+      --amber:     #fbbf24;
+      --purple:    #a78bfa;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Figtree', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    header h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      background: linear-gradient(135deg, var(--blue) 0%, var(--purple) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.5px;
+    }
+    header p { color: var(--muted); font-size: 14px; margin-top: 4px; letter-spacing: 0.3px; }
+
+    /* ── Layout ── */
+    .grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 20px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .col-right { display: flex; flex-direction: column; gap: 20px; }
+
+    /* ── Card ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+    }
+    .card-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.1rem;
+      color: var(--text);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ── Tabs (Practice modes) ── */
+    .mode-tabs {
+      display: flex;
+      gap: 6px;
+      background: var(--surface2);
+      padding: 5px;
+      border-radius: 14px;
+      margin-bottom: 18px;
+    }
+    .tab {
+      flex: 1;
+      padding: 9px 12px;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      background: transparent;
+      color: var(--muted);
+      font-family: 'Figtree', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.22s;
+      letter-spacing: 0.1px;
+    }
+    .tab.active {
+      background: rgba(96,165,250,0.1);
+      color: var(--blue);
+      border-color: rgba(96,165,250,0.25);
+      box-shadow: 0 1px 8px rgba(96,165,250,0.08);
+    }
+    .tab:not(.active):hover { color: var(--text); background: rgba(255,255,255,0.04); }
+
+    /* ── Text input area ── */
+    .input-section { display: flex; flex-direction: column; gap: 10px; }
+    .title-input {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-family: 'Figtree', sans-serif;
+      font-size: 14px;
+      outline: none;
+      width: 100%;
+      transition: border-color 0.2s;
+    }
+    .title-input:focus { border-color: var(--blue); }
+    .title-input::placeholder { color: var(--muted); }
+
+    textarea {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      color: var(--text);
+      font-family: 'Figtree', sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      resize: vertical;
+      min-height: 120px;
+      width: 100%;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    textarea:focus { border-color: var(--blue); }
+
+    /* ── Reading box ── */
+    .reading-box {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      font-size: 20px;
+      line-height: 1.9;
+      min-height: 100px;
+      transition: border-color 0.3s;
+    }
+    .reading-box.recording { border-color: var(--red); box-shadow: 0 0 0 3px var(--red-dim); }
+
+    /* ── Word spans ── */
+    .word { display: inline; cursor: default; border-radius: 5px; padding: 1px 2px; transition: all 0.2s; }
+    .word.tts-active { background: rgba(96,165,250,0.25); color: var(--blue); box-shadow: 0 0 12px rgba(96,165,250,0.3); }
+    .word.correct { background: var(--green-dim); color: var(--green); }
+    .word.incorrect { background: var(--red-dim); color: var(--red); text-decoration: line-through; }
+    .word.para-active-word { border-bottom: 2px solid var(--amber); }
+
+    /* ── Paragraph mode ── */
+    .para-nav {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 16px;
+      margin-bottom: 10px;
+    }
+    .para-nav.visible { display: flex; }
+    .para-label { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--muted); }
+    .para-dots { display: flex; gap: 6px; }
+    .para-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--surface3); transition: all 0.3s; }
+    .para-dot.done { background: var(--green); }
+    .para-dot.current { background: var(--blue); transform: scale(1.3); }
+    .para-btn {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--muted);
+      padding: 6px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: 'Figtree', sans-serif;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+    .para-btn:hover { border-color: rgba(96,165,250,0.4); color: var(--blue); background: rgba(96,165,250,0.06); }
+    .para-btn:disabled { opacity: 0.25; cursor: not-allowed; }
+
+    /* ── Visualizer ── */
+    .visualizer {
+      display: none;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      height: 32px;
+      margin: 12px 0;
+    }
+    .visualizer.show { display: flex; }
+    .bar {
+      width: 3px;
+      background: var(--red);
+      border-radius: 20px;
+      animation: wave 0.8s ease-in-out infinite;
+    }
+    .bar:nth-child(1) { height: 12px; animation-delay: 0s; }
+    .bar:nth-child(2) { height: 22px; animation-delay: 0.1s; }
+    .bar:nth-child(3) { height: 30px; animation-delay: 0.2s; }
+    .bar:nth-child(4) { height: 22px; animation-delay: 0.3s; }
+    .bar:nth-child(5) { height: 12px; animation-delay: 0.4s; }
+    @keyframes wave { 0%,100% { transform: scaleY(0.4); } 50% { transform: scaleY(1); } }
+
+    /* TTS visualizer */
+    .tts-vis { display: none; justify-content: center; align-items: center; gap: 5px; height: 32px; margin: 12px 0; }
+    .tts-vis.show { display: flex; }
+    .tts-bar { width: 3px; background: var(--blue); border-radius: 20px; animation: wave 1s ease-in-out infinite; }
+    .tts-bar:nth-child(odd) { background: var(--purple); }
+
+    /* ── Speed selector ── */
+    .speed-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    select {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      padding: 5px 10px;
+      font-size: 13px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* ── Voice selector ── */
+    .voice-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 16px;
+    }
+    .voice-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .voice-icon { font-size: 16px; }
+    .voice-badge {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 100px;
+      background: rgba(52,211,153,0.15);
+      border: 1px solid rgba(52,211,153,0.3);
+      color: var(--green);
+      letter-spacing: 0.4px;
+    }
+    #voice-select {
+      flex: 1;
+      max-width: 260px;
+      background: var(--surface3);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 8px;
+      color: var(--text);
+      padding: 6px 10px;
+      font-size: 13px;
+      font-family: 'Figtree', sans-serif;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    #voice-select:focus { border-color: rgba(96,165,250,0.4); }
+
+    /* ── Buttons ── */
+    .btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 10px 22px;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Figtree', sans-serif;
+      font-weight: 500;
+      font-size: 13.5px;
+      cursor: pointer;
+      transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+      white-space: nowrap;
+      letter-spacing: 0.2px;
+      overflow: hidden;
+    }
+
+    /* Shimmer sweep on hover */
+    .btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.08) 50%, transparent 60%);
+      transform: translateX(-100%);
+      transition: transform 0.5s ease;
+    }
+    .btn:hover::after { transform: translateX(100%); }
+
+    /* Primary — ice blue glass */
+    .btn-primary {
+      background: rgba(96,165,250,0.12);
+      color: var(--blue);
+      border: 1px solid rgba(96,165,250,0.3);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+    }
+    .btn-primary:hover {
+      background: rgba(96,165,250,0.2);
+      border-color: rgba(96,165,250,0.6);
+      color: #bfdbfe;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(96,165,250,0.18), inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+
+    /* Ghost — frosted */
+    .btn-ghost {
+      background: rgba(255,255,255,0.03);
+      color: var(--muted);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .btn-ghost:hover {
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(96,165,250,0.35);
+      color: var(--text);
+      transform: translateY(-1px);
+    }
+
+    /* Record — deep crimson glow */
+    .btn-record {
+      background: rgba(239,68,68,0.1);
+      color: #fca5a5;
+      border: 1px solid rgba(239,68,68,0.35);
+      font-size: 15px;
+      font-weight: 600;
+      padding: 15px 44px;
+      letter-spacing: 0.4px;
+      border-radius: 14px;
+      box-shadow: 0 0 0 0 rgba(239,68,68,0), inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+    .btn-record:hover {
+      background: rgba(239,68,68,0.18);
+      border-color: rgba(239,68,68,0.65);
+      color: #fecaca;
+      box-shadow: 0 6px 24px rgba(239,68,68,0.2), inset 0 1px 0 rgba(255,255,255,0.08);
+      transform: translateY(-1px);
+    }
+    .btn-record.active {
+      background: rgba(239,68,68,0.15);
+      border-color: rgba(239,68,68,0.7);
+      color: #fca5a5;
+      animation: pulse-rec 2s ease-in-out infinite;
+    }
+    @keyframes pulse-rec {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.3), inset 0 1px 0 rgba(255,255,255,0.06); }
+      50%       { box-shadow: 0 0 0 10px rgba(239,68,68,0), inset 0 1px 0 rgba(255,255,255,0.06); }
+    }
+
+    button:disabled { opacity: 0.3; cursor: not-allowed; transform: none !important; }
+
+    /* ── Controls row ── */
+    .controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: center; }
+    .divider { width: 100%; height: 1px; background: var(--border); margin: 18px 0; }
+
+    /* ── Score display ── */
+    .score-display {
+      display: none;
+      background: var(--green-dim);
+      border: 1px solid rgba(52,211,153,0.25);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      margin-top: 16px;
+      animation: fadeIn 0.4s ease;
+    }
+    .score-display.show { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .score-big {
+      font-family: 'DM Mono', monospace;
+      font-size: 3.5rem;
+      font-weight: 500;
+      color: var(--green);
+      line-height: 1;
+    }
+    .score-label { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+    /* ── Pronunciation breakdown ── */
+    .analysis-box {
+      display: none;
+      margin-top: 16px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      animation: fadeIn 0.4s ease 0.2s both;
+    }
+    .analysis-box.show { display: block; }
+    .analysis-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+    .analysis-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .stat-chip {
+      background: var(--surface3);
+      border-radius: 10px;
+      padding: 10px;
+      text-align: center;
+    }
+    .stat-chip .val {
+      font-family: 'DM Mono', monospace;
+      font-size: 1.4rem;
+      font-weight: 500;
+    }
+    .stat-chip .lbl { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .stat-chip.green .val { color: var(--green); }
+    .stat-chip.red .val { color: var(--red); }
+    .stat-chip.amber .val { color: var(--amber); }
+
+    .missed-words { margin-top: 10px; }
+    .missed-label { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+    .word-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .word-chip {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 100px;
+      border: 1px solid;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      user-select: none;
+    }
+    .word-chip.ok { background: var(--green-dim); border-color: rgba(52,211,153,0.3); color: var(--green); }
+    .word-chip.miss {
+      background: var(--red-dim);
+      border-color: rgba(248,113,113,0.3);
+      color: var(--red);
+      cursor: pointer;
+      position: relative;
+    }
+    .word-chip.miss:hover {
+      background: rgba(248,113,113,0.22);
+      border-color: rgba(248,113,113,0.65);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 14px rgba(248,113,113,0.2);
+    }
+    .word-chip.miss:active { transform: translateY(0); }
+    /* Speaking state — pulses blue while audio plays */
+    .word-chip.miss.speaking {
+      background: rgba(96,165,250,0.15);
+      border-color: rgba(96,165,250,0.55);
+      color: var(--blue);
+      box-shadow: 0 0 0 0 rgba(96,165,250,0.4);
+      animation: chip-pulse 1s ease-in-out infinite;
+    }
+    @keyframes chip-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(96,165,250,0.3); }
+      50%       { box-shadow: 0 0 0 7px rgba(96,165,250,0); }
+    }
+    .missed-label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .missed-hint {
+      font-size: 10px;
+      color: rgba(96,165,250,0.6);
+      border: 1px solid rgba(96,165,250,0.2);
+      border-radius: 100px;
+      padding: 1px 7px;
+      letter-spacing: 0.3px;
+    }
+
+    /* ── Progress Chart ── */
+    .chart-container { position: relative; height: 200px; }
+    .chart-filter {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .chart-filter label { font-size: 12px; color: var(--muted); }
+
+    /* ── History ── */
+    .history-scroll { max-height: 320px; overflow-y: auto; padding-right: 4px; }
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 8px;
+      transition: border-color 0.2s;
+    }
+    .history-item:hover { border-color: rgba(255,255,255,0.14); }
+    .history-meta small { color: var(--muted); font-size: 11px; }
+    .history-meta strong { font-size: 14px; display: block; margin-top: 2px; }
+    .history-score {
+      font-family: 'DM Mono', monospace;
+      font-size: 1.5rem;
+      font-weight: 500;
+    }
+    .score-excellent { color: var(--green); }
+    .score-good { color: var(--blue); }
+    .score-fair { color: var(--amber); }
+    .score-poor { color: var(--red); }
+
+    .empty-state { text-align: center; padding: 30px 0; color: var(--muted); font-size: 14px; }
+    .empty-state span { display: block; font-size: 2rem; margin-bottom: 8px; }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #374151; }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+      .col-right { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>English Coach Pro</h1>
+  <p>Listen · Practice · Improve</p>
+</header>
+
+<div class="grid">
+
+  <!-- ═══════════════ LEFT: Main Practice Card ═══════════════ -->
+  <div class="card">
+    <div class="mode-tabs">
+      <button class="tab active" id="tab-free" onclick="switchMode('free')">📝 Free Reading</button>
+      <button class="tab" id="tab-para" onclick="switchMode('paragraph')">¶ Paragraph Mode</button>
+    </div>
+
+    <div class="input-section">
+      <input class="title-input" id="title-input" type="text" placeholder="Reading title (e.g. Daily Vocabulary)">
+      <textarea id="text-input" rows="4">The stars are constant, but our perspective changes as the world turns beneath them. Every morning brings a new chance to grow, to learn, and to become a better version of yourself.</textarea>
+    </div>
+
+    <!-- Paragraph nav (hidden in free mode) -->
+    <div class="para-nav" id="para-nav">
+      <button class="para-btn" id="para-prev" onclick="App.paragraphs.prev()">← Prev</button>
+      <div>
+        <div class="para-label" id="para-label">Paragraph 1 / 1</div>
+        <div class="para-dots" id="para-dots"></div>
+      </div>
+      <button class="para-btn" id="para-next" onclick="App.paragraphs.next()">Next →</button>
+    </div>
+
+    <!-- Reading display -->
+    <div class="reading-box" id="reading-box" style="margin-top: 12px;"></div>
+
+    <!-- TTS visualizer -->
+    <div class="tts-vis" id="tts-vis">
+      <div class="tts-bar"></div><div class="tts-bar"></div><div class="tts-bar"></div>
+      <div class="tts-bar"></div><div class="tts-bar"></div>
+    </div>
+
+    <!-- Recording visualizer -->
+    <div class="visualizer" id="rec-vis">
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      <div class="bar"></div><div class="bar"></div>
+    </div>
+
+    <!-- TTS Controls -->
+    <div class="divider"></div>
+
+    <!-- Voice selector -->
+    <div class="voice-row" id="voice-row">
+      <div class="voice-label">
+        <span class="voice-icon">🎙</span>
+        <span>Voice</span>
+        <span class="voice-badge" id="voice-badge">NATURAL</span>
+      </div>
+      <select id="voice-select" onchange="App.tts.onVoiceChange()">
+        <option value="">Loading voices…</option>
+      </select>
+    </div>
+
+    <div class="controls" id="tts-controls" style="margin-top:14px;">
+      <button class="btn btn-primary" id="btn-play" onclick="App.tts.play()">🔊 Listen</button>
+      <button class="btn btn-ghost" id="btn-pause" onclick="App.tts.pause()" style="display:none">⏸ Pause</button>
+      <button class="btn btn-ghost" id="btn-resume" onclick="App.tts.resume()" style="display:none">▶ Resume</button>
+      <button class="btn btn-ghost" id="btn-stop-tts" onclick="App.tts.stop()" style="display:none">⏹ Stop</button>
+      <div class="speed-row">
+        <span>Speed:</span>
+        <select id="speed-rate">
+          <option value="0.6">Slow</option>
+          <option value="0.85" selected>Normal</option>
+          <option value="1.1">Fast</option>
+          <option value="1.4">Very Fast</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Recording Controls -->
+    <div class="divider"></div>
+    <div class="controls">
+      <button class="btn btn-record" id="btn-record" onclick="App.recording.toggle()">🎙️ Start Reading</button>
+    </div>
+
+    <!-- Score -->
+    <div class="score-display" id="score-display">
+      <div class="score-big" id="score-val">--</div>
+      <div class="score-label">Pronunciation Accuracy</div>
+    </div>
+
+    <!-- Analysis breakdown -->
+    <div class="analysis-box" id="analysis-box">
+      <div class="analysis-title">Word-by-Word Analysis</div>
+      <div class="analysis-stats">
+        <div class="stat-chip green"><div class="val" id="stat-correct">0</div><div class="lbl">Correct</div></div>
+        <div class="stat-chip red"><div class="val" id="stat-missed">0</div><div class="lbl">Missed</div></div>
+        <div class="stat-chip amber"><div class="val" id="stat-total">0</div><div class="lbl">Total Words</div></div>
+      </div>
+      <div class="missed-words" id="missed-section">
+        <div class="missed-label">Words to practice: <span class="missed-hint">👆 click to hear</span></div>
+        <div class="word-chips" id="missed-chips"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ RIGHT COLUMN ═══════════════ -->
+  <div class="col-right">
+
+    <!-- Progress Chart -->
+    <div class="card">
+      <div class="card-title">📈 Progress</div>
+      <div class="chart-filter">
+        <label>Filter by:</label>
+        <select id="chart-filter" onchange="App.chart.render()">
+          <option value="">All Readings</option>
+        </select>
+      </div>
+      <div class="chart-container">
+        <canvas id="progress-chart"></canvas>
+      </div>
+    </div>
+
+    <!-- History -->
+    <div class="card">
+      <div class="card-title">📋 Activity Log</div>
+      <div class="chart-filter">
+        <label>Filter:</label>
+        <select id="history-filter" onchange="App.history.render()">
+          <option value="">All Readings</option>
+        </select>
+      </div>
+      <div class="history-scroll" id="history-list"></div>
+      <button onclick="App.history.clear()"
+        style="background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;text-decoration:underline;margin-top:12px;width:100%">
+        Clear History
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   DATA LAYER
+═══════════════════════════════════════════════════ */
+const DB = {
+  key: 'englishCoachPro_v2',
+  load() { try { return JSON.parse(localStorage.getItem(this.key) || '[]'); } catch { return []; } },
+  save(data) { localStorage.setItem(this.key, JSON.stringify(data)); },
+  add(entry) {
+    const data = this.load();
+    data.unshift(entry);
+    this.save(data);
+  },
+  clear() { localStorage.removeItem(this.key); },
+  getTitles() { return [...new Set(this.load().map(i => i.title))]; }
+};
+
+/* ═══════════════════════════════════════════════════
+   APP
+═══════════════════════════════════════════════════ */
+const App = {
+
+  /* ── State ── */
+  mode: 'free', // 'free' | 'paragraph'
+  currentPara: 0,
+  paragraphList: [],
+  isRecording: false,
+  recognition: null,
+  fullTranscript: '',
+  chartInstance: null,
+
+  /* ── Init ── */
+  init() {
+    this.renderPreview();
+    document.getElementById('text-input').addEventListener('input', () => {
+      this.renderPreview();
+      this.resetResults();
+      if (this.mode === 'paragraph') this.paragraphs.build();
+    });
+    this.tts.loadVoices();
+    this.history.render();
+    this.chart.render();
+    this.refreshSelects();
+  },
+
+  /* ── Mode Switch ── */
+  switchMode(mode) {
+    this.mode = mode;
+    document.getElementById('tab-free').classList.toggle('active', mode === 'free');
+    document.getElementById('tab-para').classList.toggle('active', mode === 'paragraph');
+    this.resetResults();
+    if (mode === 'paragraph') {
+      this.paragraphs.build();
+      document.getElementById('para-nav').classList.add('visible');
+    } else {
+      document.getElementById('para-nav').classList.remove('visible');
+      this.renderPreview();
+    }
+  },
+
+  /* ── Render text as word spans ── */
+  renderPreview(text) {
+    text = text || document.getElementById('text-input').value;
+    const box = document.getElementById('reading-box');
+    box.innerHTML = text.split(/\s+/).filter(Boolean).map((w, i) =>
+      `<span class="word" data-i="${i}">${w} </span>`
+    ).join('');
+  },
+
+  resetResults() {
+    document.getElementById('score-display').classList.remove('show');
+    document.getElementById('analysis-box').classList.remove('show');
+    document.querySelectorAll('.word').forEach(w => {
+      w.classList.remove('correct', 'incorrect', 'tts-active');
+    });
+  },
+
+  refreshSelects() {
+    const titles = DB.getTitles();
+    const opts = '<option value="">All Readings</option>' +
+      titles.map(t => `<option value="${t}">${t}</option>`).join('');
+    document.getElementById('chart-filter').innerHTML = opts;
+    document.getElementById('history-filter').innerHTML = opts;
+  },
+
+  /* ─────────────────────────────────────────
+     TTS MODULE
+  ───────────────────────────────────────── */
+  tts: {
+    synth: window.speechSynthesis,
+    utter: null,
+    voices: [],
+    selectedVoice: null,
+
+    // Priority keywords: neural/natural voices first, then fallbacks
+    VOICE_PRIORITY: [
+      // macOS / iOS premium
+      'Samantha', 'Karen', 'Daniel', 'Moira', 'Tessa',
+      // Google Chrome neural
+      'Google US English', 'Google UK English Female', 'Google UK English Male',
+      // Microsoft neural (Edge/Windows)
+      'Microsoft Aria', 'Microsoft Jenny', 'Microsoft Guy', 'Microsoft Zira',
+      'Microsoft David', 'Microsoft Mark',
+      // Generic quality keywords
+      'Natural', 'Neural', 'Premium', 'Enhanced',
+    ],
+
+    loadVoices() {
+      const populate = () => {
+        this.voices = this.synth.getVoices().filter(v =>
+          v.lang.startsWith('en')
+        );
+        if (!this.voices.length) return;
+
+        const select = document.getElementById('voice-select');
+        const badge  = document.getElementById('voice-badge');
+
+        // Sort: priority voices first, then alphabetical
+        const score = (v) => {
+          for (let i = 0; i < this.VOICE_PRIORITY.length; i++) {
+            if (v.name.includes(this.VOICE_PRIORITY[i])) return i;
+          }
+          return 999;
+        };
+        this.voices.sort((a, b) => score(a) - score(b));
+
+        select.innerHTML = this.voices.map((v, i) =>
+          `<option value="${i}">${v.name} (${v.lang})</option>`
+        ).join('');
+
+        // Auto-select best voice
+        this.selectedVoice = this.voices[0];
+        select.value = '0';
+
+        // Show badge if it's a known premium voice
+        const isPremium = score(this.selectedVoice) < 20;
+        badge.textContent  = isPremium ? 'NATURAL' : 'STANDARD';
+        badge.style.background = isPremium ? 'rgba(52,211,153,0.15)' : 'rgba(251,191,36,0.15)';
+        badge.style.borderColor = isPremium ? 'rgba(52,211,153,0.3)'  : 'rgba(251,191,36,0.3)';
+        badge.style.color       = isPremium ? 'var(--green)'           : 'var(--amber)';
+      };
+
+      populate();
+      // Chrome loads voices async
+      if (this.synth.onvoiceschanged !== undefined) {
+        this.synth.onvoiceschanged = populate;
+      }
+    },
+
+    onVoiceChange() {
+      const idx = parseInt(document.getElementById('voice-select').value);
+      this.selectedVoice = this.voices[idx] || null;
+      const badge = document.getElementById('voice-badge');
+      const score = (v) => {
+        for (let i = 0; i < this.VOICE_PRIORITY.length; i++) {
+          if (v && v.name.includes(this.VOICE_PRIORITY[i])) return i;
+        }
+        return 999;
+      };
+      const isPremium = this.selectedVoice && score(this.selectedVoice) < 20;
+      badge.textContent   = isPremium ? 'NATURAL' : 'STANDARD';
+      badge.style.background  = isPremium ? 'rgba(52,211,153,0.15)' : 'rgba(251,191,36,0.15)';
+      badge.style.borderColor = isPremium ? 'rgba(52,211,153,0.3)'  : 'rgba(251,191,36,0.3)';
+      badge.style.color       = isPremium ? 'var(--green)'           : 'var(--amber)';
+    },
+
+    getText() {
+      if (App.mode === 'paragraph') return App.paragraphList[App.currentPara] || '';
+      return document.getElementById('text-input').value;
+    },
+
+    // Add subtle pauses at punctuation for more natural flow
+    preprocessText(text) {
+      return text
+        .replace(/([.!?])\s+/g, '$1  ')   // longer pause after sentence end
+        .replace(/([,;:])\s+/g, '$1 ');    // slight pause after comma/semicolon
+    },
+
+    play() {
+      this.synth.cancel();
+      const raw = this.getText();
+      if (!raw.trim()) return;
+
+      App.renderPreview(raw);
+      const text = this.preprocessText(raw);
+
+      this.utter = new SpeechSynthesisUtterance(text);
+      this.utter.lang  = 'en-US';
+      this.utter.rate  = parseFloat(document.getElementById('speed-rate').value);
+      this.utter.pitch = 1.05;   // very slight lift — sounds less flat
+      this.utter.volume = 1;
+
+      if (this.selectedVoice) this.utter.voice = this.selectedVoice;
+
+      this.utter.onboundary = (e) => {
+        if (e.name !== 'word') return;
+        const words = document.querySelectorAll('.word');
+        let pos = 0;
+        words.forEach(span => {
+          const raw = span.innerText.trim();
+          if (e.charIndex >= pos && e.charIndex < pos + raw.length) {
+            words.forEach(s => s.classList.remove('tts-active'));
+            span.classList.add('tts-active');
+          }
+          pos += raw.length + 1;
+        });
+      };
+      this.utter.onstart = () => {
+        this._setState('playing');
+        document.getElementById('tts-vis').classList.add('show');
+      };
+      this.utter.onend = () => { this.stop(); };
+      this.synth.speak(this.utter);
+    },
+
+    pause() {
+      this.synth.pause();
+      this._setState('paused');
+      document.getElementById('tts-vis').classList.remove('show');
+    },
+
+    resume() {
+      this.synth.resume();
+      this._setState('playing');
+      document.getElementById('tts-vis').classList.add('show');
+    },
+
+    stop() {
+      this.synth.cancel();
+      this._setState('stopped');
+      document.getElementById('tts-vis').classList.remove('show');
+      document.querySelectorAll('.word').forEach(s => s.classList.remove('tts-active'));
+    },
+
+    // Pronounce a single missed word when its chip is clicked
+    pronounceWord(chipEl, word) {
+      // Cancel any ongoing speech
+      this.synth.cancel();
+
+      // Remove speaking state from all chips first
+      document.querySelectorAll('.word-chip.speaking').forEach(c => c.classList.remove('speaking'));
+
+      const utter = new SpeechSynthesisUtterance(word);
+      utter.lang   = 'en-US';
+      utter.rate   = 0.78;   // slightly slower so pronunciation is clear
+      utter.pitch  = 1.05;
+      utter.volume = 1;
+      if (this.selectedVoice) utter.voice = this.selectedVoice;
+
+      utter.onstart = () => { chipEl.classList.add('speaking'); };
+      utter.onend   = () => { chipEl.classList.remove('speaking'); };
+      utter.onerror = () => { chipEl.classList.remove('speaking'); };
+
+      this.synth.speak(utter);
+    },
+
+    _setState(s) {
+      const show = (id, v) => { const el = document.getElementById(id); if (el) el.style.display = v ? 'inline-flex' : 'none'; };
+      show('btn-play',      s === 'stopped');
+      show('btn-pause',     s === 'playing');
+      show('btn-resume',    s === 'paused');
+      show('btn-stop-tts',  s !== 'stopped');
+    }
+  },
+
+  /* ─────────────────────────────────────────
+     RECORDING MODULE
+  ───────────────────────────────────────── */
+  recording: {
+    toggle() {
+      App.isRecording ? this.stop() : this.start();
+    },
+
+    start() {
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRec) { alert('Speech Recognition not supported in this browser. Try Chrome.'); return; }
+
+      App.isRecording = true;
+      App.fullTranscript = '';
+      App.resetResults();
+
+      App.recognition = new SpeechRec();
+      App.recognition.lang = 'en-US';
+      App.recognition.continuous = true;
+      App.recognition.interimResults = true;
+
+      App.recognition.onresult = (e) => {
+        let final = '';
+        for (let i = 0; i < e.results.length; i++) {
+          if (e.results[i].isFinal) final += e.results[i][0].transcript + ' ';
+        }
+        App.fullTranscript = final;
+      };
+
+      App.recognition.start();
+      document.getElementById('btn-record').classList.add('active');
+      document.getElementById('btn-record').innerHTML = '⏹ Stop & Evaluate';
+      document.getElementById('rec-vis').classList.add('show');
+      document.getElementById('reading-box').classList.add('recording');
+    },
+
+    stop() {
+      App.isRecording = false;
+      if (App.recognition) App.recognition.stop();
+      document.getElementById('btn-record').classList.remove('active');
+      document.getElementById('btn-record').innerHTML = '🎙️ Start Reading';
+      document.getElementById('rec-vis').classList.remove('show');
+      document.getElementById('reading-box').classList.remove('recording');
+      setTimeout(() => App.evaluate(App.fullTranscript), 600);
+    }
+  },
+
+  /* ─────────────────────────────────────────
+     EVALUATION MODULE
+  ───────────────────────────────────────── */
+  evaluate(spoken) {
+    const targetText = this.mode === 'paragraph'
+      ? this.paragraphList[this.currentPara] || ''
+      : document.getElementById('text-input').value;
+
+    const clean = s => s.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?"']/g, '');
+    const originalWords = targetText.split(/\s+/).filter(Boolean);
+    const spokenSet = new Set(spoken.split(/\s+/).map(clean).filter(Boolean));
+
+    let correct = 0, missed = 0;
+    const missedWords = [];
+
+    // Highlight words in reading box
+    this.renderPreview(targetText);
+    const wordSpans = document.querySelectorAll('.word');
+    wordSpans.forEach((span, i) => {
+      const w = clean(originalWords[i] || '');
+      if (spokenSet.has(w)) {
+        span.classList.add('correct');
+        correct++;
+      } else {
+        span.classList.add('incorrect');
+        missedWords.push(originalWords[i]);
+        missed++;
+      }
+    });
+
+    const total = originalWords.length;
+    const accuracy = total ? Math.round((correct / total) * 100) : 0;
+
+    // Score display
+    document.getElementById('score-val').textContent = accuracy + '%';
+    document.getElementById('score-display').classList.add('show');
+
+    // Analysis
+    document.getElementById('stat-correct').textContent = correct;
+    document.getElementById('stat-missed').textContent = missed;
+    document.getElementById('stat-total').textContent = total;
+
+    const chipsEl = document.getElementById('missed-chips');
+    chipsEl.innerHTML = missedWords.slice(0, 20).map(w =>
+      `<span class="word-chip miss" onclick="App.tts.pronounceWord(this, '${w.replace(/'/g, "\'")}')" title="Click to hear pronunciation">${w} 🔉</span>`
+    ).join('') + (missedWords.length > 20 ? `<span class="word-chip miss" style="cursor:default;opacity:0.5;">+${missedWords.length - 20} more</span>` : '');
+
+    if (missedWords.length === 0) {
+      document.getElementById('missed-section').style.display = 'none';
+    } else {
+      document.getElementById('missed-section').style.display = 'block';
+    }
+
+    document.getElementById('analysis-box').classList.add('show');
+
+    // Paragraph mode: mark as done
+    if (this.mode === 'paragraph') {
+      this.paragraphs.markDone(this.currentPara, accuracy);
+    }
+
+    // Save
+    const title = document.getElementById('title-input').value.trim() || 'General Reading';
+    const suffix = this.mode === 'paragraph' ? ` (P${this.currentPara + 1})` : '';
+    DB.add({ title: title + suffix, score: accuracy, date: new Date().toLocaleString() });
+    this.tts.loadVoices();
+    this.history.render();
+    this.chart.render();
+    this.refreshSelects();
+  },
+
+  /* ─────────────────────────────────────────
+     PARAGRAPH MODULE
+  ───────────────────────────────────────── */
+  paragraphs: {
+    paraScores: {},
+
+    build() {
+      const text = document.getElementById('text-input').value;
+      // Split by double newline OR sentences
+      let paras = text.split(/\n\n+/).filter(s => s.trim());
+      if (paras.length < 2) {
+        // Auto-split into sentences
+        paras = text.match(/[^.!?]+[.!?]+/g) || [text];
+      }
+      App.paragraphList = paras.map(p => p.trim());
+      App.currentPara = 0;
+      this.paraScores = {};
+      this.renderNav();
+      this.showCurrent();
+    },
+
+    showCurrent() {
+      const para = App.paragraphList[App.currentPara];
+      if (para) {
+        App.renderPreview(para);
+        App.resetResults();
+      }
+    },
+
+    renderNav() {
+      const total = App.paragraphList.length;
+      document.getElementById('para-label').textContent =
+        `Segment ${App.currentPara + 1} / ${total}`;
+      const dots = App.paragraphList.map((_, i) => {
+        let cls = 'para-dot';
+        if (i === App.currentPara) cls += ' current';
+        else if (this.paraScores[i] !== undefined) cls += ' done';
+        return `<div class="${cls}" title="${this.paraScores[i] !== undefined ? this.paraScores[i]+'%' : ''}" onclick="App.paragraphs.goto(${i})"></div>`;
+      }).join('');
+      document.getElementById('para-dots').innerHTML = dots;
+      document.getElementById('para-prev').disabled = App.currentPara === 0;
+      document.getElementById('para-next').disabled = App.currentPara >= total - 1;
+    },
+
+    goto(i) {
+      App.currentPara = i;
+      this.renderNav();
+      this.showCurrent();
+    },
+    prev() { if (App.currentPara > 0) this.goto(App.currentPara - 1); },
+    next() { if (App.currentPara < App.paragraphList.length - 1) this.goto(App.currentPara + 1); },
+    markDone(i, score) {
+      this.paraScores[i] = score;
+      this.renderNav();
+    }
+  },
+
+  /* ─────────────────────────────────────────
+     HISTORY MODULE
+  ───────────────────────────────────────── */
+  history: {
+    render() {
+      const data = DB.load();
+      const filter = document.getElementById('history-filter').value;
+      const filtered = filter ? data.filter(i => i.title === filter) : data;
+      const el = document.getElementById('history-list');
+
+      if (!filtered.length) {
+        el.innerHTML = `<div class="empty-state"><span>📭</span>No records yet.<br>Complete your first reading to see progress.</div>`;
+        return;
+      }
+
+      el.innerHTML = filtered.map(item => {
+        const cls = item.score >= 90 ? 'score-excellent'
+                  : item.score >= 75 ? 'score-good'
+                  : item.score >= 50 ? 'score-fair'
+                  : 'score-poor';
+        return `
+          <div class="history-item">
+            <div class="history-meta">
+              <small>${item.date}</small>
+              <strong>${item.title}</strong>
+            </div>
+            <div class="history-score ${cls}">${item.score}%</div>
+          </div>`;
+      }).join('');
+    },
+
+    clear() {
+      if (!confirm('Delete all history?')) return;
+      DB.clear();
+      App.history.render();
+      App.chart.render();
+      App.refreshSelects();
+    }
+  },
+
+  /* ─────────────────────────────────────────
+     CHART MODULE
+  ───────────────────────────────────────── */
+  chart: {
+    render() {
+      const data = DB.load().reverse(); // oldest first
+      const filter = document.getElementById('chart-filter').value;
+      const filtered = filter ? data.filter(i => i.title === filter) : data;
+      const last20 = filtered.slice(-20);
+
+      const labels = last20.map((_, i) => `#${i + 1}`);
+      const scores = last20.map(i => i.score);
+
+      const ctx = document.getElementById('progress-chart').getContext('2d');
+
+      if (App.chartInstance) App.chartInstance.destroy();
+
+      const gradient = ctx.createLinearGradient(0, 0, 0, 200);
+      gradient.addColorStop(0, 'rgba(96,165,250,0.3)');
+      gradient.addColorStop(1, 'rgba(96,165,250,0)');
+
+      App.chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Score %',
+            data: scores,
+            borderColor: '#60a5fa',
+            backgroundColor: gradient,
+            borderWidth: 2,
+            pointBackgroundColor: scores.map(s =>
+              s >= 90 ? '#34d399' : s >= 75 ? '#60a5fa' : s >= 50 ? '#fbbf24' : '#f87171'
+            ),
+            pointRadius: 5,
+            pointHoverRadius: 7,
+            tension: 0.35,
+            fill: true,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: ctx => `Score: ${ctx.parsed.y}%`
+              }
+            }
+          },
+          scales: {
+            x: {
+              ticks: { color: '#6b7280', font: { family: 'DM Mono', size: 11 } },
+              grid: { color: 'rgba(255,255,255,0.04)' },
+              border: { display: false }
+            },
+            y: {
+              min: 0, max: 100,
+              ticks: { color: '#6b7280', font: { family: 'DM Mono', size: 11 }, callback: v => v + '%' },
+              grid: { color: 'rgba(255,255,255,0.04)' },
+              border: { display: false }
+            }
+          }
+        }
+      });
+
+      if (scores.length === 0) {
+        // Clear canvas with message
+        App.chartInstance.destroy();
+        App.chartInstance = null;
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        ctx.fillStyle = '#6b7280';
+        ctx.font = '14px Figtree';
+        ctx.textAlign = 'center';
+        ctx.fillText('Complete readings to see your progress', ctx.canvas.width / 2, 100);
+      }
+    }
+  }
+};
+
+/* ── Global wrappers ── */
+function switchMode(mode) { App.switchMode(mode); }
+
+/* ── Boot ── */
+window.addEventListener('DOMContentLoaded', () => App.init());
+</script>
+</body>
+</html>
